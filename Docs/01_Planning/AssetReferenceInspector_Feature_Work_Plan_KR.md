@@ -1,0 +1,402 @@
+# AssetReferenceInspector 기능 단위 작업 계획
+
+## 목적
+
+이 문서는 `AssetReferenceInspector` 개발을 주차 단위가 아니라 기능, 리팩토링, 검증 단위로 나누어 진행하기 위한 기준이다.
+
+각 작업 단위는 가능한 한 하나의 명확한 목적을 가지며, 빌드 가능한 상태와 커밋 가능한 경계를 목표로 한다.
+
+## 작업 단위 기준
+
+하나의 작업 단위는 다음 조건을 만족해야 한다.
+
+- 하나의 명확한 목적이 있다.
+- 변경 범위가 설명 가능하다.
+- 가능하면 빌드 가능한 상태로 끝난다.
+- 검증 결과 또는 미확인 항목을 남길 수 있다.
+- 커밋 메시지 하나로 설명 가능하다.
+
+## Feature 시작 규칙
+
+주요 feature를 시작하기 전에는 작업에 바로 들어가지 않고 mini plan을 먼저 남긴다.
+
+mini plan에는 다음 항목을 포함한다.
+
+- 목표
+- 포함 범위
+- 제외 범위
+- 예상 변경 파일
+- 검증 방법
+- 예상 커밋 단위
+
+다만 모든 변경에 새 계획 문서를 만들지는 않는다. 작은 fix, 문서 링크 수정, 단순 formatting 변경, include 정리처럼 범위가 명확하고 위험이 낮은 작업은 작업 보고로 대체할 수 있다.
+
+별도 mini plan이 필요한 예:
+
+- Editor Plugin 골격 생성
+- Nomad Tab / Slate UI 추가
+- Asset Registry Analyzer 구현
+- CSV Export 구현
+- Portfolio 프로젝트 적용 시연
+
+별도 mini plan이 불필요한 예:
+
+- 버튼 라벨 수정
+- 문서 링크 수정
+- 빌드 경고 수준의 include 정리
+- 오타 수정
+
+## 검증 반복 규칙
+
+작업은 빌드 또는 동작 확인이 가능한 작은 단위로 나눈다.
+
+각 단위가 끝날 때 다음 중 하나를 기록한다.
+
+- 검증 완료
+- 일부 검증
+- 미확인
+
+직접 확인하지 못한 항목은 성공으로 기록하지 않고 `미확인`으로 남긴다.
+
+검증 예:
+
+- UE 5.4 Editor Target 빌드
+- 에디터에서 플러그인 탭 오픈
+- 버튼 클릭 동작
+- Content Browser 선택 Asset 연동
+- Tree View 렌더링
+- CSV 파일 생성
+
+## 작업 종료 문서화 체크
+
+작업이 끝나면 문서 업데이트가 필요한지 확인한다.
+
+문서화가 필요한 경우:
+
+- 사용 방법이 바뀐 경우
+- 빌드 방법이 바뀐 경우
+- 플러그인 구조가 바뀐 경우
+- UI 흐름이 바뀐 경우
+- Known Limitation이 발견된 경우
+- 검증 결과가 새로 생긴 경우
+- 포트폴리오 설명에 쓸 만한 기능이 추가된 경우
+
+문서화가 불필요한 경우:
+
+- 내부 변수명만 바뀐 경우
+- formatting만 수정한 경우
+- 작은 include 정리
+- 동작 변화 없는 주석 수정
+
+문서 업데이트가 필요하다고 판단되면 바로 임의로 확장하지 않고, 사용자에게 업데이트 범위와 이유를 먼저 제안한다.
+
+## Phase 0: 저장소 기준선
+
+### 0-1. 초기 문서와 운영 규칙
+
+목적:
+
+- 프로젝트 목표, 작업 규칙, 빌드 기준, 문서 체계를 고정한다.
+
+주요 변경:
+
+- `AGENTS.md`
+- `README.md`
+- `BUILD.md`
+- `Docs/`
+- `.gitignore`
+
+커밋 예시:
+
+```text
+docs: 플러그인 개발 초기 문서와 작업 규칙 추가
+```
+
+### 0-2. Demo Host UE 프로젝트 초기 파일
+
+목적:
+
+- 플러그인 개발의 기준이 되는 UE Demo Host 프로젝트 파일을 저장소에 고정한다.
+
+주요 변경:
+
+- `Portfolio_PlugIn.uproject`
+- `Config/`
+- `Source/Portfolio_PlugIn/`
+- `.vsconfig`
+
+커밋 예시:
+
+```text
+chore: Demo Host UE 프로젝트 초기 파일 추가
+```
+
+## Phase 1: 플러그인 골격
+
+### 1-1. Editor Plugin 골격 생성
+
+목적:
+
+- UE 5.4에서 인식 가능한 `AssetReferenceInspector` Project Plugin을 만든다.
+
+주요 변경:
+
+- `Plugins/AssetReferenceInspector/AssetReferenceInspector.uplugin`
+- `Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/AssetReferenceInspector.Build.cs`
+- `AssetReferenceInspectorModule` Startup / Shutdown
+
+완료 기준:
+
+- 플러그인이 프로젝트 플러그인으로 인식된다.
+- Editor Target 빌드가 가능하다.
+
+커밋 예시:
+
+```text
+feat: AssetReferenceInspector Editor Plugin 골격 추가
+```
+
+### 1-2. Demo Host 플러그인 활성화
+
+목적:
+
+- Demo Host `.uproject`에서 플러그인을 활성화한다.
+
+주요 변경:
+
+- `Portfolio_PlugIn.uproject`
+
+완료 기준:
+
+- 에디터 실행 시 플러그인 모듈이 로드된다.
+
+## Phase 2: Editor Tab / Slate UI
+
+### 2-1. Nomad Tab 등록
+
+목적:
+
+- Editor 메뉴에서 `Asset Reference Inspector` 탭을 열 수 있게 한다.
+
+완료 기준:
+
+- 탭을 열고 닫을 수 있다.
+- 모듈 종료 시 등록이 정상 해제된다.
+
+### 2-2. Slate 기본 위젯
+
+목적:
+
+- 분석 기능을 붙일 기본 UI를 만든다.
+
+주요 UI:
+
+- Analyze 버튼
+- Pick Selected Asset 버튼
+- Dependencies / Referencers 모드 자리
+- Max Depth 입력 자리
+- Tree View 자리
+
+### 2-3. STreeView 더미 데이터
+
+목적:
+
+- 실제 Asset 분석 전 Tree View 렌더링과 row 구성을 검증한다.
+
+완료 기준:
+
+- 더미 노드가 계층 구조로 표시된다.
+- expand / collapse가 동작한다.
+
+## Phase 3: Asset 선택과 Registry 조회
+
+### 3-1. Content Browser 선택 Asset 가져오기
+
+목적:
+
+- 현재 선택된 Asset을 분석 대상으로 가져온다.
+
+완료 기준:
+
+- 선택 Asset의 이름과 PackageName을 UI에 표시한다.
+- 선택 없음 상태를 안전하게 처리한다.
+
+### 3-2. Dependencies Depth 1 조회
+
+목적:
+
+- Asset Registry로 선택 Asset의 1-depth Dependencies를 조회한다.
+
+완료 기준:
+
+- `IAssetRegistry::GetDependencies` 결과가 Tree에 표시된다.
+
+### 3-3. 분석 데이터 구조 분리
+
+목적:
+
+- UI와 분석 로직 사이의 데이터 구조를 분리한다.
+
+주요 타입:
+
+- `EAssetReferenceMode`
+- `FAssetReferenceNode`
+- 분석 옵션 구조체
+
+커밋 예시:
+
+```text
+refactor: Asset Reference 분석 데이터 구조 분리
+```
+
+## Phase 4: Tree 분석 MVP
+
+### 4-1. Max Depth 기반 재귀 Tree 생성
+
+목적:
+
+- Depth 제한을 가진 재귀 참조 Tree를 만든다.
+
+완료 기준:
+
+- Max Depth 설정이 Tree 생성에 반영된다.
+
+### 4-2. Referencers 모드 추가
+
+목적:
+
+- Dependencies와 Referencers를 전환해 분석할 수 있게 한다.
+
+완료 기준:
+
+- `GetDependencies`와 `GetReferencers` 경로가 같은 Tree 모델을 사용한다.
+
+### 4-3. Content Browser Sync
+
+목적:
+
+- Tree 노드를 더블 클릭하면 Content Browser에서 해당 Asset을 선택한다.
+
+완료 기준:
+
+- `IContentBrowserSingleton::SyncBrowserToAssets`가 정상 동작한다.
+
+## Phase 5: 필터
+
+### 5-1. Path 필터
+
+목적:
+
+- 특정 경로만 포함하거나 제외한다.
+
+### 5-2. Asset Class 필터
+
+목적:
+
+- Asset Class 기준으로 결과를 제한한다.
+
+### 5-3. Engine / Plugin Content 옵션
+
+목적:
+
+- Engine Content와 Plugin Content 표시 여부를 제어한다.
+
+### 5-4. Filter Predicate 분리
+
+목적:
+
+- 필터 조건을 Analyzer 내부에서 독립 함수 또는 구조로 분리한다.
+
+커밋 예시:
+
+```text
+refactor: Asset Reference 필터 조건 분리
+```
+
+## Phase 6: 실무형 분석 기능
+
+### 6-1. 순환 참조 탐지
+
+목적:
+
+- 전체 방문 여부가 아니라 현재 DFS 경로 기준으로 순환 참조를 탐지한다.
+
+완료 기준:
+
+- 같은 PackageName이 현재 경로에 다시 등장하면 `Circular`로 표시한다.
+
+### 6-2. Asset 디스크 크기 표시
+
+목적:
+
+- Asset의 디스크 파일 기준 추정 크기를 표시한다.
+
+기준:
+
+- 1차: `.uasset`
+- 가능하면 합산: `.uexp`, `.ubulk`
+
+### 6-3. Unused Candidate 표시
+
+목적:
+
+- Referencer 수가 0인 `/Game` Asset을 검토 후보로 표시한다.
+
+주의:
+
+- 삭제 가능 판정이 아니다.
+- UI와 문서에서 `Unused Candidate` 표현을 사용한다.
+
+### 6-4. Analyzer 메타데이터 정리
+
+목적:
+
+- 순환 참조, 크기, Unused Candidate 같은 결과 메타데이터를 일관된 구조로 정리한다.
+
+## Phase 7: Export / 문서 / 시연
+
+### 7-1. CSV Export
+
+목적:
+
+- 현재 Tree 결과를 CSV로 저장한다.
+
+컬럼:
+
+```text
+AssetName,PackageName,Class,Path,Depth,SizeBytes,Mode,ParentPackage,IsCircular,IsUnusedCandidate
+```
+
+### 7-2. 플러그인 README
+
+목적:
+
+- `Plugins/AssetReferenceInspector`만 복사해도 사용법을 이해할 수 있게 한다.
+
+### 7-3. 검증 기록
+
+목적:
+
+- 빌드 결과, 에디터 실행 결과, 기능별 확인 결과를 `Docs/03_Verification`에 기록한다.
+
+### 7-4. Portfolio 적용 시연 문서
+
+목적:
+
+- 기존 Portfolio 프로젝트에 플러그인을 복사 적용하고 실제 Asset 분석 시나리오를 정리한다.
+
+## 커밋 운영 기준
+
+- `feat`: 사용자 기능 추가
+- `refactor`: 동작 유지 구조 개선
+- `fix`: 빌드 또는 동작 오류 수정
+- `docs`: 문서 변경
+- `chore`: 설정, 프로젝트 파일, 유지보수
+
+작업 종료 시에는 다음 중 하나를 판단한다.
+
+- 독립 커밋
+- 직전 커밋 amend
+- 검증 전 커밋 보류
+
+필요한 경우 Git Bash 기준 명령을 제안한다.

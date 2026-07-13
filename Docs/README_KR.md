@@ -14,6 +14,8 @@
   - MVP 범위와 확장 범위를 분리한다.
 - `01_Planning/AssetReferenceInspector_Three_Week_Roadmap_KR.md`
   - 3주 개발 일정을 단계별 산출물 기준으로 정리한다.
+- `01_Planning/AssetReferenceInspector_Feature_Work_Plan_KR.md`
+  - 기능, 리팩토링, 검증 단위의 실제 작업 분해 기준을 정리한다.
 - `03_Verification/README_KR.md`
   - 빌드, 에디터 실행, 기능 검증 결과를 기록하는 기준을 정리한다.
 - `00_Project/Codex_Init_Prompt_KR.md`
