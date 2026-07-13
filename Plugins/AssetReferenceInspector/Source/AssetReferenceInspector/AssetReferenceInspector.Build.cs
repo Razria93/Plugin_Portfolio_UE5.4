@@ -14,7 +14,9 @@ public class AssetReferenceInspector : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
 			"CoreUObject",
-			"Engine"
+			"Engine",
+			"Slate",
+			"SlateCore"
 		});
 	}
 }
