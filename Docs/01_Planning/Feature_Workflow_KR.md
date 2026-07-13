@@ -30,6 +30,47 @@ Mini plan이 불필요한 작업:
 
 Mini plan은 `LocalNotes/feature-plans/` 아래에 작성한다. 로컬 학습과 진행용 문서이므로 커밋 대상이 아니다.
 
+## Feature 범위 판단 기준
+
+Feature는 가능하면 사용자가 체감하거나 설명할 수 있는 단위로 잡는다.
+
+좋은 feature 예:
+
+- 에디터 메뉴에서 `Asset Reference Inspector` 창을 열 수 있다.
+- 선택한 Asset의 Dependencies를 Tree View에 표시한다.
+- Tree 노드를 더블 클릭하면 Content Browser에서 해당 Asset을 선택한다.
+- 현재 분석 결과를 CSV로 export한다.
+
+너무 작은 feature 예:
+
+- `Build.cs`에 의존성을 추가한다.
+- Nomad Tab Spawner만 등록한다.
+- 함수 선언만 추가한다.
+- include만 정리한다.
+
+너무 작은 변경은 feature가 아니라 feature 안의 구현 단계로 취급한다.
+
+## 구현 단계 판단 기준
+
+구현 단계는 하나의 feature를 안전하게 완성하기 위한 내부 작업 순서다.
+
+좋은 구현 단계는 다음 조건을 만족한다.
+
+- 하나의 코드 변경 목적을 가진다.
+- 다음 단계가 무엇인지 명확하다.
+- 가능하면 빌드 또는 코드 리뷰로 확인할 수 있다.
+- 실패했을 때 되돌릴 위치를 알 수 있다.
+
+구현 단계 예:
+
+- Tab Spawner 등록과 해제 추가
+- 기본 `SDockTab` 생성 함수 추가
+- 메뉴 Command 추가
+- `ToolMenus`에 Window 메뉴 진입점 추가
+- 메뉴 클릭 시 `TryInvokeTab` 연결
+
+구현 단계는 mini plan에 순서로 기록하되, 각 단계를 별도 feature나 PR로 나누지는 않는다.
+
 ## Branch 기준
 
 브랜치는 모든 작업에 강제하지 않는다.
