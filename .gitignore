@@ -1,0 +1,39 @@
+# Unreal Engine generated files
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# Visual Studio / Rider / local IDE files
+.vs/
+.idea/
+*.sln
+*.sln.DotSettings.user
+*.VC.db
+*.VC.opendb
+*.suo
+*.user
+*.userosscache
+*.sdf
+*.opensdf
+
+# Build outputs
+Build/
+Debug/
+Release/
+x64/
+x86/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Unreal local collections and developer-only content
+Content/Collections/
+Content/Developers/
+
+# OS files
+Thumbs.db
+Desktop.ini

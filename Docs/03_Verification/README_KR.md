@@ -1,0 +1,22 @@
+# 검증 기록
+
+이 폴더는 `AssetReferenceInspector` 개발 중 수행한 빌드, 에디터 실행, 기능 검증 결과를 기록한다.
+
+직접 확인하지 않은 항목은 성공으로 적지 않고 `미확인`으로 남긴다.
+
+## 기록 대상
+
+- UE 5.4 Editor Target 빌드 결과
+- 플러그인 탭 오픈 여부
+- Content Browser 선택 Asset 연동
+- Dependencies / Referencers 분석 결과
+- Max Depth 및 필터 동작
+- CSV Export 결과
+- 실제 Portfolio 프로젝트 적용 결과
+
+## 권장 파일
+
+- `Build_Verification_Log_KR.md`
+- `Editor_UI_Verification_KR.md`
+- `Portfolio_Project_Application_Log_KR.md`
+
