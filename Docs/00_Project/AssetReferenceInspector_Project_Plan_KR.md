@@ -24,6 +24,21 @@ Portfolio_PlugIn/
 
 최종 시연 단계에서는 `Plugins/AssetReferenceInspector` 폴더를 기존 Portfolio 프로젝트의 `Plugins` 폴더로 복사하여 적용한다.
 
+## 템플릿 기준
+
+`AssetReferenceInspector`는 Blank 기반 Editor Plugin 상태에서 시작한다.
+
+Unreal Editor의 `에디터 독립형 창` 템플릿은 구현 참고자료로 사용한다. 해당 템플릿에 포함된 `FGlobalTabmanager`, `SDockTab`, `Commands`, `Style`, `ToolMenus` 구조를 한 번에 이식하지 않고, 필요한 기능 단위로 도입한다.
+
+초기 도입 순서는 다음 기준을 따른다.
+
+1. Blank 기반 Editor Plugin 골격을 확정한다.
+2. 독립형 창 템플릿을 참고해 Nomad Tab 등록과 해제를 먼저 구현한다.
+3. 탭이 검증된 뒤 Slate Widget을 분리한다.
+4. 메뉴, Command, Style, Toolbar Button은 창을 여는 편의 진입점으로 보고 후속 단계에서 필요성을 판단한다.
+
+`에디터 툴바 버튼` 템플릿은 별도 기준으로 삼지 않는다.
+
 ## 목표
 
 - UE 5.4에서 빌드 가능한 Editor Plugin을 만든다.
@@ -191,4 +206,3 @@ struct FAssetReferenceNode
 ## 포트폴리오 메시지
 
 > Unreal Engine의 Asset Registry와 Slate UI를 활용해, 선택한 Asset의 Dependencies / Referencers를 분석하고 Tree View로 시각화하는 독립 Editor Plugin을 제작했습니다. Demo Host 프로젝트에서 개발한 뒤 실제 액션 RPG Portfolio 프로젝트에 적용하여 BP_Player, Character, Weapon, Material 등 실사용 Asset 참조 관계를 분석했습니다.
-

@@ -30,6 +30,10 @@ x86/
 *.bak
 *.swp
 
+# Local working notes
+LocalNotes/
+.obsidian/
+
 # Unreal local collections and developer-only content
 Content/Collections/
 Content/Developers/

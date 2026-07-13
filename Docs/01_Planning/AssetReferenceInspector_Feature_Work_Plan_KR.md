@@ -138,6 +138,8 @@ chore: Demo Host UE 프로젝트 초기 파일 추가
 목적:
 
 - UE 5.4에서 인식 가능한 `AssetReferenceInspector` Project Plugin을 만든다.
+- Blank 기반 Editor Plugin 상태를 시작점으로 확정한다.
+- 단, Runtime/Content용 Blank 기본값을 그대로 따르지 않고 `Type: Editor`, `CanContainContent: false`인 독립 Editor Tool 기준으로 유지한다.
 
 주요 변경:
 
@@ -172,16 +174,29 @@ feat: AssetReferenceInspector Editor Plugin 골격 추가
 
 ## Phase 2: Editor Tab / Slate UI
 
+Phase 2는 Unreal Editor의 `에디터 독립형 창` 템플릿을 참고하되, 전체 템플릿 코드를 한 번에 가져오지 않는다.
+
+도입 순서는 다음 기준을 따른다.
+
+1. Nomad Tab 등록과 해제
+2. 기본 `SDockTab` 생성
+3. Slate Widget 분리
+4. 메뉴/Command/Style/Toolbar Button 도입 여부 판단
+
+`Commands`, `Style`, `ToolMenus`, Toolbar Button은 창을 여는 편의 진입점이므로 탭 생성 흐름이 검증된 뒤 별도 작업 단위로 다룬다.
+
 ### 2-1. Nomad Tab 등록
 
 목적:
 
-- Editor 메뉴에서 `Asset Reference Inspector` 탭을 열 수 있게 한다.
+- `AssetReferenceInspector` 모듈이 `Asset Reference Inspector` Nomad Tab을 등록하고 해제할 수 있게 한다.
+- 독립형 창 템플릿의 `FGlobalTabmanager`, `RegisterNomadTabSpawner`, `SDockTab` 흐름만 먼저 참고한다.
 
 완료 기준:
 
-- 탭을 열고 닫을 수 있다.
+- 등록된 Tab Spawner로 기본 `SDockTab`을 생성할 수 있다.
 - 모듈 종료 시 등록이 정상 해제된다.
+- 메뉴, Command, Style, Toolbar Button은 아직 포함하지 않는다.
 
 ### 2-2. Slate 기본 위젯
 
