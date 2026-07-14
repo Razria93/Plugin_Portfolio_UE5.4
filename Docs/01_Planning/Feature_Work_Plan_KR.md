@@ -243,6 +243,14 @@ Phase 2는 Unreal Editor의 `에디터 독립형 창` 템플릿을 참고하되,
 - 더미 노드가 계층 구조로 표시된다.
 - expand / collapse가 동작한다.
 
+상태:
+
+- 완료.
+- `feature/ari-tree-view-dummy` 브랜치에서 결과 영역 placeholder를 `STreeView` 기반 더미 계층 구조로 교체했다.
+- 더미 데이터는 `BP_Player` 아래에 `SK_Player`, `ABP_Player`, `M_Player`, `PlayerConfig`를 배치하고, `M_Player` 아래에 `Player_D`, `Player_L`을 배치한다.
+- `Portfolio_PlugInEditor` 빌드는 성공했다.
+- 에디터에서 실제 Tree View 표시, 계층 노드 표시, expand / collapse UI, 선택 row 하이라이트를 수동 확인했다.
+
 ## Phase 3: Asset 선택과 Registry 조회
 
 ### 3-1. Content Browser 선택 Asset 가져오기

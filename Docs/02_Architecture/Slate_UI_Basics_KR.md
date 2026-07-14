@@ -29,6 +29,24 @@ SNew(STextBlock)
 	.Text(FText::FromString(TEXT("Asset Reference Inspector")))
 ```
 
+생성한 위젯을 이후 코드에서 다시 접근해야 할 때는 `SAssignNew`를 사용한다.
+
+```cpp
+SAssignNew(TreeView, STreeView<TSharedPtr<FAssetReferenceDummyNode>>)
+```
+
+차이는 다음과 같다.
+
+```text
+SNew
+= Slate 위젯을 생성해서 바로 사용한다.
+
+SAssignNew
+= Slate 위젯을 생성하면서 `TSharedPtr` 변수에도 저장한다.
+```
+
+`AssetReferenceInspector`에서는 `TreeView->SetItemExpansion(...)`처럼 생성 이후 Tree View API를 호출해야 하므로 `SAssignNew`로 `TreeView` 멤버에 저장한다.
+
 위젯은 대괄호 `[]`로 자식 위젯을 중첩해 UI 트리를 만든다.
 
 ```cpp
@@ -123,6 +141,16 @@ FillHeight(Value)
 
 `SHorizontalBox`에서는 같은 개념으로 `AutoWidth()`와 `FillWidth(Value)`를 사용한다.
 
+`Slot`은 부모 컨테이너가 자식 위젯을 배치하기 위해 제공하는 자리와 배치 규칙이다. `STreeView`의 `Row`와는 구분한다.
+
+```text
+Slot
+= `SVerticalBox`, `SHorizontalBox` 같은 레이아웃 컨테이너 안에서 자식 위젯을 놓는 자리
+
+Row
+= `SListView`, `STreeView` 같은 반복 표시 위젯에서 데이터 아이템 하나를 표현하는 화면 줄
+```
+
 ## 자주 쓰는 Slot 옵션
 
 `Padding`은 슬롯 또는 위젯 내부 여백을 지정한다.
@@ -181,8 +209,9 @@ SAssetReferenceInspectorWidget
         SButton
       STextBlock
       SBorder
-        SScrollBox
-          STextBlock
+        STreeView
+          STableRow
+            STextBlock
 ```
 
 각 요소의 역할:
@@ -206,9 +235,92 @@ SUniformGridPanel
 SButton
 = 이후 실제 기능이 연결될 버튼 placeholder
 
-SScrollBox
-= 이후 STreeView나 긴 분석 결과가 들어갈 영역
+STreeView
+= Asset 참조 관계를 계층 구조로 표시할 결과 영역
 ```
+
+## STreeView 기본 구조
+
+`STreeView`는 여러 데이터 아이템을 계층 row 형태로 반복 표시하는 Slate 위젯이다.
+
+현재 더미 Tree View는 다음 타입을 사용한다.
+
+```cpp
+TSharedPtr<STreeView<TSharedPtr<FAssetReferenceDummyNode>>> TreeView;
+```
+
+안쪽 타입인 `TSharedPtr<FAssetReferenceDummyNode>`는 Tree View가 표시할 아이템 하나의 타입이다. 바깥쪽 `TSharedPtr<STreeView<...>>`는 실제 Slate 위젯 인스턴스를 보관하는 포인터다.
+
+더미 노드는 현재 UI 검증을 위한 임시 데이터 모델이다.
+
+```cpp
+struct FAssetReferenceDummyNode
+{
+	explicit FAssetReferenceDummyNode(const FString& InName);
+
+	FString Name;
+	TArray<TSharedPtr<FAssetReferenceDummyNode>> Children;
+};
+```
+
+`Name`은 row에 표시할 이름이고, `Children`은 노드를 펼쳤을 때 보여줄 자식 노드 목록이다. `explicit`은 `FString`이 의도치 않게 `FAssetReferenceDummyNode`로 암시 변환되는 것을 막는 C++ 문법 안전장치다.
+
+더미 데이터는 다음 구조를 만든다.
+
+```text
+BP_Player
+  SK_Player
+  ABP_Player
+  M_Player
+    Player_D
+    Player_L
+  PlayerConfig
+```
+
+Tree View 연결의 핵심은 세 가지다.
+
+```cpp
+SAssignNew(TreeView, STreeView<TSharedPtr<FAssetReferenceDummyNode>>)
+	.TreeItemsSource(&TreeRootItems)
+	.OnGenerateRow(this, &SAssetReferenceInspectorWidget::OnGenerateTreeRow)
+	.OnGetChildren(this, &SAssetReferenceInspectorWidget::OnGetTreeChildren)
+```
+
+`TreeItemsSource(&TreeRootItems)`는 Tree View의 최상위 아이템 배열을 지정한다. 이 배열은 주소로 전달되므로 `Construct` 내부 지역 변수가 아니라 위젯 클래스 멤버로 유지해야 한다. 지역 변수로 만들면 `Construct` 종료 후 주소가 무효가 된다.
+
+`OnGenerateRow`는 데이터 노드 하나를 화면 row 하나로 변환하는 콜백 슬롯이다. 현재는 `FAssetReferenceDummyNode::Name`을 `STextBlock`으로 표시하는 `STableRow`를 반환한다.
+
+```cpp
+return SNew(STableRow<TSharedPtr<FAssetReferenceDummyNode>>, OwnerTable)
+	[
+		SNew(STextBlock)
+			.Text(FText::FromString(DisplayName))
+	];
+```
+
+`STableRow`는 `SListView`, `STreeView` 같은 테이블 계열 위젯에서 아이템 하나를 표현하는 화면 줄이다. 여기서 테이블 계열은 위계가 있다는 뜻이 아니라, 여러 데이터 아이템을 row 또는 tile 형태로 반복 표시하는 위젯 계열을 뜻한다.
+
+`OwnerTable`은 이 row가 소속되는 부모 테이블 위젯이다. 실제로는 현재 `STreeView`가 넘어오지만, `STableRow`가 `SListView`, `STreeView`, `STileView` 계열에서 공통으로 쓰일 수 있도록 공통 부모 타입인 `STableViewBase`로 받는다.
+
+`OnGetChildren`은 특정 노드를 펼쳤을 때 보여줄 자식 목록을 제공하는 콜백 슬롯이다.
+
+```cpp
+OutChildren.Append(Item->Children);
+```
+
+전체 흐름은 다음과 같다.
+
+```text
+BuildDummyTree()
+-> TreeRootItems에 루트 노드 구성
+-> STreeView 생성
+-> TreeItemsSource로 루트 배열 연결
+-> row가 필요할 때 OnGenerateTreeRow 호출
+-> 노드를 펼칠 때 OnGetTreeChildren 호출
+-> 반환된 자식들에 대해 다시 row 생성
+```
+
+즉 Tree View는 데이터를 직접 해석해서 그리지 않는다. 데이터 소스와 콜백 슬롯을 통해 필요한 row와 children을 요청하면서 화면을 구성한다.
 
 ## 현재 코드에서 의도한 역할
 
@@ -232,7 +344,7 @@ SAssetReferenceInspectorWidget
 - Analyze 버튼 이벤트 연결
 - Dependencies / Referencers 모드 선택 UI
 - Max Depth 입력 UI
-- STreeView 결과 표시
+- STreeView 결과를 실제 Asset 분석 데이터와 연결
 ```
 
 ## 작성 기준
@@ -244,4 +356,5 @@ Slate UI를 추가할 때는 다음 기준을 따른다.
 - 배치 컨테이너와 실제 입력/표시 위젯의 역할을 구분한다.
 - 상단 조작 영역은 `AutoHeight`, 결과 영역은 가능한 `FillHeight`를 사용한다.
 - placeholder는 다음 기능을 붙일 자리를 보여주는 수준으로 유지한다.
-- 실제 데이터 표시가 필요해지면 `STreeView` 등 목적에 맞는 Slate 위젯으로 교체한다.
+- Tree View 데이터 배열은 `STreeView`보다 오래 살아야 하므로 위젯 멤버로 유지한다.
+- row 표시 방식은 `OnGenerateRow`, 계층 데이터 제공은 `OnGetChildren`에서 다룬다.

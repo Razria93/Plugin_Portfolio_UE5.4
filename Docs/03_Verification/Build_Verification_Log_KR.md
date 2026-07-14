@@ -243,3 +243,51 @@ Total execution time: 2.69 seconds
 - `Pick Selected Asset` / `Analyze` 버튼 placeholder 표시 확인
 - `Mode: Dependencies / Referencers` placeholder 표시 확인
 - 결과 영역 placeholder 표시 확인
+
+### AssetReferenceInspector STreeView 더미 데이터
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+일반 실행은 UBT 로그 파일 백업 단계에서 `UnauthorizedAccessException`으로 실패했다. 동일 명령을 권한 상승으로 재실행해 실제 컴파일/링크를 확인했다.
+
+UBT 출력 기준:
+
+```text
+[3/7] Compile [x64] Module.AssetReferenceInspector.cpp
+[4/7] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[5/7] Link [x64] UnrealEditor-AssetReferenceInspector-0004.lib
+[6/7] Link [x64] UnrealEditor-AssetReferenceInspector-0004.dll
+[7/7] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 5.97 seconds
+```
+
+#### 확인 범위
+
+- 결과 영역 placeholder를 `STreeView`로 교체한 상태에서 빌드 확인
+- `BP_Player` 기준 더미 계층 데이터를 위젯 내부에서 생성하는 상태에서 빌드 확인
+- `OnGenerateTreeRow`, `OnGetTreeChildren` 콜백 연결 상태에서 빌드 확인
+
+#### 에디터 UI 확인
+
+- `Asset Reference Inspector` 탭 내부 결과 영역이 `STreeView`로 표시됨을 확인
+- `BP_Player` 루트 노드 표시 확인
+- `SK_Player`, `ABP_Player`, `M_Player`, `PlayerConfig` 자식 노드 표시 확인
+- `M_Player` 하위 `Player_D`, `Player_L` 노드 표시 확인
+- Tree row 선택 하이라이트 표시 확인
+- expand / collapse UI 표시 확인
