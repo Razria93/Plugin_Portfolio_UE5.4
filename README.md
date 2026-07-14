@@ -9,9 +9,9 @@
 - [Contributor Guide](AGENTS.md)
 - [Build Guide](BUILD.md)
 - [Docs Index](Docs/README_KR.md)
-- [Project Plan](Docs/00_Project/AssetReferenceInspector_Project_Plan_KR.md)
-- [MVP Scope](Docs/01_Planning/AssetReferenceInspector_MVP_Scope_KR.md)
-- [3 Week Roadmap](Docs/01_Planning/AssetReferenceInspector_Three_Week_Roadmap_KR.md)
+- [Project Plan](Docs/00_Overview/Project_Plan_KR.md)
+- [MVP Scope](Docs/00_Overview/MVP_Scope_KR.md)
+- [3 Week Roadmap](Docs/01_Planning/Three_Week_Roadmap_KR.md)
 
 ## 저장소 구조
 
@@ -47,4 +47,3 @@ Portfolio_PlugIn/
 1. Demo Host 프로젝트에서 플러그인을 개발하고 검증합니다.
 2. `Plugins/AssetReferenceInspector` 폴더를 기존 Portfolio 프로젝트의 `Plugins` 폴더로 복사합니다.
 3. 실제 Portfolio Asset을 대상으로 참조 관계를 분석하고 시연 자료를 정리합니다.
-
