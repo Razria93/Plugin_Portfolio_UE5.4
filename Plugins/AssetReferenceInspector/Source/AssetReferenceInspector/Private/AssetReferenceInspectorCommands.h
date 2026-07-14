@@ -9,7 +9,10 @@ class FAssetReferenceInspectorCommands : public TCommands<FAssetReferenceInspect
 public:
 	FAssetReferenceInspectorCommands();
 
+	// TCommands
 	virtual void RegisterCommands() override;
 
+public:
+	// Commands
 	TSharedPtr<FUICommandInfo> OpenPluginWindow;
 };

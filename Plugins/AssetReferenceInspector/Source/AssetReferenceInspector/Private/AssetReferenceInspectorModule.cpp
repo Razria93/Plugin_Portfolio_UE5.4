@@ -4,10 +4,10 @@
 
 #include "Framework/Commands/UICommandList.h"
 #include "Framework/Docking/TabManager.h"
-
 #include "Modules/ModuleManager.h"
 
 #include "ToolMenus.h"
+
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"

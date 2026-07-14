@@ -13,7 +13,12 @@ FAssetReferenceInspectorCommands::FAssetReferenceInspectorCommands()
 
 void FAssetReferenceInspectorCommands::RegisterCommands()
 {
-	UI_COMMAND(OpenPluginWindow, "Asset Reference Inspector", "Open the Asset Reference Inspector window.", EUserInterfaceActionType::Button, FInputChord());
+	UI_COMMAND(
+		OpenPluginWindow,
+		"Asset Reference Inspector",
+		"Open the Asset Reference Inspector window.",
+		EUserInterfaceActionType::Button,
+		FInputChord());
 }
 
 #undef LOCTEXT_NAMESPACE
