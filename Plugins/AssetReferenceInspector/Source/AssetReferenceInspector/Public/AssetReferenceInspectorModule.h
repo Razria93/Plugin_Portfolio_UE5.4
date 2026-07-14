@@ -11,4 +11,9 @@ public:
 
 private:
 	TSharedRef<class SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
+
+	void OpenPluginWindow();
+	void RegisterMenus();
+
+	TSharedPtr<class FUICommandList> PluginCommands;
 };

@@ -72,3 +72,47 @@ Total execution time: 0.77 seconds
 #### 미확인
 
 - 메뉴/툴바 진입점은 이번 피처 범위가 아니므로 에디터 UI에서 직접 탭을 여는 검증은 수행하지 않음
+
+### AssetReferenceInspector 에디터 창 열기
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+일반 실행은 UBT 로그 파일 백업 단계에서 `UnauthorizedAccessException`으로 실패했다. 동일 명령을 권한 상승으로 재실행해 실제 컴파일/링크를 확인했다.
+
+UBT 출력 기준:
+
+```text
+[2/7] Compile [x64] AssetReferenceInspectorCommands.cpp
+[4/7] Compile [x64] AssetReferenceInspectorModule.cpp
+[5/7] Link [x64] UnrealEditor-AssetReferenceInspector-0002.lib
+[6/7] Link [x64] UnrealEditor-AssetReferenceInspector-0002.dll
+[7/7] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 5.47 seconds
+```
+
+#### 확인 범위
+
+- `FAssetReferenceInspectorCommands` 추가 상태에서 빌드 확인
+- `FUICommandList` 기반 메뉴 Command 매핑 포함 상태에서 빌드 확인
+- `ToolMenus` 기반 `LevelEditor.MainMenu.Window` 메뉴 진입점 등록 코드 포함 상태에서 빌드 확인
+- 메뉴 Command에서 `FGlobalTabmanager::TryInvokeTab` 호출 코드 포함 상태에서 빌드 확인
+
+#### 미확인
+
+- 에디터 UI에서 Window 메뉴 항목을 직접 클릭해 창이 열리는지는 아직 수동 확인하지 않음

@@ -15,8 +15,10 @@ public class AssetReferenceInspector : ModuleRules
 		{
 			"CoreUObject",
 			"Engine",
+			"InputCore",
 			"Slate",
-			"SlateCore"
+			"SlateCore",
+			"ToolMenus"
 		});
 	}
 }
