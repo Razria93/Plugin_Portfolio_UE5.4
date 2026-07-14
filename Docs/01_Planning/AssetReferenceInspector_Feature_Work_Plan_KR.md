@@ -201,6 +201,14 @@ Phase 2는 Unreal Editor의 `에디터 독립형 창` 템플릿을 참고하되,
 - Editor Target 빌드가 성공한다.
 - Style과 Toolbar Button은 아직 포함하지 않는다.
 
+상태:
+
+- 완료.
+- `feature/ari-nomad-tab` 브랜치에서 구현했다.
+- Window 메뉴에서 `Asset Reference Inspector` 탭 오픈을 수동 확인했다.
+- Command, ToolMenus, TabManager, Slate 흐름은 `Docs/02_Architecture/AssetReferenceInspector_Editor_Window_Flow_KR.md`에 정리했다.
+- 다음 작업은 `SAssetReferenceInspectorWidget` 기반 Slate UI Shell 분리다.
+
 ### 2-2. Slate 기본 위젯
 
 목적:
