@@ -141,6 +141,15 @@ Issue 본문은 다음 원칙을 따른다.
 - 상세 내용은 `Docs/` 문서 링크로 연결한다.
 - PR 본문에는 `Related Issues` 섹션을 두고 `References` 또는 `Closes` 관계를 명시한다.
 
+Feature 종료 시 상위 `[Plan]` Issue가 있으면 다음을 반복 확인한다.
+
+- 첫 진행 댓글의 누적 Phase 요약을 갱신했는가
+- 이번 feature 완료 로그 댓글을 추가했는가
+- PR 본문에 상위 Plan Issue는 `References`, 브랜치 단위 Architecture / Verification Issue는 필요한 경우 `Closes`로 연결했는가
+- Issue label을 문서 책임에 맞게 적용했는가
+
+Plan Issue의 첫 진행 댓글은 현재까지 완료된 Phase 전체를 보여주는 진행판으로 본다. 각 feature 완료 로그는 그 아래에 새 댓글로 누적한다.
+
 ## 검증 기준
 
 C++ 코드, `.uplugin`, `Build.cs`, `.uproject` 변경은 가능한 경우 UE 5.4 Editor Target 빌드로 검증한다.

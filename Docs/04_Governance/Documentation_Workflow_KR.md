@@ -138,6 +138,29 @@ Issue 본문에는 다음을 둔다.
 
 상세 설명은 `Docs`로 연결한다.
 
+### Plan Issue 진행 댓글
+
+상위 `[Plan]` Issue는 MVP 전체 진행 상태를 추적한다.
+
+Plan Issue의 첫 진행 댓글은 현재까지 완료된 Phase를 누적 요약하는 댓글로 운영한다. 새로운 feature가 끝나면 이 첫 진행 댓글의 `완료` / `진행 예정` 목록을 갱신한다.
+
+이후 각 feature 종료 시점에는 별도 작업 로그 댓글을 추가한다.
+
+```text
+첫 진행 댓글
+= 현재까지 완료된 Phase 요약과 다음 예정 작업
+
+후속 댓글
+= 각 feature 완료 시점의 작업 내용, 검증 결과, 관련 PR
+```
+
+Feature 종료 정리 과정에서는 다음을 확인한다.
+
+- 상위 Plan Issue가 있는가
+- 첫 진행 댓글의 Phase 요약을 갱신해야 하는가
+- 이번 feature 완료 로그 댓글을 추가해야 하는가
+- 관련 PR 번호와 Architecture / Verification Issue 번호가 연결되어 있는가
+
 ## GitHub Label
 
 GitHub Issue와 PR 라벨은 문서 책임과 같은 축으로 운영한다. 현재 커스텀 라벨 이름은 그대로 사용한다.
