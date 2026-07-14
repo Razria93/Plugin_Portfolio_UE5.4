@@ -162,7 +162,7 @@ C++ 코드, `.uplugin`, `Build.cs`, `.uproject` 변경은 가능한 경우 UE 5.
 
 ## 코드 구성 검토 기준
 
-C++ 코드, `Build.cs`, `.uplugin` 변경이 있는 작업은 종료 전에 `Docs/02_Architecture/AssetReferenceInspector_Code_Organization_KR.md` 기준으로 구조를 검토한다.
+C++ 코드, `Build.cs`, `.uplugin` 변경이 있는 작업은 종료 전에 `Docs/02_Architecture/Code_Organization_KR.md` 기준으로 구조를 검토한다.
 
 검토 항목:
 

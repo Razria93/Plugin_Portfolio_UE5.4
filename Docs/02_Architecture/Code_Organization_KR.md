@@ -1,4 +1,4 @@
-# AssetReferenceInspector 코드 구성 규칙
+# Code Organization
 
 이 문서는 `AssetReferenceInspector` 플러그인의 C++ 파일 배치, include 순서, 헤더 섹션 구성 기준을 정리한다.
 

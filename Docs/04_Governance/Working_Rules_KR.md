@@ -1,4 +1,4 @@
-# AssetReferenceInspector 작업 규칙
+# Working Rules
 
 ## 기본 원칙
 
@@ -63,4 +63,3 @@
 - 구현이 끝난 기능은 README 또는 검증 문서에 사용 방법을 남긴다.
 - Known Limitations를 숨기지 않는다.
 - 포트폴리오 시연 흐름은 Demo Host 검증과 실제 Portfolio 적용을 분리해서 기록한다.
-

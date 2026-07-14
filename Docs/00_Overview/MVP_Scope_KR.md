@@ -1,4 +1,4 @@
-# AssetReferenceInspector MVP 범위
+# MVP Scope
 
 ## MVP 목표
 
@@ -66,4 +66,3 @@ MVP는 선택한 Asset의 참조 관계를 Tree View로 확인할 수 있는 Edi
 - 코드 동적 로딩 참조의 완전한 추적
 - 모든 Asset Manager 규칙 반영
 - 대규모 프로젝트 전체 분석 최적화
-
