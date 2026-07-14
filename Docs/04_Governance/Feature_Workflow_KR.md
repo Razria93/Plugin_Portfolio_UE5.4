@@ -128,12 +128,27 @@ Issue는 Docs 원문을 복사하는 공간이 아니라 GitHub 상의 추적과
 - `[Architecture]`: 구조 요약, 주요 설계 판단, 관련 Docs 링크
 - `[Verification]`: 대상 브랜치, 검증 항목, 결과, 특이사항, 관련 Docs 링크
 
+권장 label:
+
+- `[Plan]`: `work plan`
+- `[Architecture]`: `system architecture`
+- `[Verification]`: `verification log`
+
 Issue 본문은 다음 원칙을 따른다.
 
 - 긴 코드블록을 피하고 GitHub에서 깨지지 않는 Markdown을 사용한다.
 - 체크리스트와 짧은 bullet 중심으로 작성한다.
 - 상세 내용은 `Docs/` 문서 링크로 연결한다.
 - PR 본문에는 `Related Issues` 섹션을 두고 `References` 또는 `Closes` 관계를 명시한다.
+
+Feature 종료 시 상위 `[Plan]` Issue가 있으면 다음을 반복 확인한다.
+
+- 첫 진행 댓글의 누적 Phase 요약을 갱신했는가
+- 이번 feature 완료 로그 댓글을 추가했는가
+- PR 본문에 상위 Plan Issue는 `References`, 브랜치 단위 Architecture / Verification Issue는 필요한 경우 `Closes`로 연결했는가
+- Issue label을 문서 책임에 맞게 적용했는가
+
+Plan Issue의 첫 진행 댓글은 현재까지 완료된 Phase 전체를 보여주는 진행판으로 본다. 각 feature 완료 로그는 그 아래에 새 댓글로 누적한다.
 
 ## 검증 기준
 

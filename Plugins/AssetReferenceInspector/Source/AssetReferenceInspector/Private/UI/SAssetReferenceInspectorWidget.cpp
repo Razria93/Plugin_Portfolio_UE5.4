@@ -2,15 +2,20 @@
 
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Layout/SBorder.h"
-#include "Widgets/Layout/SBox.h"
-#include "Widgets/Layout/SScrollBox.h"
 #include "Widgets/Layout/SSeparator.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Text/STextBlock.h"
 
+FAssetReferenceDummyNode::FAssetReferenceDummyNode(const FString& InName)
+	: Name(InName)
+{
+}
+
 void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 {
+	BuildDummyTree();
+
 	ChildSlot
 		[
 			SNew(SBorder)
@@ -74,16 +79,57 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 							SNew(SBorder)
 								.Padding(8.0f)
 								[
-									SNew(SScrollBox)
-
-										+ SScrollBox::Slot()
-										[
-											SNew(STextBlock)
-												.Text(FText::FromString(TEXT("Analysis result tree placeholder")))
-										]
-
+									SAssignNew(TreeView, STreeView<TSharedPtr<FAssetReferenceDummyNode>>)
+										.TreeItemsSource(&TreeRootItems)
+										.OnGenerateRow(this, &SAssetReferenceInspectorWidget::OnGenerateTreeRow)
+										.OnGetChildren(this, &SAssetReferenceInspectorWidget::OnGetTreeChildren)
 								]
 						]
 				]
 		];
+
+	if (TreeView.IsValid())
+	{
+		for (const TSharedPtr<FAssetReferenceDummyNode>& RootItem : TreeRootItems)
+		{
+			TreeView->SetItemExpansion(RootItem, true);
+		}
+	}
+}
+
+void SAssetReferenceInspectorWidget::BuildDummyTree()
+{
+	TreeRootItems.Reset();
+
+	TSharedPtr<FAssetReferenceDummyNode> RootNode = MakeShared<FAssetReferenceDummyNode>(TEXT("BP_Player"));
+	RootNode->Children.Add(MakeShared<FAssetReferenceDummyNode>(TEXT("SK_Player")));
+	RootNode->Children.Add(MakeShared<FAssetReferenceDummyNode>(TEXT("ABP_Player")));
+
+	TSharedPtr<FAssetReferenceDummyNode> MaterialNode = MakeShared<FAssetReferenceDummyNode>(TEXT("M_Player"));
+	MaterialNode->Children.Add(MakeShared<FAssetReferenceDummyNode>(TEXT("Player_D")));
+	MaterialNode->Children.Add(MakeShared<FAssetReferenceDummyNode>(TEXT("Player_L")));
+	RootNode->Children.Add(MaterialNode);
+
+	RootNode->Children.Add(MakeShared<FAssetReferenceDummyNode>(TEXT("PlayerConfig")));
+
+	TreeRootItems.Add(RootNode);
+}
+
+TSharedRef<ITableRow> SAssetReferenceInspectorWidget::OnGenerateTreeRow(TSharedPtr<FAssetReferenceDummyNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const
+{
+	const FString DisplayName = Item.IsValid() ? Item->Name : FString(TEXT("Invalid Node"));
+
+	return SNew(STableRow<TSharedPtr<FAssetReferenceDummyNode>>, OwnerTable)
+		[
+			SNew(STextBlock)
+				.Text(FText::FromString(DisplayName))
+		];
+}
+
+void SAssetReferenceInspectorWidget::OnGetTreeChildren(TSharedPtr<FAssetReferenceDummyNode> Item, TArray<TSharedPtr<FAssetReferenceDummyNode>>& OutChildren) const
+{
+	if (Item.IsValid())
+	{
+		OutChildren.Append(Item->Children);
+	}
 }

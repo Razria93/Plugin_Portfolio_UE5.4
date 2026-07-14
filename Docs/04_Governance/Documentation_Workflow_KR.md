@@ -138,6 +138,52 @@ Issue 본문에는 다음을 둔다.
 
 상세 설명은 `Docs`로 연결한다.
 
+### Plan Issue 진행 댓글
+
+상위 `[Plan]` Issue는 MVP 전체 진행 상태를 추적한다.
+
+Plan Issue의 첫 진행 댓글은 현재까지 완료된 Phase를 누적 요약하는 댓글로 운영한다. 새로운 feature가 끝나면 이 첫 진행 댓글의 `완료` / `진행 예정` 목록을 갱신한다.
+
+이후 각 feature 종료 시점에는 별도 작업 로그 댓글을 추가한다.
+
+```text
+첫 진행 댓글
+= 현재까지 완료된 Phase 요약과 다음 예정 작업
+
+후속 댓글
+= 각 feature 완료 시점의 작업 내용, 검증 결과, 관련 PR
+```
+
+Feature 종료 정리 과정에서는 다음을 확인한다.
+
+- 상위 Plan Issue가 있는가
+- 첫 진행 댓글의 Phase 요약을 갱신해야 하는가
+- 이번 feature 완료 로그 댓글을 추가해야 하는가
+- 관련 PR 번호와 Architecture / Verification Issue 번호가 연결되어 있는가
+
+## GitHub Label
+
+GitHub Issue와 PR 라벨은 문서 책임과 같은 축으로 운영한다. 현재 커스텀 라벨 이름은 그대로 사용한다.
+
+```text
+work plan
+= 기능 계획, MVP 범위, 진행 순서, 상위 추적 Issue에 사용한다.
+
+system architecture
+= 설계 구조, 코드 흐름, 모듈 책임, UI 구성 설명 Issue에 사용한다.
+
+verification log
+= 빌드, 에디터 수동 확인, 기능 검증 결과 Issue에 사용한다.
+```
+
+권장 적용 기준:
+
+- `[Plan]` Issue에는 `work plan`을 붙인다.
+- `[Architecture]` Issue에는 `system architecture`를 붙인다.
+- `[Verification]` Issue에는 `verification log`를 붙인다.
+- PR은 필요한 경우 변경 성격에 맞는 라벨을 붙이되, Issue 라벨을 우선 관리 단위로 본다.
+- 라벨 이름은 GitHub 기본 라벨과 구분되는 현재 커스텀 이름을 유지한다. 설명이 비어 있으면 위 의미에 맞춰 GitHub label description을 채운다.
+
 ## PR
 
 PR 본문은 해당 브랜치에서 무엇이 바뀌었는지 제출하는 기록이다.
