@@ -113,6 +113,7 @@ Total execution time: 5.47 seconds
 - `ToolMenus` 기반 `LevelEditor.MainMenu.Window` 메뉴 진입점 등록 코드 포함 상태에서 빌드 확인
 - 메뉴 Command에서 `FGlobalTabmanager::TryInvokeTab` 호출 코드 포함 상태에서 빌드 확인
 
-#### 미확인
+#### 에디터 UI 확인
 
-- 에디터 UI에서 Window 메뉴 항목을 직접 클릭해 창이 열리는지는 아직 수동 확인하지 않음
+- Window 메뉴 클릭 후 `Asset Reference Inspector` 탭 오픈 확인
+- 탭 내부 중앙에 `Asset Reference Inspector` 텍스트 표시 확인
