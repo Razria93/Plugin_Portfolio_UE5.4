@@ -180,23 +180,34 @@ Phase 2는 Unreal Editor의 `에디터 독립형 창` 템플릿을 참고하되,
 
 1. Nomad Tab 등록과 해제
 2. 기본 `SDockTab` 생성
-3. Slate Widget 분리
-4. 메뉴/Command/Style/Toolbar Button 도입 여부 판단
+3. 창을 열 수 있는 최소 메뉴/Command 진입점 추가
+4. Slate Widget 분리
 
-`Commands`, `Style`, `ToolMenus`, Toolbar Button은 창을 여는 편의 진입점이므로 탭 생성 흐름이 검증된 뒤 별도 작업 단위로 다룬다.
+`Commands`와 `ToolMenus`는 사용자가 에디터에서 창을 열 수 있게 하는 최소 진입점이므로 Phase 2-1의 같은 feature 안에서 다룬다. `Style`과 Toolbar Button은 아이콘/툴바 편의 기능이므로 후속 작업에서 필요성을 판단한다.
 
-### 2-1. Nomad Tab 등록
+### 2-1. Editor 독립형 창 최소 오픈
 
 목적:
 
-- `AssetReferenceInspector` 모듈이 `Asset Reference Inspector` Nomad Tab을 등록하고 해제할 수 있게 한다.
-- 독립형 창 템플릿의 `FGlobalTabmanager`, `RegisterNomadTabSpawner`, `SDockTab` 흐름만 먼저 참고한다.
+- 에디터 메뉴에서 `Asset Reference Inspector` 독립형 창을 열 수 있게 한다.
+- 독립형 창 템플릿의 `FGlobalTabmanager`, `RegisterNomadTabSpawner`, `SDockTab`, `Commands`, `ToolMenus` 흐름을 참고한다.
+- 현재 단계에서는 기본 Slate 콘텐츠만 표시하고 실제 Asset 분석 UI는 만들지 않는다.
 
 완료 기준:
 
 - 등록된 Tab Spawner로 기본 `SDockTab`을 생성할 수 있다.
+- 메뉴 진입점을 통해 창을 열 수 있다.
 - 모듈 종료 시 등록이 정상 해제된다.
-- 메뉴, Command, Style, Toolbar Button은 아직 포함하지 않는다.
+- Editor Target 빌드가 성공한다.
+- Style과 Toolbar Button은 아직 포함하지 않는다.
+
+상태:
+
+- 완료.
+- `feature/ari-nomad-tab` 브랜치에서 구현했다.
+- Window 메뉴에서 `Asset Reference Inspector` 탭 오픈을 수동 확인했다.
+- Command, ToolMenus, TabManager, Slate 흐름은 `Docs/02_Architecture/AssetReferenceInspector_Editor_Window_Flow_KR.md`에 정리했다.
+- 다음 작업은 `SAssetReferenceInspectorWidget` 기반 Slate UI Shell 분리다.
 
 ### 2-2. Slate 기본 위젯
 

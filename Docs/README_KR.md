@@ -18,16 +18,18 @@
   - 기능, 리팩토링, 검증 단위의 실제 작업 분해 기준을 정리한다.
 - `01_Planning/Feature_Workflow_KR.md`
   - feature 시작, mini plan 작성, 브랜치 판단, 검증, 문서화, 커밋 판단 기준을 정리한다.
+- `02_Architecture/AssetReferenceInspector_Editor_Window_Flow_KR.md`
+  - 에디터 Window 메뉴에서 독립형 Nomad Tab을 여는 Command, Menu, TabManager, Slate 흐름을 정리한다.
 - `03_Verification/README_KR.md`
   - 빌드, 에디터 실행, 기능 검증 결과를 기록하는 기준을 정리한다.
 - `03_Verification/Build_Verification_Log_KR.md`
   - UE 5.4 빌드 검증 결과를 기록한다.
+- `04_PR/feature_ari_nomad_tab_PR_KR.md`
+  - `feature/ari-nomad-tab` 브랜치의 PR 본문 초안을 정리한다.
 - `00_Project/Codex_Init_Prompt_KR.md`
   - 새 Codex 세션에서 사용할 초기 작업 지침을 정리한다.
 
 ## 이후 추가 예정 문서
 
-- `02_Architecture/AssetReferenceInspector_Architecture_KR.md`
-  - 실제 구현 구조가 안정된 뒤 모듈, 클래스, 데이터 흐름을 정리한다.
 - `04_Demo/AssetReferenceInspector_Portfolio_Demo_KR.md`
   - 포트폴리오 적용 시연 시나리오와 촬영 체크리스트를 정리한다.
