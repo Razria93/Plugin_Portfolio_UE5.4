@@ -155,3 +155,91 @@ Total execution time: 5.18 seconds
 
 - `AssetReferenceInspectorCommands.h`를 `Public`에서 `Private`로 이동한 상태에서 빌드 확인
 - Slate / Commands 관련 의존성을 `PrivateDependencyModuleNames`에 유지한 상태에서 빌드 확인
+
+## 2026-07-14
+
+### 코드 구성 규칙 반영
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+일반 실행은 UBT 로그 파일 백업 단계에서 `UnauthorizedAccessException`으로 실패했다. 동일 명령을 권한 상승으로 재실행해 실제 컴파일/링크를 확인했다.
+
+UBT 출력 기준:
+
+```text
+[2/7] Compile [x64] AssetReferenceInspectorCommands.cpp
+[4/7] Compile [x64] AssetReferenceInspectorModule.cpp
+[5/7] Link [x64] UnrealEditor-AssetReferenceInspector-0003.lib
+[6/7] Link [x64] UnrealEditor-AssetReferenceInspector-0003.dll
+[7/7] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 3.84 seconds
+```
+
+#### 확인 범위
+
+- `AssetReferenceInspectorModule.h` 섹션 정리 후 빌드 확인
+- `AssetReferenceInspectorModule.cpp` include 그룹 정리 후 빌드 확인
+- `AssetReferenceInspectorCommands.h` 섹션 정리 후 빌드 확인
+- `AssetReferenceInspectorCommands.cpp` `UI_COMMAND` 포맷 정리 후 빌드 확인
+
+### AssetReferenceInspector 기본 Slate UI Shell
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+일반 실행은 UBT 로그 파일 백업 단계에서 `UnauthorizedAccessException`으로 실패했다. 동일 명령을 권한 상승으로 재실행해 실제 컴파일/링크를 확인했다.
+
+UBT 출력 기준:
+
+```text
+[3/6] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[4/6] Link [x64] UnrealEditor-AssetReferenceInspector-0006.lib
+[5/6] Link [x64] UnrealEditor-AssetReferenceInspector-0006.dll
+[6/6] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 2.69 seconds
+```
+
+#### 확인 범위
+
+- `Private/UI/SAssetReferenceInspectorWidget` 추가 상태에서 빌드 확인
+- `OnSpawnPluginTab()`이 `SAssetReferenceInspectorWidget`을 탭 내부 루트 위젯으로 사용하는 상태에서 빌드 확인
+
+#### 에디터 UI 확인
+
+- Window 메뉴 클릭 후 `Asset Reference Inspector` 탭 오픈 확인
+- `SAssetReferenceInspectorWidget` 기반 기본 UI Shell 표시 확인
+- `Selected Asset: None` placeholder 표시 확인
+- `Pick Selected Asset` / `Analyze` 버튼 placeholder 표시 확인
+- `Mode: Dependencies / Referencers` placeholder 표시 확인
+- 결과 영역 placeholder 표시 확인
