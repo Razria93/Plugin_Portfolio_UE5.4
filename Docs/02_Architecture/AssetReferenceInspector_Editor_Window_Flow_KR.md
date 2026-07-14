@@ -37,10 +37,10 @@ Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/
 ```text
 Public/
   AssetReferenceInspectorModule.h
-  AssetReferenceInspectorCommands.h
 
 Private/
   AssetReferenceInspectorModule.cpp
+  AssetReferenceInspectorCommands.h
   AssetReferenceInspectorCommands.cpp
 ```
 
