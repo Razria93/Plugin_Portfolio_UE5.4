@@ -1,6 +1,7 @@
 #include "AssetReferenceInspectorModule.h"
 
 #include "AssetReferenceInspectorCommands.h"
+#include "UI/SAssetReferenceInspectorWidget.h"
 
 #include "Framework/Commands/UICommandList.h"
 #include "Framework/Docking/TabManager.h"
@@ -9,8 +10,6 @@
 #include "ToolMenus.h"
 
 #include "Widgets/Docking/SDockTab.h"
-#include "Widgets/Layout/SBox.h"
-#include "Widgets/Text/STextBlock.h"
 
 static const FName AssetReferenceInspectorTabName(TEXT("AssetReferenceInspector"));
 
@@ -48,13 +47,7 @@ TSharedRef<SDockTab> FAssetReferenceInspectorModule::OnSpawnPluginTab(const FSpa
 	return SNew(SDockTab)
 		.TabRole(ETabRole::NomadTab)
 		[
-			SNew(SBox)
-				.HAlign(HAlign_Center)
-				.VAlign(VAlign_Center)
-				[
-					SNew(STextBlock)
-						.Text(FText::FromString(TEXT("Asset Reference Inspector")))
-				]
+			SNew(SAssetReferenceInspectorWidget)
 		];
 }
 
