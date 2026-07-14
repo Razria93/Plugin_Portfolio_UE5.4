@@ -128,6 +128,12 @@ Issue는 Docs 원문을 복사하는 공간이 아니라 GitHub 상의 추적과
 - `[Architecture]`: 구조 요약, 주요 설계 판단, 관련 Docs 링크
 - `[Verification]`: 대상 브랜치, 검증 항목, 결과, 특이사항, 관련 Docs 링크
 
+권장 label:
+
+- `[Plan]`: `work plan`
+- `[Architecture]`: `system architecture`
+- `[Verification]`: `verification log`
+
 Issue 본문은 다음 원칙을 따른다.
 
 - 긴 코드블록을 피하고 GitHub에서 깨지지 않는 Markdown을 사용한다.
