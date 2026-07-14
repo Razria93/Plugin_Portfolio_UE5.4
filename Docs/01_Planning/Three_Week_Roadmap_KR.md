@@ -1,4 +1,4 @@
-# AssetReferenceInspector 3주 개발 로드맵
+# Three Week Roadmap
 
 ## 1주차: 플러그인 골격, Asset Registry 조회, Tree UI
 
@@ -113,4 +113,3 @@ Portfolio 프로젝트에 적용할 때 참조 깊이와 Asset 수가 많으면 
 - Max Depth 기본값을 낮게 둔다.
 - 필터를 먼저 적용한다.
 - 필요 시 비동기 분석은 후속 개선으로 분리한다.
-

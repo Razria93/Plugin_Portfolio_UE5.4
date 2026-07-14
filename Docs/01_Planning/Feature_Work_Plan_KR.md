@@ -1,4 +1,4 @@
-# AssetReferenceInspector 기능 단위 작업 계획
+# Feature Work Plan
 
 ## 목적
 
@@ -206,7 +206,7 @@ Phase 2는 Unreal Editor의 `에디터 독립형 창` 템플릿을 참고하되,
 - 완료.
 - `feature/ari-nomad-tab` 브랜치에서 구현했다.
 - Window 메뉴에서 `Asset Reference Inspector` 탭 오픈을 수동 확인했다.
-- Command, ToolMenus, TabManager, Slate 흐름은 `Docs/02_Architecture/AssetReferenceInspector_Editor_Window_Flow_KR.md`에 정리했다.
+- Command, ToolMenus, TabManager, Slate 흐름은 `Docs/02_Architecture/Editor_Window_Flow_KR.md`에 정리했다.
 - 다음 작업은 `SAssetReferenceInspectorWidget` 기반 Slate UI Shell 분리다.
 
 ### 2-2. Slate 기본 위젯
@@ -230,7 +230,7 @@ Phase 2는 Unreal Editor의 `에디터 독립형 창` 템플릿을 참고하되,
 - `SDockTab` 내부 UI를 모듈 cpp에서 직접 구성하지 않고 전용 Slate Widget으로 이동했다.
 - 현재 UI Shell에는 제목, 선택 Asset placeholder, `Pick Selected Asset`, `Analyze`, 모드 placeholder, 결과 영역 placeholder가 표시된다.
 - 실제 Max Depth 입력과 Tree View는 후속 작업에서 구현한다.
-- Slate UI 기본 구조는 `Docs/02_Architecture/AssetReferenceInspector_Slate_UI_Basics_KR.md`에 정리했다.
+- Slate UI 기본 구조는 `Docs/02_Architecture/Slate_UI_Basics_KR.md`에 정리했다.
 
 ### 2-3. STreeView 더미 데이터
 

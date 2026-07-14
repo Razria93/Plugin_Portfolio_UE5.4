@@ -32,7 +32,7 @@ Feature 작업 규칙:
 - 여러 파일에 걸친 feature나 refactor는 `feature/<short-name>` 브랜치를 권장하지만 모든 작업에 브랜치를 강제하지 않습니다.
 - feature 브랜치 작업은 PR을 통해 main에 반영하는 것을 기본 흐름으로 보고, 작업 종료 시 PR summary를 제안합니다.
 - 작업 종료 시 문서 업데이트 필요 여부와 commit/amend/보류 여부를 판단하고, Git Bash 기준 명령만 제안합니다.
-- C++ 코드 변경이 있으면 작업 종료 전에 `Docs/02_Architecture/AssetReferenceInspector_Code_Organization_KR.md` 기준으로 Public/Private 배치, include 순서, 헤더 섹션, 의존성 범위를 검토합니다.
+- C++ 코드 변경이 있으면 작업 종료 전에 `Docs/02_Architecture/Code_Organization_KR.md` 기준으로 Public/Private 배치, include 순서, 헤더 섹션, 의존성 범위를 검토합니다.
 - 사용자가 명시적으로 요청하기 전에는 commit, amend, push, PR 생성, merge를 실행하지 않습니다.
 
 빌드/검증 규칙:

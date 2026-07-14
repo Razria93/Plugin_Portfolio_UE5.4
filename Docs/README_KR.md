@@ -1,41 +1,72 @@
 # AssetReferenceInspector 문서 인덱스
 
-이 문서 폴더는 `AssetReferenceInspector` Editor Plugin 개발을 위한 계획, 작업 규칙, 설계, 검증, 시연 자료를 관리한다.
+이 폴더는 `AssetReferenceInspector` Editor Plugin 개발을 위한 공개 문서를 관리한다.
 
 현재 프로젝트는 플러그인 개발용 Demo Host 프로젝트이며, 실제 플러그인 구현은 프로젝트 루트의 `Plugins/AssetReferenceInspector` 아래에서 진행한다.
 
-## 문서 구성
+## 00_Overview
 
-- `00_Project/AssetReferenceInspector_Project_Plan_KR.md`
-  - 프로젝트 목표, 비목표, 개발 원칙, 주요 기능, 산출물 기준을 정의한다.
-- `00_Project/AssetReferenceInspector_Working_Rules_KR.md`
-  - 이 저장소에서 플러그인을 개발할 때 지켜야 할 작업 규칙을 정의한다.
-- `01_Planning/AssetReferenceInspector_MVP_Scope_KR.md`
+프로젝트의 목적, 범위, MVP 기준처럼 "무엇을 왜 만드는가"를 설명하는 문서다.
+
+- `00_Overview/Project_Plan_KR.md`
+  - 프로젝트 목표, 개발 원칙, 주요 기능, 산출물 기준을 정리한다.
+- `00_Overview/MVP_Scope_KR.md`
   - MVP 범위와 확장 범위를 분리한다.
-- `01_Planning/AssetReferenceInspector_Three_Week_Roadmap_KR.md`
+
+## 01_Planning
+
+일정과 feature 단위처럼 "어떤 순서와 단위로 만들 것인가"를 정리하는 문서다.
+
+- `01_Planning/Three_Week_Roadmap_KR.md`
   - 3주 개발 일정을 단계별 산출물 기준으로 정리한다.
-- `01_Planning/AssetReferenceInspector_Feature_Work_Plan_KR.md`
-  - 기능, 리팩토링, 검증 단위의 실제 작업 분해 기준을 정리한다.
-- `01_Planning/Feature_Workflow_KR.md`
-  - feature 시작, mini plan 작성, 브랜치 판단, 검증, 문서화, 커밋 판단 기준을 정리한다.
-- `02_Architecture/AssetReferenceInspector_Editor_Window_Flow_KR.md`
+- `01_Planning/Feature_Work_Plan_KR.md`
+  - 기능, 리팩토링, 검증 단위를 실제 작업 기준으로 분해한다.
+
+## 02_Architecture
+
+플러그인 구조, Unreal Editor 확장 흐름, Slate UI, 코드 배치 규칙처럼 설계 이해에 필요한 문서다.
+
+- `02_Architecture/Editor_Window_Flow_KR.md`
   - 에디터 Window 메뉴에서 독립형 Nomad Tab을 여는 Command, Menu, TabManager, Slate 흐름을 정리한다.
-- `02_Architecture/AssetReferenceInspector_Code_Organization_KR.md`
-  - 플러그인 C++ 코드의 Public/Private 헤더, include 순서, 헤더 섹션 구성 규칙을 정리한다.
-- `02_Architecture/AssetReferenceInspector_Slate_UI_Basics_KR.md`
+- `02_Architecture/Code_Organization_KR.md`
+  - 플러그인 C++ 코드의 Public/Private 폴더, include 순서, 헤더 섹션 구성 규칙을 정리한다.
+- `02_Architecture/Slate_UI_Basics_KR.md`
   - 플러그인 UI에 사용하는 Slate 위젯, Slot, 배치 옵션, 현재 UI Shell 구조를 정리한다.
+
+## 03_Verification
+
+빌드, 에디터 실행, 기능별 확인 결과를 기록하는 문서다. 직접 확인하지 못한 항목은 성공으로 쓰지 않고 `미확인`으로 남긴다.
+
 - `03_Verification/README_KR.md`
-  - 빌드, 에디터 실행, 기능 검증 결과를 기록하는 기준을 정리한다.
+  - 검증 기록을 작성하는 기준을 정리한다.
 - `03_Verification/Build_Verification_Log_KR.md`
-  - UE 5.4 빌드 검증 결과를 기록한다.
-- `04_PR/feature_ari_nomad_tab_PR_KR.md`
-  - `feature/ari-nomad-tab` 브랜치의 PR 본문 초안을 정리한다.
-- `04_PR/feature_ari_ui_shell_PR_KR.md`
-  - `feature/ari-ui-shell` 브랜치의 PR 본문 초안을 정리한다.
-- `00_Project/Codex_Init_Prompt_KR.md`
+  - UE 5.4 빌드와 에디터 UI 확인 결과를 기록한다.
+
+## 04_Governance
+
+저장소 운영 규칙, 작업 절차, 문서 책임 분리, Codex 세션 지침처럼 "어떻게 일할 것인가"를 정리하는 문서다.
+
+- `04_Governance/Working_Rules_KR.md`
+  - 저장소에서 플러그인을 개발할 때 지켜야 할 기본 작업 규칙을 정리한다.
+- `04_Governance/Feature_Workflow_KR.md`
+  - feature 시작, mini plan 작성, 브랜치 판단, 검증, 문서화, 커밋 판단 기준을 정리한다.
+- `04_Governance/Documentation_Workflow_KR.md`
+  - `Docs`, `LocalNotes`, GitHub Issue, PR 본문의 책임 분리와 문서 네이밍 규칙을 정리한다.
+- `04_Governance/Codex_Init_Prompt_KR.md`
   - 새 Codex 세션에서 사용할 초기 작업 지침을 정리한다.
 
-## 이후 추가 예정 문서
+## LocalNotes
 
-- `04_Demo/AssetReferenceInspector_Portfolio_Demo_KR.md`
-  - 포트폴리오 적용 시연 시나리오와 촬영 체크리스트를 정리한다.
+`LocalNotes/`는 ignored 되는 작업 공간이다. mini plan, GitHub Issue 초안, PR 본문 초안, 학습 메모처럼 공개 문서로 커밋하지 않을 자료를 둔다.
+
+- `LocalNotes/feature-plans/`
+  - feature 시작 전 mini plan을 둔다.
+- `LocalNotes/github-issues/`
+  - `gh issue create --body-file`에 사용할 Issue 본문 초안을 둔다.
+- `LocalNotes/pr-drafts/`
+  - `gh pr create --body-file`에 사용할 PR 본문 초안을 둔다.
+
+## 향후 추가 예정
+
+- `05_Demo/Portfolio_Demo_KR.md`
+  - 포트폴리오 프로젝트 적용 시연 시나리오와 촬영 체크리스트를 정리한다.

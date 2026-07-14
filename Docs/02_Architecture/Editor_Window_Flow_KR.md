@@ -1,4 +1,4 @@
-# AssetReferenceInspector 에디터 창 오픈 구조
+# Editor Window Flow
 
 이 문서는 `AssetReferenceInspector` Editor Plugin이 Unreal Editor에서 독립형 창을 여는 구조를 정리한다.
 

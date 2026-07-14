@@ -1,0 +1,241 @@
+# Documentation Workflow
+
+이 문서는 `AssetReferenceInspector` 개발 중 `Docs`, `LocalNotes`, GitHub Issue, PR 본문의 책임을 분리하는 기준을 정의한다.
+
+## 기본 원칙
+
+- `Docs`는 프로젝트 지식의 원본이다.
+- `LocalNotes`는 커밋하지 않는 작업 초안이다.
+- GitHub Issue는 추적 카드다.
+- PR 본문은 브랜치 변경 제출 기록이다.
+
+같은 내용을 여러 곳에 원문 복사하지 않는다. 상세한 원문은 `Docs`에 두고, Issue와 PR은 요약과 링크 중심으로 작성한다.
+
+## 문서 트리
+
+공개 문서는 다음 구조를 따른다.
+
+```text
+Docs/
+  README_KR.md
+
+  00_Overview/
+    Project_Plan_KR.md
+    MVP_Scope_KR.md
+
+  01_Planning/
+    Three_Week_Roadmap_KR.md
+    Feature_Work_Plan_KR.md
+
+  02_Architecture/
+    Editor_Window_Flow_KR.md
+    Code_Organization_KR.md
+    Slate_UI_Basics_KR.md
+
+  03_Verification/
+    README_KR.md
+    Build_Verification_Log_KR.md
+
+  04_Governance/
+    Working_Rules_KR.md
+    Feature_Workflow_KR.md
+    Documentation_Workflow_KR.md
+    Codex_Init_Prompt_KR.md
+```
+
+PR 본문 초안과 Issue 본문 초안은 `Docs`가 아니라 `LocalNotes`에 둔다.
+
+```text
+LocalNotes/
+  feature-plans/
+  github-issues/
+  pr-drafts/
+  notes/
+```
+
+## 문서 네이밍 규칙
+
+문서 파일명은 폴더 카테고리와 중복되는 긴 접두사를 피하고, 문서의 역할이 드러나도록 작성한다.
+
+기본 형식:
+
+```text
+<Subject>_<Purpose>_KR.md
+```
+
+적용 기준:
+
+- `Docs` 전체가 `AssetReferenceInspector` 문서이므로 파일명에 `AssetReferenceInspector_`를 반복하지 않는다.
+- 폴더명이 이미 범주를 제공하므로 `Architecture_`, `Planning_`, `Verification_` 같은 접두사는 붙이지 않는다.
+- 한국어 문서는 `_KR.md`로 끝낸다.
+- 여러 단어는 PascalCase가 아니라 `_`로 구분한다.
+- PR 초안과 Issue 초안은 공개 Docs가 아니므로 `LocalNotes/pr-drafts/`, `LocalNotes/github-issues/`에 둔다.
+
+예:
+
+```text
+Docs/00_Overview/Project_Plan_KR.md
+Docs/01_Planning/Feature_Work_Plan_KR.md
+Docs/02_Architecture/Editor_Window_Flow_KR.md
+Docs/03_Verification/Build_Verification_Log_KR.md
+Docs/04_Governance/Feature_Workflow_KR.md
+```
+
+## Docs
+
+`Docs`에는 장기적으로 남길 공개 문서만 둔다.
+
+문서 보완 순서는 다음을 기본으로 한다.
+
+1. Plan
+   - 기능 계획, MVP 범위, 작업 순서
+   - 위치: `Docs/01_Planning`
+
+2. Architecture
+   - 설계 원문, 모듈 구조, UI 흐름, 코드 구성 규칙
+   - 위치: `Docs/02_Architecture`
+
+3. Verification
+   - 빌드 로그, 에디터 수동 확인, 기능 검증 결과, 미확인 항목
+   - 위치: `Docs/03_Verification`
+
+저장소 운영 규칙과 작업 절차는 `Docs/04_Governance`에 둔다.
+
+## LocalNotes
+
+`LocalNotes`는 ignored 되는 작업장이다. 커밋하지 않는다.
+
+포함 대상:
+
+- feature 시작 전 mini plan
+- 작업 중 체크리스트
+- GitHub Issue 본문 초안
+- PR 본문 초안
+- 개인 학습 메모
+- 공개 문서로 승격할지 아직 결정하지 않은 정리
+
+Issue 초안은 제출 전까지 `LocalNotes/github-issues/`에 둔다. PR 본문 초안은 제출 전까지 `LocalNotes/pr-drafts/`에 둔다.
+
+## GitHub Issue
+
+Issue는 문서 원본 저장소가 아니라 추적 단위다.
+
+권장 유형:
+
+- `ARI-Pxx`: Plan
+- `ARI-Axx`: Architecture
+- `ARI-Vxx`: Verification
+- `ARI-Lxx`: Limitation / Known Limitation
+
+Issue 본문에는 다음을 둔다.
+
+- Tracking ID
+- 대상 브랜치 또는 범위
+- 목적
+- 핵심 요약
+- 완료 또는 검증 기준
+- 관련 `Docs` 링크
+
+상세 설명은 `Docs`로 연결한다.
+
+## PR
+
+PR 본문은 해당 브랜치에서 무엇이 바뀌었는지 제출하는 기록이다.
+
+포함 대상:
+
+- Summary
+- Key Changes
+- Verification
+- Unverified / Limitations
+- Documentation
+- Related Issues
+- Next Step
+
+PR 본문 초안은 `LocalNotes/pr-drafts/`에 작성하고, GitHub에 제출한 뒤에는 GitHub PR을 원본 기록으로 본다. PR 본문 전체를 `Docs`에 복제하지 않는다.
+
+## References / Closes
+
+`References`는 관련 맥락만 연결한다. Issue를 닫지 않는다.
+
+사용 기준:
+
+- 상위 계획 Issue
+- 여러 PR에 걸쳐 진행되는 Issue
+- 일부만 관련된 Issue
+- 닫으면 추적 손실이 생기는 Issue
+
+`Closes`는 PR merge 시 Issue가 완료되어도 되는 경우에만 사용한다.
+
+사용 기준:
+
+- 해당 PR 하나로 Issue 목적이 완료된다.
+- 남은 후속 작업이 별도 Issue로 분리되어 있다.
+- Architecture / Verification Issue처럼 브랜치 단위 기록이 PR merge와 함께 완료된다.
+
+예:
+
+```markdown
+## Related Issues
+
+- References #2
+- Closes #6
+- Closes #7
+```
+
+## 번호 규칙
+
+GitHub Issue 번호는 생성 순서에 따라 바뀐다. 프로젝트 내부 추적에는 별도 번호를 사용한다.
+
+권장 형식:
+
+```text
+[ARI-P01][Plan] AssetReferenceInspector MVP 개발 계획
+[ARI-A01][Architecture] Editor Window Open Flow
+[ARI-A02][Architecture] Slate UI Shell Structure
+[ARI-V01][Verification] feature/ari-nomad-tab
+[ARI-V02][Verification] feature/ari-ui-shell
+```
+
+번호는 Issue 제목과 PR의 Related Issues 섹션에 우선 사용한다. 신규 문서나 큰 폭으로 수정하는 Docs에는 상단 메타데이터로 추가할 수 있다. C++ 코드 식별자나 커밋 메시지 필수 prefix로는 사용하지 않는다.
+
+## 현재 추적 매핑
+
+현재까지의 공개 문서와 Issue 추적 ID는 다음처럼 본다.
+
+```text
+ARI-P01: AssetReferenceInspector MVP 개발 계획
+  - Docs/00_Overview/Project_Plan_KR.md
+  - Docs/00_Overview/MVP_Scope_KR.md
+  - GitHub Issue: #2
+
+ARI-A01: Editor Window Open Flow
+  - Docs/02_Architecture/Editor_Window_Flow_KR.md
+  - Branch: feature/ari-nomad-tab
+
+ARI-V01: feature/ari-nomad-tab Verification
+  - Docs/03_Verification/Build_Verification_Log_KR.md
+  - Branch: feature/ari-nomad-tab
+
+ARI-A02: Slate UI Shell Structure
+  - Docs/02_Architecture/Slate_UI_Basics_KR.md
+  - Docs/02_Architecture/Code_Organization_KR.md
+  - Branch: feature/ari-ui-shell
+  - GitHub Issue: #6
+
+ARI-V02: feature/ari-ui-shell Verification
+  - Docs/03_Verification/Build_Verification_Log_KR.md
+  - Branch: feature/ari-ui-shell
+  - GitHub Issue: #7
+```
+
+## 승격 기준
+
+`LocalNotes`의 내용은 다음 조건을 만족할 때 `Docs`로 승격한다.
+
+- 프로젝트 구조나 설계 이해에 계속 필요하다.
+- 후속 feature에서 반복 참조한다.
+- 포트폴리오 설명 자료로 사용할 가치가 있다.
+- 검증 결과나 제한 사항으로 추적해야 한다.
+
+단순 Issue 본문 초안, PR 작성 초안, 개인 학습 과정은 승격하지 않는다.
