@@ -24,6 +24,8 @@ Private/
   AssetReferenceInspectorCommands.h
   AssetReferenceInspectorCommands.cpp
   AssetReferenceInspectorModule.cpp
+  UI/SAssetReferenceInspectorWidget.h
+  UI/SAssetReferenceInspectorWidget.cpp
 ```
 
 기본 판단:
@@ -34,6 +36,8 @@ Private/
 - 구현 파일에서만 쓰는 의존성은 `PrivateDependencyModuleNames`에 둔다.
 
 예를 들어 `FAssetReferenceInspectorCommands`는 메뉴 등록을 위한 내부 타입이다. 외부 모듈이 사용할 API가 아니며 Slate / Commands 관련 타입을 포함하므로 `Private`에 둔다.
+
+`SAssetReferenceInspectorWidget`도 플러그인 내부 탭 UI 구현체이므로 `Private/UI`에 둔다. 외부 모듈이 직접 include할 Public API가 아니라 `AssetReferenceInspector` 탭 내부에서만 사용한다.
 
 ## Include 순서
 
@@ -118,3 +122,5 @@ private Commands
 ```
 
 이 구조는 다음 작업인 `SAssetReferenceInspectorWidget` 분리 이후에도 유지한다. 모듈은 탭과 메뉴 등록의 진입점으로 남기고, 실제 UI 구성은 별도 Slate 위젯으로 옮긴다.
+
+`SAssetReferenceInspectorWidget` 분리 이후에도 `FAssetReferenceInspectorModule`은 탭 생성 시 UI 루트 위젯을 배치하는 역할만 맡는다. 버튼, 선택 Asset 표시, Tree View 같은 실제 화면 구성은 `Private/UI` 아래 Slate Widget에서 확장한다.

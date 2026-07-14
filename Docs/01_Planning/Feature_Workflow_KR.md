@@ -160,6 +160,22 @@ C++ 코드, `.uplugin`, `Build.cs`, `.uproject` 변경은 가능한 경우 UE 5.
 
 문서 업데이트가 필요하면 범위와 이유를 먼저 제안한다.
 
+## 코드 구성 검토 기준
+
+C++ 코드, `Build.cs`, `.uplugin` 변경이 있는 작업은 종료 전에 `Docs/02_Architecture/AssetReferenceInspector_Code_Organization_KR.md` 기준으로 구조를 검토한다.
+
+검토 항목:
+
+- Public 헤더에 외부 모듈이 실제로 include해야 하는 타입만 노출했는가
+- 플러그인 내부 Command, Menu, ToolMenus, Slate 구현 세부 타입이 `Private`에 있는가
+- Public 헤더에 노출된 타입 때문에 필요한 의존성만 `PublicDependencyModuleNames`에 있는가
+- 구현에서만 쓰는 의존성은 `PrivateDependencyModuleNames`에 있는가
+- `.cpp` include 순서가 자기 헤더, 같은 모듈 내부 헤더, Unreal Framework/Modules, ToolMenus, Slate/Widgets 흐름을 따르는가
+- 헤더 섹션이 public override, private helper, private field 순서로 읽히는가
+- 새 UI / Analysis / Export 파일이 권장 폴더인 `Private/UI`, `Private/Analysis`, `Private/Export`에 배치되었는가
+
+검토 결과 구조 보완이 필요하면 기능 구현 커밋에 포함할지, 별도 `refactor` / `docs` 커밋으로 분리할지 작업 종료 보고에서 제안한다.
+
 ## Commit 판단 기준
 
 독립 커밋 권장:
