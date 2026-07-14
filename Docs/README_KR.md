@@ -30,6 +30,8 @@
   - UE 5.4 빌드 검증 결과를 기록한다.
 - `04_PR/feature_ari_nomad_tab_PR_KR.md`
   - `feature/ari-nomad-tab` 브랜치의 PR 본문 초안을 정리한다.
+- `04_PR/feature_ari_ui_shell_PR_KR.md`
+  - `feature/ari-ui-shell` 브랜치의 PR 본문 초안을 정리한다.
 - `00_Project/Codex_Init_Prompt_KR.md`
   - 새 Codex 세션에서 사용할 초기 작업 지침을 정리한다.
 

@@ -223,6 +223,15 @@ Phase 2는 Unreal Editor의 `에디터 독립형 창` 템플릿을 참고하되,
 - Max Depth 입력 자리
 - Tree View 자리
 
+상태:
+
+- 부분 완료.
+- `feature/ari-ui-shell` 브랜치에서 `SAssetReferenceInspectorWidget` 기반 기본 UI Shell을 분리했다.
+- `SDockTab` 내부 UI를 모듈 cpp에서 직접 구성하지 않고 전용 Slate Widget으로 이동했다.
+- 현재 UI Shell에는 제목, 선택 Asset placeholder, `Pick Selected Asset`, `Analyze`, 모드 placeholder, 결과 영역 placeholder가 표시된다.
+- 실제 Max Depth 입력과 Tree View는 후속 작업에서 구현한다.
+- Slate UI 기본 구조는 `Docs/02_Architecture/AssetReferenceInspector_Slate_UI_Basics_KR.md`에 정리했다.
+
 ### 2-3. STreeView 더미 데이터
 
 목적:
