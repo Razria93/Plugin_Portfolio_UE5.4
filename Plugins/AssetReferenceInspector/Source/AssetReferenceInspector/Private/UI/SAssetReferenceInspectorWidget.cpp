@@ -13,12 +13,6 @@
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Text/STextBlock.h"
 
-FAssetReferenceTreeNode::FAssetReferenceTreeNode(const FString& InDisplayName, FName InPackageName)
-	: DisplayName(InDisplayName)
-	, PackageName(InPackageName)
-{
-}
-
 void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 {
 	ChildSlot

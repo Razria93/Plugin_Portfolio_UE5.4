@@ -83,16 +83,37 @@ AssetRegistryModule.Get().GetDependencies(
 
 ## Tree Node 구성
 
-현재 UI 노드는 `FAssetReferenceTreeNode`다.
+현재 Tree View 노드는 `FAssetReferenceTreeNode`다.
+
+이 타입은 UI 위젯 내부 구조체가 아니라 `Private/Analysis/AssetReferenceTypes.h`에 둔다. 외부 모듈에 공개할 필요가 없는 내부 분석 데이터이므로 `Public` API로 노출하지 않는다.
 
 ```cpp
 struct FAssetReferenceTreeNode
 {
 	FString DisplayName;
 	FName PackageName;
+	int32 Depth;
 	TArray<TSharedPtr<FAssetReferenceTreeNode>> Children;
 };
 ```
+
+분석 방향과 실행 옵션도 같은 Analysis 영역의 내부 타입으로 둔다.
+
+```cpp
+enum class EAssetReferenceMode : uint8
+{
+	Dependencies,
+	Referencers
+};
+
+struct FAssetReferenceAnalysisOptions
+{
+	EAssetReferenceMode Mode;
+	int32 MaxDepth;
+};
+```
+
+현재 UI는 아직 Dependencies Depth 1만 사용한다. `EAssetReferenceMode`와 `FAssetReferenceAnalysisOptions`는 Phase 4의 Max Depth / Referencers 확장을 위한 기반 타입이다.
 
 루트 노드:
 

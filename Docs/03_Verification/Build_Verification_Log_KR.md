@@ -412,3 +412,53 @@ Total execution time: 8.24 seconds
 ![M_Dummy Dependencies](Screenshots/feature_ari_dependencies_depth1/m_dummy_dependencies.png)
 
 ![T_Dummy_Color Dependencies](Screenshots/feature_ari_dependencies_depth1/t_dummy_color_dependencies.png)
+
+### AssetReferenceInspector Analysis Data Model 분리
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+일반 실행은 UBT 로그 백업 단계에서 `UnauthorizedAccessException`으로 실패했다. 동일 명령을 권한 상승으로 재실행해 빌드 타깃이 최신 상태임을 확인했다.
+
+UBT 출력 기준:
+
+```text
+Target is up to date
+Total execution time: 0.61 seconds
+```
+
+#### 확인 범위
+
+- `FAssetReferenceTreeNode`를 `Private/Analysis/AssetReferenceTypes.h`로 분리한 상태에서 빌드 확인
+- `EAssetReferenceMode`, `FAssetReferenceAnalysisOptions` 추가 상태에서 빌드 확인
+- `SAssetReferenceInspectorWidget`이 새 Analysis 타입 헤더를 include하는 상태에서 빌드 확인
+
+#### 미확인
+
+없음.
+
+#### 비고
+
+이전 링크 실패는 실행 중인 에디터가 모듈 DLL을 점유한 파일 잠금 상황으로 추정한다. 캐시 정리와 재빌드 후 권한 상승 빌드에서 타깃 최신 상태를 확인했다.
+
+#### 에디터 UI 확인
+
+- `BP_Dummy` 선택 후 `Pick Selected Asset`, `Analyze` 클릭 시 기존과 동일하게 `BP_Dummy` 루트와 `/Script/NavigationSystem`, `Cube`, `M_Dummy` Dependencies 표시 확인
+- `M_Dummy` 선택 후 `Analyze` 클릭 시 기존과 동일하게 `T_Dummy_Color` Dependency 표시 확인
+- `T_Dummy_Color` 선택 후 `Analyze` 클릭 시 기존과 동일하게 `/Script/InterchangeEngine` Dependency 표시 확인
+- 이번 변경은 분석 데이터 구조 분리이므로 UI의 시각적 변화는 없음

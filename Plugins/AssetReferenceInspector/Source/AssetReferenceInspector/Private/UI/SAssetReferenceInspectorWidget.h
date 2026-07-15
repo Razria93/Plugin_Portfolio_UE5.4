@@ -1,19 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Analysis/AssetReferenceTypes.h"
 #include "AssetRegistry/AssetData.h"
 #include "Input/Reply.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/Views/STreeView.h"
-
-struct FAssetReferenceTreeNode
-{
-	FAssetReferenceTreeNode(const FString& InDisplayName, FName InPackageName = NAME_None);
-
-	FString DisplayName;
-	FName PackageName;
-	TArray<TSharedPtr<FAssetReferenceTreeNode>> Children;
-};
 
 class SAssetReferenceInspectorWidget : public SCompoundWidget
 {
