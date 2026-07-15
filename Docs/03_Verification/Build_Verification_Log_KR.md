@@ -380,7 +380,9 @@ Total execution time: 8.24 seconds
 
 #### 에디터 UI 확인
 
-- 미확인.
-- `BP_Dummy` 선택 후 `Analyze` 클릭 시 Tree 루트에 `BP_Dummy`가 표시되는지 수동 확인 후 갱신한다.
-- `BP_Dummy`의 Dependencies 결과에 `M_Dummy`가 포함되는지 수동 확인 후 갱신한다.
-- 선택 Asset이 없는 상태에서 `Analyze` 클릭 시 안전하게 처리되는지 수동 확인 후 갱신한다.
+- 확인 완료.
+- `BP_Dummy` 선택 후 `Pick Selected Asset`, `Analyze` 클릭 시 Tree 루트에 `BP_Dummy`가 표시되는 것을 확인했다.
+- `BP_Dummy`의 Dependencies 결과에 `/Script/NavigationSystem`, `Cube`, `M_Dummy`가 표시되는 것을 확인했다.
+- `M_Dummy` 선택 후 `Analyze` 클릭 시 Tree 루트에 `M_Dummy`가 표시되고, 자식 노드로 `T_Dummy_Color`가 표시되는 것을 확인했다.
+- `T_Dummy_Color` 선택 후 `Analyze` 클릭 시 Tree 루트에 `T_Dummy_Color`가 표시되고, 자식 노드로 `/Script/InterchangeEngine`이 표시되는 것을 확인했다.
+- 선택 Asset이 없는 상태에서 `Analyze` 클릭 시 안전하게 처리되는지는 아직 미확인이다.
