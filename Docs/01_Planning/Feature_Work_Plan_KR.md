@@ -264,6 +264,15 @@ Phase 2는 Unreal Editor의 `에디터 독립형 창` 템플릿을 참고하되,
 - 선택 Asset의 이름과 PackageName을 UI에 표시한다.
 - 선택 없음 상태를 안전하게 처리한다.
 
+상태:
+
+- 완료.
+- `feature/ari-selected-asset` 브랜치에서 `Pick Selected Asset` 버튼에 Content Browser 선택 Asset 조회를 연결했다.
+- 선택 Asset의 이름과 PackageName을 `Selected Asset` 텍스트에 표시하도록 구성했다.
+- 선택 Asset이 없으면 `Selected Asset: None`을 표시하도록 구성했다.
+- `Portfolio_PlugInEditor` 빌드는 성공했다.
+- 에디터에서 `BP_Dummy` 선택 표시와 선택 없음 상태 표시를 수동 확인했다.
+
 ### 3-2. Dependencies Depth 1 조회
 
 목적:
