@@ -6,6 +6,24 @@ MVP는 선택한 Asset의 참조 관계를 Tree View로 확인할 수 있는 Edi
 
 처음부터 모든 실무형 기능을 넣기보다, Content Browser 선택 Asset에서 시작해 Asset Registry 결과를 안정적으로 Tree View에 표시하는 흐름을 우선한다.
 
+## 단계 기준
+
+이 프로젝트에서는 MVP 표현이 혼동되지 않도록 다음 단계명을 함께 사용한다.
+
+```text
+1주차 완료
+= 플러그인이 “동작한다”는 증명
+= 선택 Asset의 Dependencies Depth 1을 Tree View로 표시
+
+Core Tool Structure
+= 플러그인이 “도구 구조를 갖췄다”는 증명
+= Dependencies / Referencers, Max Depth, 필터, Content Browser Sync 포함
+
+Portfolio-ready
+= 플러그인이 “포트폴리오 완성 기능을 갖췄다”는 증명
+= 순환 참조, Unused Candidate, Asset Size, CSV Export, README / 시연 정리 포함
+```
+
 ## MVP 포함 기능
 
 - Project Plugin 구조 생성
@@ -46,7 +64,7 @@ MVP는 선택한 Asset의 참조 관계를 Tree View로 확인할 수 있는 Edi
 
 ## 범위 고정 기준
 
-다음 조건을 만족하면 MVP 완료로 본다.
+다음 조건을 만족하면 Core Tool Structure 완료로 본다.
 
 - Editor 메뉴 또는 Window 메뉴에서 플러그인 탭을 열 수 있다.
 - Content Browser에서 선택한 Asset을 분석 대상으로 가져올 수 있다.
@@ -54,7 +72,11 @@ MVP는 선택한 Asset의 참조 관계를 Tree View로 확인할 수 있는 Edi
 - Max Depth가 Tree 생성에 반영된다.
 - 결과가 Tree View로 표시된다.
 - Tree 노드를 더블 클릭하면 Content Browser가 해당 Asset으로 이동한다.
+
+다음 조건을 추가로 만족하면 Portfolio-ready 완료로 본다.
+
 - 현재 Tree 결과를 CSV로 저장할 수 있다.
+- README와 검증 문서에 사용 방법, 제한 사항, 시연 흐름이 정리된다.
 
 ## 범위 제외 기준
 

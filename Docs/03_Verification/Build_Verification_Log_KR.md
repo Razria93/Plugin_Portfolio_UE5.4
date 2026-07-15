@@ -118,6 +118,10 @@ Total execution time: 5.47 seconds
 - Window 메뉴 클릭 후 `Asset Reference Inspector` 탭 오픈 확인
 - 탭 내부 중앙에 `Asset Reference Inspector` 텍스트 표시 확인
 
+#### Screenshots
+
+![Nomad Tab Open](Screenshots/feature_ari_nomad_tab/nomad_tab.png)
+
 ### AssetReferenceInspector Commands Public API 정리
 
 #### 대상
@@ -244,6 +248,10 @@ Total execution time: 2.69 seconds
 - `Mode: Dependencies / Referencers` placeholder 표시 확인
 - 결과 영역 placeholder 표시 확인
 
+#### Screenshots
+
+![Slate UI Shell](Screenshots/feature_ari_ui_shell/ui_shell.png)
+
 ### AssetReferenceInspector STreeView 더미 데이터
 
 #### 대상
@@ -292,6 +300,10 @@ Total execution time: 5.97 seconds
 - Tree row 선택 하이라이트 표시 확인
 - expand / collapse UI 표시 확인
 
+#### Screenshots
+
+![Tree View Dummy](Screenshots/feature_ari_tree_view_dummy/tree_view_dummy.png)
+
 ### AssetReferenceInspector Content Browser 선택 Asset 표시
 
 #### 대상
@@ -337,6 +349,12 @@ Total execution time: 6.71 seconds
 - Content Browser에서 `BP_Dummy` 선택 후 `Pick Selected Asset` 클릭 시 `Selected Asset: BP_Dummy (/Game/BP_Dummy)` 표시 확인
 - Content Browser 선택 Asset이 없는 상태에서 `Pick Selected Asset` 클릭 시 `Selected Asset: None` 표시 확인
 - 선택 Asset 표시 변경 후 기존 더미 `STreeView` 표시 유지 확인
+
+#### Screenshots
+
+![Selected Asset](Screenshots/feature_ari_selected_asset/selected_asset.png)
+
+![Selected Asset None](Screenshots/feature_ari_selected_asset/selected_asset_none.png)
 
 ### AssetReferenceInspector Dependencies Depth 1 조회
 

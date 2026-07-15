@@ -101,6 +101,26 @@ feature/<short-name>
 feature/ari-nomad-tab
 ```
 
+### 브랜치 보존과 복원
+
+로컬/원격 feature 브랜치는 사용자가 명시적으로 요청하기 전에는 삭제하지 않는다.
+
+브랜치 삭제가 필요한 경우 다음을 먼저 확인한다.
+
+- 해당 브랜치가 PR로 merge되었는가
+- 변경 내용이 `main`에 반영되었는가
+- 복원 가능한 커밋 SHA가 남아 있는가
+- 사용자가 삭제를 명시적으로 요청했는가
+
+삭제된 브랜치는 커밋이 남아 있으면 같은 이름으로 복원할 수 있다.
+
+```bash
+git switch -c feature/<short-name> <commit-sha>
+git push -u origin feature/<short-name>
+```
+
+브랜치 복원은 작업 재개뿐 아니라 검증, 비교, 기록 보강 목적으로도 사용할 수 있다. 에이전트는 로컬/원격 브랜치를 임의로 삭제하지 않는다.
+
 ## PR 기준
 
 Feature branch를 만든 작업은 PR을 통해 `main`에 반영하는 것을 기본으로 한다.
@@ -115,6 +135,47 @@ PR은 다음 목적을 가진다.
 작은 문서 수정, 오타 수정, 단일 파일 정리처럼 feature branch 없이 진행한 작업은 PR을 필수로 하지 않는다.
 
 Codex는 사용자가 명시적으로 요청하기 전에는 `git push`, `gh pr create`, `gh pr merge`를 실행하지 않는다. 작업 종료 시 필요한 명령과 PR 본문 초안을 제안한다.
+
+### Draft PR / Ready for review 기준
+
+다음 항목이 남아 있으면 PR은 Draft로 둔다.
+
+- 검증 결과가 아직 정리되지 않았다.
+- 검증 스크린샷 또는 문서 링크가 아직 반영되지 않았다.
+- Related Issues 관계가 확정되지 않았다.
+- 미확인 항목과 제한 사항이 PR 본문에 정리되지 않았다.
+
+다음 항목을 확인한 뒤 Ready for review로 전환한다.
+
+- `Verification` 섹션이 실제 검증 결과와 일치한다.
+- `Unverified / Limitations` 섹션이 남은 제한을 숨기지 않는다.
+- `Documentation` 섹션이 관련 Docs를 가리킨다.
+- `Related Issues`에서 상위 Plan Issue는 `References`, 해당 PR로 완료되는 Architecture / Verification Issue는 `Closes`로 연결된다.
+- PR 본문에 포함한 이미지와 링크가 GitHub에서 렌더링된다.
+
+### PR 종료 체크리스트
+
+PR merge 전:
+
+- 상위 Plan Issue를 `References`로 연결했는가
+- 해당 PR에서 완료되는 Architecture / Verification Issue를 `Closes`로 연결했는가
+- 필요한 label이 적용되었는가
+- 검증 스크린샷 필요 여부를 확인했는가
+- 문서 링크와 `Unverified / Limitations`가 현재 상태와 일치하는가
+
+PR merge 후:
+
+- 상위 Plan Issue의 첫 누적 진행 댓글을 갱신했는가
+- 상위 Plan Issue에 feature 완료 로그 댓글을 추가했는가
+- 로컬을 `main`으로 전환했는가
+- 원격 `main`을 pull 했는가
+
+```bash
+git switch main
+git pull
+```
+
+Issue #2 같은 상위 Plan Issue 갱신을 누락한 경우, 발견 즉시 첫 누적 진행 댓글과 feature 완료 로그 댓글을 보정한다.
 
 ## GitHub Issue 제안 기준
 
@@ -161,6 +222,16 @@ C++ 코드, `.uplugin`, `Build.cs`, `.uproject` 변경은 가능한 경우 UE 5.
 - 기존 규칙과 충돌 여부
 
 검증 결과는 작업 보고 또는 `Docs/03_Verification`에 남긴다.
+
+### 검증 스크린샷
+
+UI 변화나 에디터 동작이 feature 완료 기준에 포함되면 검증 스크린샷 필요 여부를 확인한다.
+
+- 임시 캡처는 `LocalNotes/screenshots`에 둔다.
+- PR 검증 증거로 사용할 최종 이미지는 `Docs/03_Verification/Screenshots/<branch-name>/`로 승격한다.
+- 현재 또는 미래 PR은 본문 `Screenshots` 섹션에 Docs 이미지 링크를 포함한다.
+- 이미 merge된 과거 PR은 본문을 재작성하지 않고 댓글로 Docs 이미지 링크를 남긴다.
+- 과거 PR 보강 댓글에는 현재 프로젝트 상태에서 완료 조건을 재확인한 기록임을 명시한다.
 
 ## 문서 업데이트 기준
 
