@@ -152,6 +152,7 @@ Codex는 사용자가 명시적으로 요청하기 전에는 `git push`, `gh pr 
 - `Documentation` 섹션이 관련 Docs를 가리킨다.
 - `Related Issues`에서 상위 Plan Issue는 `References`, 해당 PR로 완료되는 Architecture / Verification Issue는 `Closes`로 연결된다.
 - PR 본문에 포함한 이미지와 링크가 GitHub에서 렌더링된다.
+- GitHub 게시 전 같은 카테고리의 공개 PR 본문 형식을 확인했다.
 
 ### PR 종료 체크리스트
 
@@ -162,6 +163,7 @@ PR merge 전:
 - 필요한 label이 적용되었는가
 - 검증 스크린샷 필요 여부를 확인했는가
 - 문서 링크와 `Unverified / Limitations`가 현재 상태와 일치하는가
+- GitHub 공개 기록 확인 기준은 `Docs/04_Governance/Documentation_Workflow_KR.md`를 따랐는가
 
 PR merge 후:
 
@@ -201,6 +203,7 @@ Issue 본문은 다음 원칙을 따른다.
 - 체크리스트와 짧은 bullet 중심으로 작성한다.
 - 상세 내용은 `Docs/` 문서 링크로 연결한다.
 - PR 본문에는 `Related Issues` 섹션을 두고 `References` 또는 `Closes` 관계를 명시한다.
+- 게시 전 같은 카테고리의 GitHub 공개 Issue 형식을 확인한다.
 
 Feature 종료 시 상위 `[Plan]` Issue가 있으면 다음을 반복 확인한다.
 
@@ -208,6 +211,7 @@ Feature 종료 시 상위 `[Plan]` Issue가 있으면 다음을 반복 확인한
 - 이번 feature 완료 로그 댓글을 추가했는가
 - PR 본문에 상위 Plan Issue는 `References`, 브랜치 단위 Architecture / Verification Issue는 필요한 경우 `Closes`로 연결했는가
 - Issue label을 문서 책임에 맞게 적용했는가
+- Plan Issue 누적 댓글은 기존 GitHub 공개 댓글 형식을 유지했는가
 
 Plan Issue의 첫 진행 댓글은 현재까지 완료된 Phase 전체를 보여주는 진행판으로 본다. 각 feature 완료 로그는 그 아래에 새 댓글로 누적한다.
 

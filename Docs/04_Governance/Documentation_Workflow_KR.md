@@ -180,6 +180,56 @@ Archived
 
 공개 본문은 `## Summary`, `## Scope`, `## Verification`, `## Documentation`처럼 독자가 바로 읽을 수 있는 섹션으로 시작한다.
 
+## GitHub 공개 기록 확인
+
+GitHub에 이미 게시된 같은 카테고리의 Issue, PR 본문, 댓글은 최종 공개 기록이다. `LocalNotes` 초안과 템플릿은 게시 전 초안 소스일 뿐이며, 한 번 GitHub에 게시된 뒤에는 최종 표준으로 보지 않는다.
+
+새 GitHub Issue, PR 본문 생성/수정, Plan Issue 누적 댓글 갱신, Architecture / Verification 공개 기록, PR 스크린샷 또는 보강 댓글을 게시하기 전에는 같은 카테고리의 GitHub 공개 기록을 먼저 확인한다.
+
+필수 확인 대상:
+
+- 신규 Issue 생성
+- PR 본문 생성 또는 업데이트
+- Plan Issue 첫 누적 진행 댓글 업데이트
+- Architecture / Verification Issue 본문 작성
+- PR 스크린샷 섹션 또는 PR 보강 댓글 작성
+
+생략 가능 대상:
+
+- 단순 오타 수정
+- 링크 경로만 고치는 변경
+- `LocalNotes` 안에서만 남기는 메모
+- GitHub에 게시하지 않는 작업 보고
+
+### Docs 승격 전 확인
+
+`LocalNotes` 내용을 `Docs`로 승격하기 전에는 다음을 확인한다.
+
+- 장기 공개 문서로 남길 내용인가
+- 기존 `Docs`의 같은 주제 문서와 충돌하지 않는가
+- 로컬 전용 `Metadata`, `Draft` 제목, 임시 상태가 섞여 있지 않은가
+- Issue / PR 본문 초안을 원문 그대로 복사하는 것이 아니라 구조, 설계, 검증 사실만 문서화하는가
+
+### GitHub 게시 전 확인
+
+`Docs` 또는 `LocalNotes`에서 만든 내용을 GitHub에 게시하기 전에는 다음을 확인한다.
+
+- 같은 카테고리의 최신 GitHub Issue / PR / 댓글 형식과 섹션 순서가 맞는가
+- GitHub 공개 기록에서 사용하는 용어, label, `References` / `Closes` 관계와 일치하는가
+- `Docs` 링크가 현재 브랜치 또는 게시 대상 기준에서 열리는가
+- `## Metadata`, `Status: Draft`, `# Issue Draft`, `# PR Draft` 같은 로컬 전용 섹션이 제거되었는가
+- Plan Issue 누적 댓글은 기존 첫 댓글의 진행판 형식을 유지하는가
+- PR 스크린샷이나 보강 댓글은 기존 PR 공개 기록의 설명 방식과 이미지 링크 방식을 따르는가
+
+### 불일치 수정
+
+초안이 같은 카테고리의 GitHub 공개 형식과 다르면 다음 순서로 보정한다.
+
+1. GitHub에 게시된 최신 같은 카테고리 기록을 기준으로 섹션 이름, 순서, 링크 표현을 맞춘다.
+2. 로컬 전용 `Metadata`와 `Draft` 상태는 제출용 본문에서 제거한다.
+3. `Docs` 원문 복사 대신 GitHub용 요약과 체크리스트로 줄이고, 상세 내용은 `Docs` 링크로 연결한다.
+4. 수정한 제출용 본문을 다시 같은 카테고리 공개 기록과 대조한 뒤 게시한다.
+
 ## GitHub Issue
 
 Issue는 문서 원본 저장소가 아니라 추적 단위다.
