@@ -124,3 +124,43 @@ private Commands
 이 구조는 다음 작업인 `SAssetReferenceInspectorWidget` 분리 이후에도 유지한다. 모듈은 탭과 메뉴 등록의 진입점으로 남기고, 실제 UI 구성은 별도 Slate 위젯으로 옮긴다.
 
 `SAssetReferenceInspectorWidget` 분리 이후에도 `FAssetReferenceInspectorModule`은 탭 생성 시 UI 루트 위젯을 배치하는 역할만 맡는다. 버튼, 선택 Asset 표시, Tree View 같은 실제 화면 구성은 `Private/UI` 아래 Slate Widget에서 확장한다.
+
+`SAssetReferenceInspectorWidget`은 UI 이벤트, 분석 데이터 생성, Tree View 표시가 한 클래스 안에 공존한다. 이 경우 `private` helper를 하나의 `Tree data` 섹션에 모두 넣지 않고 다음 기준으로 나눈다.
+
+```text
+private UI callbacks
+- OnPickSelectedAssetClicked
+- OnAnalyzeClicked
+
+private UI text
+- GetSelectedAssetText
+
+private Analysis
+- BuildDependencyTree
+- BuildDependencyChildren
+- CreateDependencyNode
+- ShouldIncludeDependencyPackage
+
+private Tree view
+- RefreshTree
+- ExpandTreeItems
+- OnGenerateTreeRow
+- OnGetTreeChildren
+
+private Analysis state
+- AnalysisOptions
+- SelectedAssetData
+
+private Tree view state
+- TreeRootItems
+- TreeView
+```
+
+기준:
+
+- 버튼 클릭처럼 Slate 이벤트에서 직접 호출되는 함수는 `UI callbacks`에 둔다.
+- Slate text binding 함수는 `UI text`에 둔다.
+- Asset Registry 조회, 노드 생성, 필터 판단은 `Analysis`에 둔다.
+- `STreeView` 갱신, expand, row 생성, children 제공은 `Tree view`에 둔다.
+- 분석 입력과 옵션은 `Analysis state`, Tree가 참조하는 데이터와 Slate 위젯 포인터는 `Tree view state`에 둔다.
+- 더 세부적인 `Dependency Query`, `Node Factory`, `Filter` 섹션은 실제 함수 수가 늘어난 뒤에만 추가한다.

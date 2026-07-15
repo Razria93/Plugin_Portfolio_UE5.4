@@ -25,16 +25,24 @@ private:
 	// UI text
 	FText GetSelectedAssetText() const;
 
-	// Tree data
+	// Analysis
 	void BuildDependencyTree();
+	void BuildDependencyChildren(TSharedPtr<FAssetReferenceTreeNode> ParentNode, TArray<FName>& CurrentPath) const;
+	TSharedPtr<FAssetReferenceTreeNode> CreateDependencyNode(FName PackageName, int32 Depth, bool bIsCircular = false) const;
+	bool ShouldIncludeDependencyPackage(FName PackageName) const;
+
+	// Tree view
 	void RefreshTree();
-	TSharedPtr<FAssetReferenceTreeNode> CreateDependencyNode(FName PackageName) const;
+	void ExpandTreeItems(const TArray<TSharedPtr<FAssetReferenceTreeNode>>& Items);
 	TSharedRef<ITableRow> OnGenerateTreeRow(TSharedPtr<FAssetReferenceTreeNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const;
 	void OnGetTreeChildren(TSharedPtr<FAssetReferenceTreeNode> Item, TArray<TSharedPtr<FAssetReferenceTreeNode>>& OutChildren) const;
 
 private:
-	// State
+	// Analysis state
+	FAssetReferenceAnalysisOptions AnalysisOptions;
 	FAssetData SelectedAssetData;
+
+	// Tree view state
 	TArray<TSharedPtr<FAssetReferenceTreeNode>> TreeRootItems;
 	TSharedPtr<STreeView<TSharedPtr<FAssetReferenceTreeNode>>> TreeView;
 };

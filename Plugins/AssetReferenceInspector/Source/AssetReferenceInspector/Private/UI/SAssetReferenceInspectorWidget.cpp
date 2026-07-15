@@ -143,26 +143,56 @@ void SAssetReferenceInspectorWidget::BuildDependencyTree()
 
 	TSharedPtr<FAssetReferenceTreeNode> RootNode = MakeShared<FAssetReferenceTreeNode>(
 		SelectedAssetData.AssetName.ToString(),
-		SelectedAssetData.PackageName);
+		SelectedAssetData.PackageName,
+		0);
+
+	TArray<FName> CurrentPath;
+	CurrentPath.Add(SelectedAssetData.PackageName);
+
+	BuildDependencyChildren(RootNode, CurrentPath);
+
+	TreeRootItems.Add(RootNode);
+}
+
+void SAssetReferenceInspectorWidget::BuildDependencyChildren(TSharedPtr<FAssetReferenceTreeNode> ParentNode, TArray<FName>& CurrentPath) const
+{
+	if (!ParentNode.IsValid() || ParentNode->Depth >= AnalysisOptions.MaxDepth)
+	{
+		return;
+	}
 
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 
 	TArray<FName> DependencyPackageNames;
-	AssetRegistryModule.Get().GetDependencies(SelectedAssetData.PackageName, DependencyPackageNames);
+	AssetRegistryModule.Get().GetDependencies(ParentNode->PackageName, DependencyPackageNames);
 
 	if (DependencyPackageNames.Num() == 0)
 	{
-		RootNode->Children.Add(MakeShared<FAssetReferenceTreeNode>(TEXT("No dependencies found")));
+		ParentNode->Children.Add(MakeShared<FAssetReferenceTreeNode>(TEXT("No dependencies found"), NAME_None, ParentNode->Depth + 1));
 	}
 	else
 	{
 		for (const FName DependencyPackageName : DependencyPackageNames)
 		{
-			RootNode->Children.Add(CreateDependencyNode(DependencyPackageName));
+			if (!ShouldIncludeDependencyPackage(DependencyPackageName))
+			{
+				continue;
+			}
+
+			const bool bIsCircular = CurrentPath.Contains(DependencyPackageName);
+			TSharedPtr<FAssetReferenceTreeNode> ChildNode = CreateDependencyNode(DependencyPackageName, ParentNode->Depth + 1, bIsCircular);
+			ParentNode->Children.Add(ChildNode);
+
+			if (bIsCircular)
+			{
+				continue;
+			}
+
+			CurrentPath.Add(DependencyPackageName);
+			BuildDependencyChildren(ChildNode, CurrentPath);
+			CurrentPath.Pop();
 		}
 	}
-
-	TreeRootItems.Add(RootNode);
 }
 
 void SAssetReferenceInspectorWidget::RefreshTree()
@@ -174,13 +204,27 @@ void SAssetReferenceInspectorWidget::RefreshTree()
 
 	TreeView->RequestTreeRefresh();
 
-	for (const TSharedPtr<FAssetReferenceTreeNode>& RootItem : TreeRootItems)
+	ExpandTreeItems(TreeRootItems);
+}
+
+void SAssetReferenceInspectorWidget::ExpandTreeItems(const TArray<TSharedPtr<FAssetReferenceTreeNode>>& Items)
+{
+	if (!TreeView.IsValid())
 	{
-		TreeView->SetItemExpansion(RootItem, true);
+		return;
+	}
+
+	for (const TSharedPtr<FAssetReferenceTreeNode>& Item : Items)
+	{
+		if (Item.IsValid())
+		{
+			TreeView->SetItemExpansion(Item, true);
+			ExpandTreeItems(Item->Children);
+		}
 	}
 }
 
-TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateDependencyNode(FName PackageName) const
+TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateDependencyNode(FName PackageName, int32 Depth, bool bIsCircular) const
 {
 	FString DisplayName = PackageName.ToString();
 
@@ -194,7 +238,12 @@ TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateDepend
 		DisplayName = AssetsInPackage[0].AssetName.ToString();
 	}
 
-	return MakeShared<FAssetReferenceTreeNode>(DisplayName, PackageName);
+	return MakeShared<FAssetReferenceTreeNode>(DisplayName, PackageName, Depth, bIsCircular);
+}
+
+bool SAssetReferenceInspectorWidget::ShouldIncludeDependencyPackage(FName PackageName) const
+{
+	return PackageName.ToString().StartsWith(TEXT("/Game/"));
 }
 
 TSharedRef<ITableRow> SAssetReferenceInspectorWidget::OnGenerateTreeRow(TSharedPtr<FAssetReferenceTreeNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const

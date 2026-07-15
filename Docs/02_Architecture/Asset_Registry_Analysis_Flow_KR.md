@@ -113,7 +113,13 @@ struct FAssetReferenceAnalysisOptions
 };
 ```
 
-현재 UI는 아직 Dependencies Depth 1만 사용한다. `EAssetReferenceMode`와 `FAssetReferenceAnalysisOptions`는 Phase 4의 Max Depth / Referencers 확장을 위한 기반 타입이다.
+현재 UI는 Dependencies 모드만 사용한다. `FAssetReferenceAnalysisOptions::MaxDepth`는 재귀 Tree 생성의 깊이 제한으로 사용한다.
+
+```text
+Depth 0 = 선택 Asset root
+Depth 1 = root의 직접 Dependencies
+Depth 2 = Depth 1 노드의 Dependencies
+```
 
 루트 노드:
 
@@ -130,6 +136,73 @@ PackageName = Dependency PackageName
 ```
 
 조회 결과가 없으면 `No dependencies found` 노드를 자식으로 추가한다.
+
+## Max Depth 재귀 생성
+
+Dependencies Tree는 `BuildDependencyChildren`에서 DFS 방식으로 생성한다.
+
+```text
+BuildDependencyTree
+-> root node 생성
+-> CurrentPath에 root PackageName 추가
+-> BuildDependencyChildren(root, CurrentPath)
+```
+
+`BuildDependencyChildren`은 다음 조건에서 자식 조회를 중단한다.
+
+- ParentNode가 유효하지 않음
+- ParentNode의 Depth가 `MaxDepth` 이상
+- 현재 DFS 경로에 이미 같은 PackageName이 있음
+
+현재 경로 중복 검사는 전체 방문 여부가 아니라 DFS 경로 기준이다. 같은 Asset이 다른 경로에서 다시 나타나는 것은 별도 경로의 결과로 볼 수 있으므로 전역 visited로 막지 않는다.
+
+### 순환 후보 노드 처리 정책
+
+현재 DFS 경로에 이미 포함된 PackageName을 다시 만나면 순환 후보로 본다.
+
+이 경우 해당 Package는 Parent의 실제 dependency이므로 Tree에는 추가한다. 다만 그 아래로 다시 확장하면 무한 재귀가 될 수 있으므로 children 조회는 중단한다.
+
+```text
+A
+  B
+    A
+```
+
+위 구조에서 마지막 `A`는 표시하지만, 다시 `B`로 확장하지 않는다.
+
+이 정책은 순환 참조 정보를 숨기지 않기 위한 것이다. 후속 순환 참조 탐지 단계에서는 `bIsCircular` 상태를 UI에 표시해 순환 후보 노드임을 명확히 보여준다.
+
+## 임시 Project Content 필터
+
+Phase 4-1에서는 재귀 Tree 검증 범위를 통제하기 위해 `/Game` Package만 표시한다.
+
+```cpp
+PackageName.ToString().StartsWith(TEXT("/Game/"))
+```
+
+이 정책은 정식 필터 UI가 아니다. `/Script`, `/Engine` 같은 Engine / Script dependency가 재귀 결과를 과도하게 복잡하게 만들면, Demo Asset 간의 참조 관계를 검증하기 어렵다. 따라서 이번 단계에서는 Project Content만 남겨 Max Depth 재귀 구조를 확인한다.
+
+Engine Content / Plugin Content 표시 옵션은 후속 필터 작업에서 별도 UI와 옵션으로 다룬다.
+
+검증 기준으로 사용한 Before / After는 다음과 같다.
+
+```text
+Before
+BP_Dummy
+  /Script/NavigationSystem
+  Cube
+    /Script/NavigationSystem
+    WorldGridMaterial
+  M_Dummy
+    T_Dummy_Color
+
+After
+BP_Dummy
+  M_Dummy
+    T_Dummy_Color
+```
+
+Before는 Asset Registry dependency를 그대로 재귀 표시한 결과다. After는 `/Game` Package만 표시해 Demo Asset 간 참조 관계만 남긴 결과다.
 
 ## Tree 갱신
 
@@ -151,6 +224,9 @@ TreeView->SetItemExpansion(RootItem, true);
   BP_Dummy
   M_Dummy
   T_Dummy_Color
+  Validation/
+    BP_CycleA
+    BP_CycleB
 ```
 
 기대 참조 관계:
@@ -161,15 +237,24 @@ BP_Dummy
     T_Dummy_Color
 ```
 
-Depth 1 검증 기준:
+Max Depth 검증 기준:
 
 - `BP_Dummy` 선택
 - `Pick Selected Asset` 클릭
 - `Analyze` 클릭
 - Tree 루트에 `BP_Dummy` 표시
-- Tree 자식에 `M_Dummy` 포함
+- Tree 자식에 `M_Dummy` 표시
+- `M_Dummy` 하위에 `T_Dummy_Color` 표시
 
-Engine 기본 Mesh 또는 Script Package가 함께 표시될 수 있다. 이번 단계에서는 필터링하지 않으므로 정상 범위로 본다.
+현재는 `/Game` Package만 표시하므로 Engine 기본 Mesh 또는 Script Package는 결과 Tree에서 제외된다.
+
+순환 방어 검증 기준:
+
+- `BP_CycleA` 선택
+- `Pick Selected Asset` 클릭
+- `Analyze` 클릭
+- `BP_CycleA -> BP_CycleB -> BP_CycleA` 표시
+- 마지막 `BP_CycleA` 아래로 다시 `BP_CycleB`가 확장되지 않음
 
 ## 후속 확장
 
@@ -186,4 +271,4 @@ Options
 = Mode, Max Depth, 필터 조건
 ```
 
-재귀 Depth, Referencers, 필터, 순환 참조 탐지는 Analyzer 분리 이후 확장한다.
+Referencers, 정식 필터 UI, 순환 참조 표시, Analyzer 클래스 분리는 후속 작업에서 확장한다.
