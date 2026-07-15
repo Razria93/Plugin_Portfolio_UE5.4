@@ -6,6 +6,39 @@
 
 각 작업 단위는 가능한 한 하나의 명확한 목적을 가지며, 빌드 가능한 상태와 커밋 가능한 경계를 목표로 한다.
 
+## Week / Phase / MVP 용어
+
+Week는 일정과 목표를 설명하는 단위이고, Phase는 구현 범위를 설명하는 단위다.
+
+```text
+1주차 = 플러그인이 “동작한다”는 증명
+2주차 = 플러그인이 “도구 구조를 갖췄다”는 증명
+3주차 = 플러그인이 “포트폴리오 완성 기능을 갖췄다”는 증명
+```
+
+Phase 매핑:
+
+```text
+1주차: Phase 1 ~ Phase 3
+2주차: Phase 4 ~ Phase 5
+3주차: Phase 6 ~ Phase 7
+```
+
+완료 단계 표현:
+
+```text
+1주차 완료
+= Editor Plugin이 열리고 선택 Asset의 Dependencies Depth 1을 Tree View로 표시하는 동작 증명
+
+2주차 완료
+= Dependencies / Referencers, Max Depth, 필터, Content Browser Sync를 갖춘 Core Tool Structure
+
+3주차 완료
+= 순환 참조, Unused Candidate, Asset Size, CSV Export, README / 시연 정리가 포함된 Portfolio-ready 상태
+```
+
+이 문서에서 MVP는 문맥에 따라 다르게 보일 수 있으므로, 기능 완료 기준을 말할 때는 가능하면 `1주차 완료`, `Core Tool Structure`, `Portfolio-ready`처럼 단계 이름을 함께 쓴다.
+
 ## 작업 단위 기준
 
 하나의 작업 단위는 다음 조건을 만족해야 한다.
@@ -315,6 +348,8 @@ refactor: Asset Reference 분석 데이터 구조 분리
 
 ## Phase 4: Tree 분석 MVP
 
+Phase 4부터는 플러그인이 단순 조회 데모를 넘어 분석 도구 구조를 갖추는 단계다. 2주차 목표의 전반부에 해당한다.
+
 ### 4-1. Max Depth 기반 재귀 Tree 생성
 
 목적:
@@ -347,6 +382,8 @@ refactor: Asset Reference 분석 데이터 구조 분리
 
 ## Phase 5: 필터
 
+Phase 5는 2주차 목표의 후반부에 해당하며, 분석 결과를 실제 프로젝트에서 다룰 수 있게 제한하고 좁히는 사용성 구조를 만든다.
+
 ### 5-1. Path 필터
 
 목적:
@@ -378,6 +415,8 @@ refactor: Asset Reference 필터 조건 분리
 ```
 
 ## Phase 6: 실무형 분석 기능
+
+Phase 6부터는 3주차 목표에 해당한다. 참조 관계 조회 도구를 포트폴리오에서 설명 가능한 실무형 분석 기능으로 확장한다.
 
 ### 6-1. 순환 참조 탐지
 
@@ -418,6 +457,8 @@ refactor: Asset Reference 필터 조건 분리
 - 순환 참조, 크기, Unused Candidate 같은 결과 메타데이터를 일관된 구조로 정리한다.
 
 ## Phase 7: Export / 문서 / 시연
+
+Phase 7은 Portfolio-ready 상태를 만들기 위한 마감 단계다. 기능 결과를 저장하고, 사용법과 시연 흐름을 정리한다.
 
 ### 7-1. CSV Export
 
