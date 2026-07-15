@@ -31,6 +31,7 @@ Docs/
     Editor_Window_Flow_KR.md
     Code_Organization_KR.md
     Slate_UI_Basics_KR.md
+    Asset_Registry_Analysis_Flow_KR.md
 
   03_Verification/
     README_KR.md

@@ -6,12 +6,13 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/Views/STreeView.h"
 
-struct FAssetReferenceDummyNode
+struct FAssetReferenceTreeNode
 {
-	explicit FAssetReferenceDummyNode(const FString& InName);
+	FAssetReferenceTreeNode(const FString& InDisplayName, FName InPackageName = NAME_None);
 
-	FString Name;
-	TArray<TSharedPtr<FAssetReferenceDummyNode>> Children;
+	FString DisplayName;
+	FName PackageName;
+	TArray<TSharedPtr<FAssetReferenceTreeNode>> Children;
 };
 
 class SAssetReferenceInspectorWidget : public SCompoundWidget
@@ -27,18 +28,21 @@ public:
 private:
 	// UI callbacks
 	FReply OnPickSelectedAssetClicked();
+	FReply OnAnalyzeClicked();
 
 	// UI text
 	FText GetSelectedAssetText() const;
 
-	// Dummy tree data
-	void BuildDummyTree();
-	TSharedRef<ITableRow> OnGenerateTreeRow(TSharedPtr<FAssetReferenceDummyNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const;
-	void OnGetTreeChildren(TSharedPtr<FAssetReferenceDummyNode> Item, TArray<TSharedPtr<FAssetReferenceDummyNode>>& OutChildren) const;
+	// Tree data
+	void BuildDependencyTree();
+	void RefreshTree();
+	TSharedPtr<FAssetReferenceTreeNode> CreateDependencyNode(FName PackageName) const;
+	TSharedRef<ITableRow> OnGenerateTreeRow(TSharedPtr<FAssetReferenceTreeNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const;
+	void OnGetTreeChildren(TSharedPtr<FAssetReferenceTreeNode> Item, TArray<TSharedPtr<FAssetReferenceTreeNode>>& OutChildren) const;
 
 private:
 	// State
 	FAssetData SelectedAssetData;
-	TArray<TSharedPtr<FAssetReferenceDummyNode>> TreeRootItems;
-	TSharedPtr<STreeView<TSharedPtr<FAssetReferenceDummyNode>>> TreeView;
+	TArray<TSharedPtr<FAssetReferenceTreeNode>> TreeRootItems;
+	TSharedPtr<STreeView<TSharedPtr<FAssetReferenceTreeNode>>> TreeView;
 };
