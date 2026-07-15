@@ -337,3 +337,50 @@ Total execution time: 6.71 seconds
 - Content Browser에서 `BP_Dummy` 선택 후 `Pick Selected Asset` 클릭 시 `Selected Asset: BP_Dummy (/Game/BP_Dummy)` 표시 확인
 - Content Browser 선택 Asset이 없는 상태에서 `Pick Selected Asset` 클릭 시 `Selected Asset: None` 표시 확인
 - 선택 Asset 표시 변경 후 기존 더미 `STreeView` 표시 유지 확인
+
+### AssetReferenceInspector Dependencies Depth 1 조회
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+일반 실행은 UBT 로그 파일 백업 단계에서 `UnauthorizedAccessException`으로 실패했다. 동일 명령을 권한 상승으로 재실행해 실제 컴파일/링크를 확인했다.
+
+UBT 출력 기준:
+
+```text
+[3/7] Compile [x64] Module.AssetReferenceInspector.cpp
+[4/7] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[5/7] Link [x64] UnrealEditor-AssetReferenceInspector-0001.lib
+[6/7] Link [x64] UnrealEditor-AssetReferenceInspector-0001.dll
+[7/7] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 8.24 seconds
+```
+
+#### 확인 범위
+
+- `Analyze` 버튼에 `OnClicked` 핸들러를 연결한 상태에서 빌드 확인
+- `FAssetRegistryModule`과 `IAssetRegistry::GetDependencies` 사용 상태에서 빌드 확인
+- `FAssetReferenceTreeNode` 기반 Tree View 표시 구조로 변경한 상태에서 빌드 확인
+- 조회 결과를 `TreeView->RequestTreeRefresh()`로 갱신하는 상태에서 빌드 확인
+
+#### 에디터 UI 확인
+
+- 미확인.
+- `BP_Dummy` 선택 후 `Analyze` 클릭 시 Tree 루트에 `BP_Dummy`가 표시되는지 수동 확인 후 갱신한다.
+- `BP_Dummy`의 Dependencies 결과에 `M_Dummy`가 포함되는지 수동 확인 후 갱신한다.
+- 선택 Asset이 없는 상태에서 `Analyze` 클릭 시 안전하게 처리되는지 수동 확인 후 갱신한다.

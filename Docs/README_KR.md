@@ -32,6 +32,8 @@
   - 플러그인 C++ 코드의 Public/Private 폴더, include 순서, 헤더 섹션 구성 규칙을 정리한다.
 - `02_Architecture/Slate_UI_Basics_KR.md`
   - 플러그인 UI에 사용하는 Slate 위젯, Slot, 배치 옵션, 현재 UI Shell 구조를 정리한다.
+- `02_Architecture/Asset_Registry_Analysis_Flow_KR.md`
+  - Asset Registry 기반 Dependencies 조회와 Tree View 표시 흐름을 정리한다.
 
 ## 03_Verification
 

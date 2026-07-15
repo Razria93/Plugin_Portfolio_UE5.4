@@ -1,5 +1,6 @@
 #include "UI/SAssetReferenceInspectorWidget.h"
 
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "Modules/ModuleManager.h"
 
 #include "ContentBrowserModule.h"
@@ -12,15 +13,14 @@
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Text/STextBlock.h"
 
-FAssetReferenceDummyNode::FAssetReferenceDummyNode(const FString& InName)
-	: Name(InName)
+FAssetReferenceTreeNode::FAssetReferenceTreeNode(const FString& InDisplayName, FName InPackageName)
+	: DisplayName(InDisplayName)
+	, PackageName(InPackageName)
 {
 }
 
 void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 {
-	BuildDummyTree();
-
 	ChildSlot
 		[
 			SNew(SBorder)
@@ -68,6 +68,7 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 								[
 									SNew(SButton)
 										.Text(FText::FromString(TEXT("Analyze")))
+										.OnClicked(this, &SAssetReferenceInspectorWidget::OnAnalyzeClicked)
 								]
 						]
 
@@ -85,7 +86,7 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 							SNew(SBorder)
 								.Padding(8.0f)
 								[
-									SAssignNew(TreeView, STreeView<TSharedPtr<FAssetReferenceDummyNode>>)
+									SAssignNew(TreeView, STreeView<TSharedPtr<FAssetReferenceTreeNode>>)
 										.TreeItemsSource(&TreeRootItems)
 										.OnGenerateRow(this, &SAssetReferenceInspectorWidget::OnGenerateTreeRow)
 										.OnGetChildren(this, &SAssetReferenceInspectorWidget::OnGetTreeChildren)
@@ -96,7 +97,7 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 
 	if (TreeView.IsValid())
 	{
-		for (const TSharedPtr<FAssetReferenceDummyNode>& RootItem : TreeRootItems)
+		for (const TSharedPtr<FAssetReferenceTreeNode>& RootItem : TreeRootItems)
 		{
 			TreeView->SetItemExpansion(RootItem, true);
 		}
@@ -115,6 +116,14 @@ FReply SAssetReferenceInspectorWidget::OnPickSelectedAssetClicked()
 	return FReply::Handled();
 }
 
+FReply SAssetReferenceInspectorWidget::OnAnalyzeClicked()
+{
+	BuildDependencyTree();
+	RefreshTree();
+
+	return FReply::Handled();
+}
+
 FText SAssetReferenceInspectorWidget::GetSelectedAssetText() const
 {
 	if (!SelectedAssetData.IsValid())
@@ -128,36 +137,84 @@ FText SAssetReferenceInspectorWidget::GetSelectedAssetText() const
 		*SelectedAssetData.PackageName.ToString()));
 }
 
-void SAssetReferenceInspectorWidget::BuildDummyTree()
+void SAssetReferenceInspectorWidget::BuildDependencyTree()
 {
 	TreeRootItems.Reset();
 
-	TSharedPtr<FAssetReferenceDummyNode> RootNode = MakeShared<FAssetReferenceDummyNode>(TEXT("BP_Player"));
-	RootNode->Children.Add(MakeShared<FAssetReferenceDummyNode>(TEXT("SK_Player")));
-	RootNode->Children.Add(MakeShared<FAssetReferenceDummyNode>(TEXT("ABP_Player")));
+	if (!SelectedAssetData.IsValid())
+	{
+		TreeRootItems.Add(MakeShared<FAssetReferenceTreeNode>(TEXT("No selected asset")));
+		return;
+	}
 
-	TSharedPtr<FAssetReferenceDummyNode> MaterialNode = MakeShared<FAssetReferenceDummyNode>(TEXT("M_Player"));
-	MaterialNode->Children.Add(MakeShared<FAssetReferenceDummyNode>(TEXT("Player_D")));
-	MaterialNode->Children.Add(MakeShared<FAssetReferenceDummyNode>(TEXT("Player_L")));
-	RootNode->Children.Add(MaterialNode);
+	TSharedPtr<FAssetReferenceTreeNode> RootNode = MakeShared<FAssetReferenceTreeNode>(
+		SelectedAssetData.AssetName.ToString(),
+		SelectedAssetData.PackageName);
 
-	RootNode->Children.Add(MakeShared<FAssetReferenceDummyNode>(TEXT("PlayerConfig")));
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+
+	TArray<FName> DependencyPackageNames;
+	AssetRegistryModule.Get().GetDependencies(SelectedAssetData.PackageName, DependencyPackageNames);
+
+	if (DependencyPackageNames.Num() == 0)
+	{
+		RootNode->Children.Add(MakeShared<FAssetReferenceTreeNode>(TEXT("No dependencies found")));
+	}
+	else
+	{
+		for (const FName DependencyPackageName : DependencyPackageNames)
+		{
+			RootNode->Children.Add(CreateDependencyNode(DependencyPackageName));
+		}
+	}
 
 	TreeRootItems.Add(RootNode);
 }
 
-TSharedRef<ITableRow> SAssetReferenceInspectorWidget::OnGenerateTreeRow(TSharedPtr<FAssetReferenceDummyNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const
+void SAssetReferenceInspectorWidget::RefreshTree()
 {
-	const FString DisplayName = Item.IsValid() ? Item->Name : FString(TEXT("Invalid Node"));
+	if (!TreeView.IsValid())
+	{
+		return;
+	}
 
-	return SNew(STableRow<TSharedPtr<FAssetReferenceDummyNode>>, OwnerTable)
+	TreeView->RequestTreeRefresh();
+
+	for (const TSharedPtr<FAssetReferenceTreeNode>& RootItem : TreeRootItems)
+	{
+		TreeView->SetItemExpansion(RootItem, true);
+	}
+}
+
+TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateDependencyNode(FName PackageName) const
+{
+	FString DisplayName = PackageName.ToString();
+
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+
+	TArray<FAssetData> AssetsInPackage;
+	AssetRegistryModule.Get().GetAssetsByPackageName(PackageName, AssetsInPackage);
+
+	if (AssetsInPackage.Num() > 0)
+	{
+		DisplayName = AssetsInPackage[0].AssetName.ToString();
+	}
+
+	return MakeShared<FAssetReferenceTreeNode>(DisplayName, PackageName);
+}
+
+TSharedRef<ITableRow> SAssetReferenceInspectorWidget::OnGenerateTreeRow(TSharedPtr<FAssetReferenceTreeNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const
+{
+	const FString DisplayName = Item.IsValid() ? Item->DisplayName : FString(TEXT("Invalid Node"));
+
+	return SNew(STableRow<TSharedPtr<FAssetReferenceTreeNode>>, OwnerTable)
 		[
 			SNew(STextBlock)
 				.Text(FText::FromString(DisplayName))
 		];
 }
 
-void SAssetReferenceInspectorWidget::OnGetTreeChildren(TSharedPtr<FAssetReferenceDummyNode> Item, TArray<TSharedPtr<FAssetReferenceDummyNode>>& OutChildren) const
+void SAssetReferenceInspectorWidget::OnGetTreeChildren(TSharedPtr<FAssetReferenceTreeNode> Item, TArray<TSharedPtr<FAssetReferenceTreeNode>>& OutChildren) const
 {
 	if (Item.IsValid())
 	{

@@ -283,6 +283,16 @@ Phase 2는 Unreal Editor의 `에디터 독립형 창` 템플릿을 참고하되,
 
 - `IAssetRegistry::GetDependencies` 결과가 Tree에 표시된다.
 
+상태:
+
+- 부분 완료.
+- `feature/ari-dependencies-depth1` 브랜치에서 `Analyze` 버튼에 Asset Registry Dependencies 조회를 연결했다.
+- `SelectedAssetData.PackageName` 기준으로 1-depth Dependencies를 조회하도록 구성했다.
+- Tree 루트는 선택 Asset, 자식 노드는 조회된 Dependency Package로 표시하도록 구성했다.
+- 조회 결과가 없거나 선택 Asset이 없는 상태를 안전하게 표시하도록 구성했다.
+- `Portfolio_PlugInEditor` 빌드는 성공했다.
+- 에디터에서 `BP_Dummy` 기준 `M_Dummy` Dependency 표시 여부는 수동 검증 전까지 `미확인`으로 둔다.
+
 ### 3-3. 분석 데이터 구조 분리
 
 목적:

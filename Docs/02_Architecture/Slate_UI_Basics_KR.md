@@ -32,7 +32,7 @@ SNew(STextBlock)
 생성한 위젯을 이후 코드에서 다시 접근해야 할 때는 `SAssignNew`를 사용한다.
 
 ```cpp
-SAssignNew(TreeView, STreeView<TSharedPtr<FAssetReferenceDummyNode>>)
+SAssignNew(TreeView, STreeView<TSharedPtr<FAssetReferenceTreeNode>>)
 ```
 
 차이는 다음과 같다.
@@ -301,7 +301,7 @@ SUniformGridPanel
 = Pick Selected Asset / Analyze 버튼을 같은 크기로 배치
 
 SButton
-= 이후 실제 기능이 연결될 버튼 placeholder
+= Pick Selected Asset / Analyze 실행 버튼
 
 STreeView
 = Asset 참조 관계를 계층 구조로 표시할 결과 영역
@@ -311,44 +311,63 @@ STreeView
 
 `STreeView`는 여러 데이터 아이템을 계층 row 형태로 반복 표시하는 Slate 위젯이다.
 
-현재 더미 Tree View는 다음 타입을 사용한다.
+현재 위젯 흐름은 다음 기준으로 이해한다.
 
-```cpp
-TSharedPtr<STreeView<TSharedPtr<FAssetReferenceDummyNode>>> TreeView;
+```text
+Construct
+= 위젯 인스턴스 생성 시 1회 호출되어 UI 트리, 콜백 함수, 데이터 소스 주소를 연결한다.
+
+TreeRootItems
+= STreeView가 루트 데이터 소스로 참조하는 배열이다.
+
+RequestTreeRefresh
+= TreeRootItems가 바뀐 뒤 TreeView에 다시 표시하라고 요청한다.
+
+OnGenerateTreeRow
+= 데이터 노드 하나를 STableRow 위젯 하나로 변환한다.
+
+OnGetTreeChildren
+= 특정 노드가 펼쳐질 때 Children 배열을 제공한다.
+
+CreateDependencyNode
+= Dependency PackageName 하나를 Tree 표시용 노드 하나로 변환한다.
 ```
 
-안쪽 타입인 `TSharedPtr<FAssetReferenceDummyNode>`는 Tree View가 표시할 아이템 하나의 타입이다. 바깥쪽 `TSharedPtr<STreeView<...>>`는 실제 Slate 위젯 인스턴스를 보관하는 포인터다.
-
-더미 노드는 현재 UI 검증을 위한 임시 데이터 모델이다.
+현재 Tree View는 다음 타입을 사용한다.
 
 ```cpp
-struct FAssetReferenceDummyNode
-{
-	explicit FAssetReferenceDummyNode(const FString& InName);
+TSharedPtr<STreeView<TSharedPtr<FAssetReferenceTreeNode>>> TreeView;
+```
 
-	FString Name;
-	TArray<TSharedPtr<FAssetReferenceDummyNode>> Children;
+안쪽 타입인 `TSharedPtr<FAssetReferenceTreeNode>`는 Tree View가 표시할 아이템 하나의 타입이다. 바깥쪽 `TSharedPtr<STreeView<...>>`는 실제 Slate 위젯 인스턴스를 보관하는 포인터다.
+
+Tree 노드는 현재 선택 Asset과 Asset Registry 조회 결과를 표시하기 위한 UI 데이터 모델이다.
+
+```cpp
+struct FAssetReferenceTreeNode
+{
+	FAssetReferenceTreeNode(const FString& InDisplayName, FName InPackageName = NAME_None);
+
+	FString DisplayName;
+	FName PackageName;
+	TArray<TSharedPtr<FAssetReferenceTreeNode>> Children;
 };
 ```
 
-`Name`은 row에 표시할 이름이고, `Children`은 노드를 펼쳤을 때 보여줄 자식 노드 목록이다. `explicit`은 `FString`이 의도치 않게 `FAssetReferenceDummyNode`로 암시 변환되는 것을 막는 C++ 문법 안전장치다.
+`DisplayName`은 row에 표시할 이름이고, `PackageName`은 Asset Registry 조회 기준이 되는 Package 이름이다. `Children`은 노드를 펼쳤을 때 보여줄 자식 노드 목록이다.
 
-더미 데이터는 다음 구조를 만든다.
+Dependencies Depth 1 조회 후에는 다음 구조를 만든다.
 
 ```text
-BP_Player
-  SK_Player
-  ABP_Player
-  M_Player
-    Player_D
-    Player_L
-  PlayerConfig
+BP_Dummy
+  M_Dummy
+  /Engine/... 또는 /Script/... Package
 ```
 
 Tree View 연결의 핵심은 세 가지다.
 
 ```cpp
-SAssignNew(TreeView, STreeView<TSharedPtr<FAssetReferenceDummyNode>>)
+SAssignNew(TreeView, STreeView<TSharedPtr<FAssetReferenceTreeNode>>)
 	.TreeItemsSource(&TreeRootItems)
 	.OnGenerateRow(this, &SAssetReferenceInspectorWidget::OnGenerateTreeRow)
 	.OnGetChildren(this, &SAssetReferenceInspectorWidget::OnGetTreeChildren)
@@ -356,24 +375,41 @@ SAssignNew(TreeView, STreeView<TSharedPtr<FAssetReferenceDummyNode>>)
 
 `TreeItemsSource(&TreeRootItems)`는 Tree View의 최상위 아이템 배열을 지정한다. 이 배열은 주소로 전달되므로 `Construct` 내부 지역 변수가 아니라 위젯 클래스 멤버로 유지해야 한다. 지역 변수로 만들면 `Construct` 종료 후 주소가 무효가 된다.
 
+`TreeRootItems`의 내용이 바뀌어도 화면이 자동으로 즉시 바뀌지는 않는다. 분석 결과로 배열을 다시 구성한 뒤에는 `RequestTreeRefresh`로 Tree View 갱신을 요청한다.
+
+```cpp
+TreeView->RequestTreeRefresh();
+```
+
+이 요청 이후 Tree View는 `TreeItemsSource`를 다시 읽고, 필요한 row와 children을 콜백으로 다시 요청한다.
+
 `OnGenerateRow`는 데이터 노드 하나를 화면 row 하나로 변환하는 콜백 슬롯이다. 이 API가 받는 delegate는 `FOnGenerateRow` 계열이며, 아이템 하나와 부모 table을 받아 `TSharedRef<ITableRow>`를 반환하는 함수가 필요하다.
 
 현재 함수 형태:
 
 ```cpp
 TSharedRef<ITableRow> OnGenerateTreeRow(
-	TSharedPtr<FAssetReferenceDummyNode> Item,
+	TSharedPtr<FAssetReferenceTreeNode> Item,
 	const TSharedRef<STableViewBase>& OwnerTable) const;
 ```
 
-현재는 `FAssetReferenceDummyNode::Name`을 `STextBlock`으로 표시하는 `STableRow`를 반환한다.
+현재는 `FAssetReferenceTreeNode::DisplayName`을 `STextBlock`으로 표시하는 `STableRow`를 반환한다.
 
 ```cpp
-return SNew(STableRow<TSharedPtr<FAssetReferenceDummyNode>>, OwnerTable)
+return SNew(STableRow<TSharedPtr<FAssetReferenceTreeNode>>, OwnerTable)
 	[
 		SNew(STextBlock)
 			.Text(FText::FromString(DisplayName))
 	];
+```
+
+이 코드는 다음 의미다.
+
+```text
+데이터 노드 하나
+-> STableRow 한 줄 생성
+-> Row 내부에 STextBlock 배치
+-> TextBlock의 Text 값으로 DisplayName 표시
 ```
 
 `STableRow`는 `SListView`, `STreeView` 같은 테이블 계열 위젯에서 아이템 하나를 표현하는 화면 줄이다. 여기서 테이블 계열은 위계가 있다는 뜻이 아니라, 여러 데이터 아이템을 row 또는 tile 형태로 반복 표시하는 위젯 계열을 뜻한다.
@@ -389,16 +425,62 @@ OutChildren.Append(Item->Children);
 전체 흐름은 다음과 같다.
 
 ```text
-BuildDummyTree()
--> TreeRootItems에 루트 노드 구성
--> STreeView 생성
--> TreeItemsSource로 루트 배열 연결
--> row가 필요할 때 OnGenerateTreeRow 호출
+Analyze 클릭
+-> BuildDependencyTree()
+-> 선택 Asset을 루트 노드로 구성
+-> Asset Registry Dependencies를 자식 노드로 구성
+-> RefreshTree()
+-> TreeView가 row 필요 시 OnGenerateTreeRow 호출
 -> 노드를 펼칠 때 OnGetTreeChildren 호출
--> 반환된 자식들에 대해 다시 row 생성
 ```
 
 즉 Tree View는 데이터를 직접 해석해서 그리지 않는다. 데이터 소스와 콜백 슬롯을 통해 필요한 row와 children을 요청하면서 화면을 구성한다.
+
+## Dependency Node 표시 정책
+
+Asset Registry의 `GetDependencies`는 짧은 Asset 이름이 아니라 PackageName 목록을 반환한다.
+
+```text
+Input:
+  /Game/ARI_Demo/BP_Dummy
+
+Output:
+  /Game/ARI_Demo/M_Dummy
+  /Engine/...
+  /Script/...
+```
+
+Tree View에서는 긴 PackageName보다 짧은 AssetName이 읽기 좋다. 그래서 `CreateDependencyNode`는 PackageName을 기본 표시명으로 둔 뒤, 해당 Package에 AssetData가 있으면 첫 번째 AssetData의 AssetName을 표시명으로 사용한다.
+
+```cpp
+FString DisplayName = PackageName.ToString();
+
+TArray<FAssetData> AssetsInPackage;
+AssetRegistryModule.Get().GetAssetsByPackageName(PackageName, AssetsInPackage);
+
+if (AssetsInPackage.Num() > 0)
+{
+	DisplayName = AssetsInPackage[0].AssetName.ToString();
+}
+```
+
+정책:
+
+```text
+PackageName
+= 분석용 안정 식별자
+
+DisplayName
+= UI 표시용 짧은 이름
+
+AssetsInPackage.Num() == 0
+= AssetData를 찾지 못했으므로 PackageName 전체를 표시
+
+AssetsInPackage.Num() > 0
+= 현재 MVP에서는 첫 번째 AssetData의 AssetName을 표시
+```
+
+하나의 PackageName에서 여러 `FAssetData`가 반환될 수 있으므로, 첫 번째 AssetData를 대표 표시명으로 쓰는 것은 MVP 단계의 단순화다. 후속 개선에서는 Package short name과 AssetName이 같은 항목을 우선 선택하는 정책을 추가할 수 있다.
 
 ## Content Browser 선택 Asset 표시 흐름
 
