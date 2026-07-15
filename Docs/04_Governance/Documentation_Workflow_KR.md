@@ -277,6 +277,34 @@ PR 본문도 Issue와 동일하게 로컬 Metadata를 제거한 제출용 본문
 
 현재 또는 미래 PR은 본문 `Screenshots` 섹션에서 Docs 이미지를 링크한다.
 
+PR 본문에 스크린샷이 3장 이상 들어가면 소제목으로 그룹화한다. Before / After 비교가 있는 경우에는 이미지 위에 짧은 설명을 붙이고, 비교 대상별로 섹션을 나눈다.
+
+예:
+
+```markdown
+## Screenshots
+
+### Game Package Filter
+
+Before: Asset Registry dependency를 그대로 재귀 표시하면 Engine / Script dependency가 함께 나타난다.
+
+![Game Filter Before](...)
+
+After: `/Game` Package만 표시해 Demo Asset 간 참조 관계만 남긴다.
+
+![Game Filter After](...)
+
+### Cycle Guard
+
+Before: 순환 방어를 끄면 순환 참조가 MaxDepth까지 반복 전개된다.
+
+![Cycle Guard Before](...)
+
+After: 순환 후보 노드는 표시하되 하위 확장은 중단한다.
+
+![Cycle Guard After](...)
+```
+
 이미 merge된 과거 PR은 본문을 재작성하지 않고 댓글로 스크린샷을 보강한다. 과거 PR 보강 댓글에는 현재 프로젝트 상태에서 해당 PR의 완료 조건을 재확인한 기록임을 명시하고, Docs에 보관된 이미지 링크를 사용한다.
 
 ### PR 상태 기준
