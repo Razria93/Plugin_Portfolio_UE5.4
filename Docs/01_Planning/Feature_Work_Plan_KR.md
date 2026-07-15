@@ -19,9 +19,9 @@ Week는 일정과 목표를 설명하는 단위이고, Phase는 구현 범위를
 Phase 매핑:
 
 ```text
-1주차: Phase 1 ~ Phase 3
-2주차: Phase 4 ~ Phase 5
-3주차: Phase 6 ~ Phase 7
+1주차: Phase 1-3
+2주차: Phase 4-5
+3주차: Phase 6-7
 ```
 
 완료 단계 표현:
