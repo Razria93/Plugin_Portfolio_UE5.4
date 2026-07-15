@@ -105,6 +105,74 @@ SAssetReferenceInspectorWidget
 
 현재 `SLATE_BEGIN_ARGS` / `SLATE_END_ARGS`는 비어 있다. 즉, `SNew(SAssetReferenceInspectorWidget)`으로 생성할 때 외부에서 넘길 설정값이 아직 없다는 뜻이다. 이후 초기 선택 Asset, 표시 옵션, 콜백 등을 외부에서 넘겨야 할 때 Slate 인자를 추가한다.
 
+## Construct와 바인딩
+
+`Construct`는 위젯 인스턴스가 생성될 때 한 번 호출되는 초기 구성 함수다. UI가 갱신될 때마다 `Construct`가 다시 위에서 아래로 실행되는 것은 아니다.
+
+`Construct`에서 주로 하는 일:
+
+```text
+- UI 트리 생성
+- Slot과 레이아웃 구성
+- 이벤트 콜백 바인딩
+- 동적 속성 바인딩
+```
+
+예를 들어 `Pick Selected Asset` 버튼은 `Construct`에서 생성되고, 클릭 이벤트에 함수가 연결된다.
+
+```cpp
+SNew(SButton)
+	.Text(FText::FromString(TEXT("Pick Selected Asset")))
+	.OnClicked(this, &SAssetReferenceInspectorWidget::OnPickSelectedAssetClicked)
+```
+
+이 코드는 `Construct` 시점에 `OnPickSelectedAssetClicked`를 실행하는 것이 아니다. 버튼이 클릭되었을 때 호출할 함수를 등록한다.
+
+`STextBlock`의 텍스트도 고정값과 동적 바인딩을 구분한다.
+
+```cpp
+.Text(FText::FromString(TEXT("Selected Asset: None")))
+```
+
+위 코드는 고정 텍스트 값을 넣는다.
+
+```cpp
+.Text(this, &SAssetReferenceInspectorWidget::GetSelectedAssetText)
+```
+
+위 코드는 텍스트 값이 필요할 때 `GetSelectedAssetText`를 호출하도록 바인딩한다. `SelectedAssetData` 같은 위젯 상태가 바뀌면, Slate가 다음 표시 갱신 시점에 이 함수를 호출해 현재 상태 기준의 텍스트를 가져온다.
+
+정리하면 다음과 같다.
+
+```text
+Construct
+= 생성 시 한 번 UI 구조와 연결선을 만든다.
+
+OnClicked
+= 클릭 이벤트가 발생했을 때 호출할 함수 바인딩이다.
+
+Text(this, &...)
+= 텍스트 속성이 필요할 때 호출할 함수 바인딩이다.
+```
+
+`SButton::OnClicked`에 연결하는 함수는 `FReply`를 반환해야 한다.
+
+```cpp
+FReply OnPickSelectedAssetClicked();
+```
+
+`FReply`는 Slate 입력 이벤트 처리 결과를 담는 응답 객체다.
+
+```text
+FReply::Handled()
+= 이 위젯이 이벤트를 처리했다.
+
+FReply::Unhandled()
+= 이 위젯이 이벤트를 처리하지 않았다.
+```
+
+현재 `Pick Selected Asset` 버튼은 클릭 이벤트 안에서 Content Browser 선택 Asset을 가져오고 `FReply::Handled()`를 반환한다.
+
 ## Slot과 배치
 
 Slate 레이아웃 컨테이너는 자식 위젯을 `Slot` 단위로 받는다.
@@ -288,7 +356,17 @@ SAssignNew(TreeView, STreeView<TSharedPtr<FAssetReferenceDummyNode>>)
 
 `TreeItemsSource(&TreeRootItems)`는 Tree View의 최상위 아이템 배열을 지정한다. 이 배열은 주소로 전달되므로 `Construct` 내부 지역 변수가 아니라 위젯 클래스 멤버로 유지해야 한다. 지역 변수로 만들면 `Construct` 종료 후 주소가 무효가 된다.
 
-`OnGenerateRow`는 데이터 노드 하나를 화면 row 하나로 변환하는 콜백 슬롯이다. 현재는 `FAssetReferenceDummyNode::Name`을 `STextBlock`으로 표시하는 `STableRow`를 반환한다.
+`OnGenerateRow`는 데이터 노드 하나를 화면 row 하나로 변환하는 콜백 슬롯이다. 이 API가 받는 delegate는 `FOnGenerateRow` 계열이며, 아이템 하나와 부모 table을 받아 `TSharedRef<ITableRow>`를 반환하는 함수가 필요하다.
+
+현재 함수 형태:
+
+```cpp
+TSharedRef<ITableRow> OnGenerateTreeRow(
+	TSharedPtr<FAssetReferenceDummyNode> Item,
+	const TSharedRef<STableViewBase>& OwnerTable) const;
+```
+
+현재는 `FAssetReferenceDummyNode::Name`을 `STextBlock`으로 표시하는 `STableRow`를 반환한다.
 
 ```cpp
 return SNew(STableRow<TSharedPtr<FAssetReferenceDummyNode>>, OwnerTable)
@@ -322,6 +400,29 @@ BuildDummyTree()
 
 즉 Tree View는 데이터를 직접 해석해서 그리지 않는다. 데이터 소스와 콜백 슬롯을 통해 필요한 row와 children을 요청하면서 화면을 구성한다.
 
+## Content Browser 선택 Asset 표시 흐름
+
+`Pick Selected Asset` 버튼은 Content Browser에서 현재 선택된 Asset을 가져와 위젯 상태로 저장한다.
+
+핵심 흐름:
+
+```text
+Pick Selected Asset 클릭
+-> OnPickSelectedAssetClicked 호출
+-> FContentBrowserModule 로드
+-> IContentBrowserSingleton::GetSelectedAssets 호출
+-> 첫 번째 FAssetData를 SelectedAssetData에 저장
+-> GetSelectedAssetText가 선택 Asset 이름과 PackageName을 표시
+```
+
+이번 단계에서는 다중 선택을 분석하지 않고 첫 번째 Asset만 사용한다. 선택된 Asset이 없으면 `SelectedAssetData`를 빈 `FAssetData`로 초기화하고 `Selected Asset: None`을 표시한다.
+
+```cpp
+SelectedAssetData = SelectedAssets.Num() > 0 ? SelectedAssets[0] : FAssetData();
+```
+
+`FContentBrowserModule`, `IContentBrowserSingleton`, `FModuleManager`는 함수 구현 내부에서만 필요하므로 `.cpp`에 include한다. `FAssetData`는 위젯의 멤버 필드 타입으로 헤더에 노출되므로 헤더에서 `AssetRegistry/AssetData.h`를 include한다.
+
 ## 현재 코드에서 의도한 역할
 
 `FAssetReferenceInspectorModule`은 더 이상 탭 내부 UI를 직접 구성하지 않는다.
@@ -340,7 +441,6 @@ SAssetReferenceInspectorWidget
 
 ```text
 - 선택 Asset 표시 상태 관리
-- Pick Selected Asset 버튼 이벤트 연결
 - Analyze 버튼 이벤트 연결
 - Dependencies / Referencers 모드 선택 UI
 - Max Depth 입력 UI

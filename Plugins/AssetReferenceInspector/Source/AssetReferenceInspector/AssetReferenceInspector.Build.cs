@@ -13,6 +13,8 @@ public class AssetReferenceInspector : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
+			"AssetRegistry",
+			"ContentBrowser",
 			"CoreUObject",
 			"Engine",
 			"InputCore",

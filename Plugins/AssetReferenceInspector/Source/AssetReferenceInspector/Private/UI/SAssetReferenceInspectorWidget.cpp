@@ -1,5 +1,10 @@
 #include "UI/SAssetReferenceInspectorWidget.h"
 
+#include "Modules/ModuleManager.h"
+
+#include "ContentBrowserModule.h"
+#include "IContentBrowserSingleton.h"
+
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SSeparator.h"
@@ -42,7 +47,7 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 						.Padding(0.0f, 0.0f, 0.0f, 8.0f)
 						[
 							SNew(STextBlock)
-								.Text(FText::FromString(TEXT("Selected Asset: None")))
+								.Text(this, &SAssetReferenceInspectorWidget::GetSelectedAssetText)
 						]
 
 						+ SVerticalBox::Slot()
@@ -56,6 +61,7 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 								[
 									SNew(SButton)
 										.Text(FText::FromString(TEXT("Pick Selected Asset")))
+										.OnClicked(this, &SAssetReferenceInspectorWidget::OnPickSelectedAssetClicked)
 								]
 
 								+ SUniformGridPanel::Slot(1, 0)
@@ -95,6 +101,31 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 			TreeView->SetItemExpansion(RootItem, true);
 		}
 	}
+}
+
+FReply SAssetReferenceInspectorWidget::OnPickSelectedAssetClicked()
+{
+	FContentBrowserModule& ContentBrowserModule = FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
+
+	TArray<FAssetData> SelectedAssets;
+	ContentBrowserModule.Get().GetSelectedAssets(SelectedAssets);
+
+	SelectedAssetData = SelectedAssets.Num() > 0 ? SelectedAssets[0] : FAssetData();
+
+	return FReply::Handled();
+}
+
+FText SAssetReferenceInspectorWidget::GetSelectedAssetText() const
+{
+	if (!SelectedAssetData.IsValid())
+	{
+		return FText::FromString(TEXT("Selected Asset: None"));
+	}
+
+	return FText::FromString(FString::Printf(
+		TEXT("Selected Asset: %s (%s)"),
+		*SelectedAssetData.AssetName.ToString(),
+		*SelectedAssetData.PackageName.ToString()));
 }
 
 void SAssetReferenceInspectorWidget::BuildDummyTree()
