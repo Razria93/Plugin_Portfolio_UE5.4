@@ -462,3 +462,78 @@ Total execution time: 0.61 seconds
 - `M_Dummy` 선택 후 `Analyze` 클릭 시 기존과 동일하게 `T_Dummy_Color` Dependency 표시 확인
 - `T_Dummy_Color` 선택 후 `Analyze` 클릭 시 기존과 동일하게 `/Script/InterchangeEngine` Dependency 표시 확인
 - 이번 변경은 분석 데이터 구조 분리이므로 UI의 시각적 변화는 없음
+
+### AssetReferenceInspector Max Depth 재귀 Tree 생성
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+일반 실행은 UBT 로그 백업 단계에서 `UnauthorizedAccessException`으로 실패했다. 동일 명령을 권한 상승으로 재실행해 실제 컴파일/링크를 확인했다.
+
+UBT 출력 기준:
+
+```text
+[1/7] Link [x64] UnrealEditor-Portfolio_PlugIn-0002.lib
+[2/7] Link [x64] UnrealEditor-Portfolio_PlugIn-0002.dll
+[3/7] Compile [x64] Module.AssetReferenceInspector.cpp
+[4/7] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[5/7] Link [x64] UnrealEditor-AssetReferenceInspector-0002.lib
+[6/7] Link [x64] UnrealEditor-AssetReferenceInspector-0002.dll
+[7/7] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 5.93 seconds
+```
+
+#### 확인 범위
+
+- `FAssetReferenceAnalysisOptions::MaxDepth` 기본값을 사용하는 상태에서 빌드 확인
+- `BuildDependencyChildren` 재귀 Dependencies Tree 생성 상태에서 빌드 확인
+- `FAssetReferenceTreeNode::Depth` 값을 노드 생성에 반영하는 상태에서 빌드 확인
+- `FAssetReferenceTreeNode::bIsCircular` 값을 순환 후보 노드에 기록하는 상태에서 빌드 확인
+- `/Game` Package만 표시하는 최소 필터 적용 상태에서 빌드 확인
+- `SAssetReferenceInspectorWidget.h`의 helper/state 섹션을 UI callbacks, UI text, Analysis, Tree view 기준으로 정리한 상태에서 빌드 확인
+
+#### 에디터 UI 확인
+
+- `BP_Dummy` 선택 후 `Pick Selected Asset`, `Analyze` 클릭 시 `BP_Dummy -> M_Dummy -> T_Dummy_Color` 재귀 Tree 표시 확인
+- `M_Dummy` 선택 후 `Analyze` 클릭 시 `M_Dummy -> T_Dummy_Color` 표시 확인
+- `T_Dummy_Color` 선택 후 `Analyze` 클릭 시 `/Script/InterchangeEngine`이 필터링되어 root만 표시되는 것 확인
+- `/Script/NavigationSystem`, `Cube`, `WorldGridMaterial`이 결과 Tree에서 제외되는 것 확인
+- 순환 방어 비활성화 상태에서 `BP_CycleA -> BP_CycleB -> BP_CycleA -> BP_CycleB -> BP_CycleA`처럼 MaxDepth까지 반복 전개되는 것을 확인
+- 순환 방어 활성화 상태에서 `BP_CycleA -> BP_CycleB -> BP_CycleA`까지만 표시되고, 마지막 `BP_CycleA` 아래로는 확장되지 않는 것을 확인
+
+#### Demo Assets
+
+- `Content/ARI_Demo/Validation/BP_CycleA.uasset`
+- `Content/ARI_Demo/Validation/BP_CycleB.uasset`
+
+두 Asset은 순환 dependency 검증 재현을 위한 Demo Host 전용 Asset이다. 플러그인 배포 단위인 `Plugins/AssetReferenceInspector`에는 포함되지 않는다.
+
+#### Screenshots
+
+![Game Filter Before](Screenshots/feature_ari_max_depth_tree/game_filter_before.png)
+
+![Game Filter After](Screenshots/feature_ari_max_depth_tree/game_filter_after.png)
+
+![Cycle Guard Before](Screenshots/feature_ari_max_depth_tree/cycle_guard_before.png)
+
+![Cycle Guard After](Screenshots/feature_ari_max_depth_tree/cycle_guard_after.png)
+
+#### 미확인
+
+- Max Depth 입력 UI는 이번 범위가 아니므로 미검증
+- 정식 Engine / Plugin Content 표시 옵션은 이번 범위가 아니므로 미검증
