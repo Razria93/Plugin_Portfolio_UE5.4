@@ -337,8 +337,23 @@ Phase 2는 Unreal Editor의 `에디터 독립형 창` 템플릿을 참고하되,
 주요 타입:
 
 - `EAssetReferenceMode`
-- `FAssetReferenceNode`
+- `FAssetReferenceTreeNode`
 - 분석 옵션 구조체
+
+완료 기준:
+
+- 분석 Tree 노드 타입이 UI 위젯 헤더에서 `Private/Analysis` 영역으로 분리된다.
+- 분석 방향과 실행 옵션 타입이 후속 Phase 4 확장을 받을 수 있는 형태로 정의된다.
+- 기존 Dependencies Depth 1 조회 결과와 Tree View 표시 동작이 유지된다.
+
+상태:
+
+- 완료.
+- `FAssetReferenceTreeNode`를 `Private/Analysis/AssetReferenceTypes.h`로 분리했다.
+- `EAssetReferenceMode`와 `FAssetReferenceAnalysisOptions`를 추가했다.
+- `SAssetReferenceInspectorWidget`은 새 Analysis 타입을 include해 기존 Tree View 동작을 유지한다.
+- `Portfolio_PlugInEditor` 빌드는 성공했다.
+- 에디터에서 `BP_Dummy`, `M_Dummy`, `T_Dummy_Color` 기준 기존 Dependencies Depth 1 결과가 유지되는 것을 수동 확인했다.
 
 커밋 예시:
 
