@@ -386,3 +386,11 @@ Total execution time: 8.24 seconds
 - `M_Dummy` 선택 후 `Analyze` 클릭 시 Tree 루트에 `M_Dummy`가 표시되고, 자식 노드로 `T_Dummy_Color`가 표시되는 것을 확인했다.
 - `T_Dummy_Color` 선택 후 `Analyze` 클릭 시 Tree 루트에 `T_Dummy_Color`가 표시되고, 자식 노드로 `/Script/InterchangeEngine`이 표시되는 것을 확인했다.
 - 선택 Asset이 없는 상태에서 `Analyze` 클릭 시 안전하게 처리되는지는 아직 미확인이다.
+
+#### Screenshots
+
+![BP_Dummy Dependencies](Screenshots/feature_ari_dependencies_depth1/bp_dummy_dependencies.png)
+
+![M_Dummy Dependencies](Screenshots/feature_ari_dependencies_depth1/m_dummy_dependencies.png)
+
+![T_Dummy_Color Dependencies](Screenshots/feature_ari_dependencies_depth1/t_dummy_color_dependencies.png)
