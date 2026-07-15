@@ -37,12 +37,14 @@
 
 ## 03_Verification
 
-빌드, 에디터 실행, 기능별 확인 결과를 기록하는 문서다. 직접 확인하지 못한 항목은 성공으로 쓰지 않고 `미확인`으로 남긴다.
+빌드, 에디터 실행, 기능별 확인 결과와 검증 스크린샷을 기록하는 문서다. 직접 확인하지 못한 항목은 성공으로 쓰지 않고 `미확인`으로 남긴다.
 
 - `03_Verification/README_KR.md`
-  - 검증 기록을 작성하는 기준을 정리한다.
+  - 검증 기록과 스크린샷 보관 기준을 정리한다.
 - `03_Verification/Build_Verification_Log_KR.md`
   - UE 5.4 빌드와 에디터 UI 확인 결과를 기록한다.
+- `03_Verification/Screenshots/`
+  - PR 또는 검증 로그에 사용할 최종 검증 스크린샷을 보관한다.
 
 ## 04_Governance
 
@@ -67,6 +69,12 @@
   - `gh issue create --body-file`에 사용할 Issue 본문 초안을 둔다.
 - `LocalNotes/pr-drafts/`
   - `gh pr create --body-file`에 사용할 PR 본문 초안을 둔다.
+- `LocalNotes/github-pr-comments/`
+  - 과거 PR 보강 댓글 같은 GitHub 댓글 초안을 둔다.
+- `LocalNotes/screenshots/`
+  - Docs로 승격하기 전 임시 스크린샷을 둔다.
+- `LocalNotes/templates/`
+  - LocalNotes 문서 작성을 위한 로컬 템플릿을 둔다.
 
 ## 향후 추가 예정
 

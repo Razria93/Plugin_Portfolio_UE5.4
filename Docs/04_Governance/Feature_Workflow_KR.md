@@ -223,6 +223,16 @@ C++ 코드, `.uplugin`, `Build.cs`, `.uproject` 변경은 가능한 경우 UE 5.
 
 검증 결과는 작업 보고 또는 `Docs/03_Verification`에 남긴다.
 
+### 검증 스크린샷
+
+UI 변화나 에디터 동작이 feature 완료 기준에 포함되면 검증 스크린샷 필요 여부를 확인한다.
+
+- 임시 캡처는 `LocalNotes/screenshots`에 둔다.
+- PR 검증 증거로 사용할 최종 이미지는 `Docs/03_Verification/Screenshots/<branch-name>/`로 승격한다.
+- 현재 또는 미래 PR은 본문 `Screenshots` 섹션에 Docs 이미지 링크를 포함한다.
+- 이미 merge된 과거 PR은 본문을 재작성하지 않고 댓글로 Docs 이미지 링크를 남긴다.
+- 과거 PR 보강 댓글에는 현재 프로젝트 상태에서 완료 조건을 재확인한 기록임을 명시한다.
+
 ## 문서 업데이트 기준
 
 작업 종료 시 다음 문서 업데이트가 필요한지 확인한다.
