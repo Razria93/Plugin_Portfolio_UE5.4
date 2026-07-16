@@ -136,6 +136,15 @@ PR은 다음 목적을 가진다.
 
 Codex는 사용자가 명시적으로 요청하기 전에는 `git push`, `gh pr create`, `gh pr merge`를 실행하지 않는다. 작업 종료 시 필요한 명령과 PR 본문 초안을 제안한다.
 
+PR 생성 또는 수정 전에는 다음 흐름을 따른다.
+
+1. `LocalNotes/github/draft/prs`에서 PR 본문 초안을 작성한다.
+2. 같은 카테고리의 최신 GitHub PR 본문 형식을 확인한다.
+3. `LocalNotes/github/public/prs`에 실제 게시할 본문을 만든다.
+4. `gh pr create` 또는 `gh pr edit`에는 `LocalNotes/github/public/prs` 파일만 사용한다.
+5. PR title, base/head, draft 여부 같은 CLI 인자는 draft Metadata 또는 작업 보고에 별도로 둔다.
+6. 직접 GitHub에서 PR 본문을 수정했거나 작업 중 불일치를 발견했다면 대응되는 `public` 파일도 갱신한다.
+
 ### Draft PR / Ready for review 기준
 
 다음 항목이 남아 있으면 PR은 Draft로 둔다.
@@ -153,6 +162,7 @@ Codex는 사용자가 명시적으로 요청하기 전에는 `git push`, `gh pr 
 - `Related Issues`에서 상위 Plan Issue는 `References`, 해당 PR로 완료되는 Architecture / Verification Issue는 `Closes`로 연결된다.
 - PR 본문에 포함한 이미지와 링크가 GitHub에서 렌더링된다.
 - GitHub 게시 전 같은 카테고리의 공개 PR 본문 형식을 확인했다.
+- PR 본문은 `LocalNotes/github/public/prs` 파일과 GitHub 본문이 일치한다.
 
 ### PR 종료 체크리스트
 
@@ -164,6 +174,7 @@ PR merge 전:
 - 검증 스크린샷 필요 여부를 확인했는가
 - 문서 링크와 `Unverified / Limitations`가 현재 상태와 일치하는가
 - GitHub 공개 기록 확인 기준은 `Docs/04_Governance/Documentation_Workflow_KR.md`를 따랐는가
+- `LocalNotes/github/public/prs` 본문과 GitHub PR 본문이 일치하는가
 
 PR merge 후:
 
@@ -204,6 +215,9 @@ Issue 본문은 다음 원칙을 따른다.
 - 상세 내용은 `Docs/` 문서 링크로 연결한다.
 - PR 본문에는 `Related Issues` 섹션을 두고 `References` 또는 `Closes` 관계를 명시한다.
 - 게시 전 같은 카테고리의 GitHub 공개 Issue 형식을 확인한다.
+- Issue와 Plan Issue 댓글은 `LocalNotes/github/draft/issues`에서 초안을 작성한 뒤 `LocalNotes/github/public/issues` 제출용 본문으로 변환한다.
+- `gh issue create`, `gh issue edit`, `gh issue comment`에는 `LocalNotes/github/public/issues` 파일만 사용한다.
+- Plan Issue 본문은 `issues/plan`, Architecture Issue 본문은 `issues/architecture`, Verification Issue 본문은 `issues/verification`, Plan Issue 댓글은 `issues/plan-comments`에 둔다.
 
 Feature 종료 시 상위 `[Plan]` Issue가 있으면 다음을 반복 확인한다.
 
@@ -212,6 +226,7 @@ Feature 종료 시 상위 `[Plan]` Issue가 있으면 다음을 반복 확인한
 - PR 본문에 상위 Plan Issue는 `References`, 브랜치 단위 Architecture / Verification Issue는 필요한 경우 `Closes`로 연결했는가
 - Issue label을 문서 책임에 맞게 적용했는가
 - Plan Issue 누적 댓글은 기존 GitHub 공개 댓글 형식을 유지했는가
+- Plan Issue 누적 댓글과 feature 완료 로그 댓글의 `public` 본문이 GitHub 댓글과 일치하는가
 
 Plan Issue의 첫 진행 댓글은 현재까지 완료된 Phase 전체를 보여주는 진행판으로 본다. 각 feature 완료 로그는 그 아래에 새 댓글로 누적한다.
 

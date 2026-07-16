@@ -61,16 +61,13 @@
 
 ## LocalNotes
 
-`LocalNotes/`는 ignored 되는 작업 공간이다. mini plan, GitHub Issue 초안, PR 본문 초안, 학습 메모처럼 공개 문서로 커밋하지 않을 자료를 둔다.
+`LocalNotes/`는 ignored 되는 작업 공간이다. mini plan, GitHub 게시용 draft/public 본문, 학습 메모처럼 공개 문서로 커밋하지 않을 자료를 둔다.
 
 - `LocalNotes/feature-plans/`
   - feature 시작 전 mini plan을 둔다.
-- `LocalNotes/github-issues/`
-  - `gh issue create --body-file`에 사용할 Issue 본문 초안을 둔다.
-- `LocalNotes/pr-drafts/`
-  - `gh pr create --body-file`에 사용할 PR 본문 초안을 둔다.
-- `LocalNotes/github-pr-comments/`
-  - 과거 PR 보강 댓글 같은 GitHub 댓글 초안을 둔다.
+- `LocalNotes/github/`
+  - GitHub Issue, PR, PR 댓글, Plan Issue 댓글의 draft와 public 제출용 본문을 둔다.
+  - `gh` CLI 업로드에는 `LocalNotes/github/public` 파일만 사용한다.
 - `LocalNotes/screenshots/`
   - Docs로 승격하기 전 임시 스크린샷을 둔다.
 - `LocalNotes/templates/`
