@@ -21,15 +21,20 @@ private:
 	// UI callbacks
 	FReply OnPickSelectedAssetClicked();
 	FReply OnAnalyzeClicked();
+	FReply OnDependenciesModeClicked();
+	FReply OnReferencersModeClicked();
 
 	// UI text
 	FText GetSelectedAssetText() const;
+	FText GetCurrentModeText() const;
 
 	// Analysis
-	void BuildDependencyTree();
-	void BuildDependencyChildren(TSharedPtr<FAssetReferenceTreeNode> ParentNode, TArray<FName>& CurrentPath) const;
-	TSharedPtr<FAssetReferenceTreeNode> CreateDependencyNode(FName PackageName, int32 Depth, bool bIsCircular = false) const;
-	bool ShouldIncludeDependencyPackage(FName PackageName) const;
+	void BuildRelationTree();
+	void BuildRelationChildren(TSharedPtr<FAssetReferenceTreeNode> ParentNode, TArray<FName>& CurrentPath) const;
+	void GetRelatedPackageNames(FName PackageName, TArray<FName>& OutPackageNames) const;
+	TSharedPtr<FAssetReferenceTreeNode> CreateRelationNode(FName PackageName, int32 Depth, bool bIsCircular = false) const;
+	bool ShouldIncludeRelatedPackage(FName PackageName) const;
+	FString GetEmptyRelationMessage() const;
 
 	// Tree view
 	void RefreshTree();
