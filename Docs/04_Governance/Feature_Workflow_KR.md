@@ -198,13 +198,11 @@ Issue는 Docs 원문을 복사하는 공간이 아니라 GitHub 상의 추적과
 
 권장 Issue 유형:
 
-- `[Plan]`: 전체 목표, MVP 범위, 진행 원칙, 관련 Docs 링크
 - `[Architecture]`: 구조 요약, 주요 설계 판단, 관련 Docs 링크
 - `[Verification]`: 대상 브랜치, 검증 항목, 결과, 특이사항, 관련 Docs 링크
 
 권장 label:
 
-- `[Plan]`: `work plan`
 - `[Architecture]`: `system architecture`
 - `[Verification]`: `verification log`
 
@@ -215,9 +213,10 @@ Issue 본문은 다음 원칙을 따른다.
 - 상세 내용은 `Docs/` 문서 링크로 연결한다.
 - PR 본문에는 `Related Issues` 섹션을 두고 `References` 또는 `Closes` 관계를 명시한다.
 - 게시 전 같은 카테고리의 GitHub 공개 Issue 형식을 확인한다.
-- Issue와 Plan Issue 댓글은 `LocalNotes/github/draft/issues`에서 초안을 작성한 뒤 `LocalNotes/github/public/issues` 제출용 본문으로 변환한다.
+- Architecture / Verification Issue와 Plan Issue 댓글은 `LocalNotes/github/draft/issues`에서 초안을 작성한 뒤 `LocalNotes/github/public/issues` 제출용 본문으로 변환한다.
 - `gh issue create`, `gh issue edit`, `gh issue comment`에는 `LocalNotes/github/public/issues` 파일만 사용한다.
-- Plan Issue 본문은 `issues/plan`, Architecture Issue 본문은 `issues/architecture`, Verification Issue 본문은 `issues/verification`, Plan Issue 댓글은 `issues/plan-comments`에 둔다.
+- 브랜치마다 새 Plan Issue 본문은 만들지 않는다. 계획 문서는 mini plan과 `Docs/01_Planning`에서 관리한다.
+- Architecture Issue 본문은 `issues/architecture`, Verification Issue 본문은 `issues/verification`, Plan Issue 댓글은 `issues/plan-comments`에 둔다.
 
 Feature 종료 시 상위 `[Plan]` Issue가 있으면 다음을 반복 확인한다.
 
@@ -381,35 +380,44 @@ Amend 권장:
 ## Mini Plan Template
 
 ```markdown
-# Feature: <name>
+# Mini Plan: <title>
 
-## 목표
-- 
+## Metadata
+- Type: Mini Plan
+- Status: Draft
+- Branch:
+- Related Phase:
+- Related PR:
+- Related Issues:
+- Source Docs:
 
-## 범위
-- 포함:
-- 제외:
+## Goal
+- <goal>
 
-## 예상 변경 파일
-- 
+## Scope
+포함:
+- <included scope>
 
-## 구현 단위
-1. 
-2. 
-3. 
+제외:
+- <excluded scope>
 
-## 검증 방법
-- 빌드:
-- 에디터 확인:
-- 미확인 가능성:
+## Target Files
+- <target files>
 
-## 문서 업데이트 필요 여부
-- README:
-- BUILD:
-- Docs:
-- Known Limitations:
+## Implementation Steps
+1. <step>
+2. <step>
+3. <step>
 
-## 예상 커밋 단위
-- 
+## Verification
+- Build:
+- Editor:
+- Unverified:
+
+## Documentation Check
+- <documentation updates>
+
+## Commit Plan
+- <commit plan>
 ```
 

@@ -66,7 +66,7 @@
 - `LocalNotes/mini-plans/`
   - feature 시작 전 mini plan을 둔다.
 - `LocalNotes/github/`
-  - GitHub Issue, PR, PR 댓글, Plan Issue 댓글의 draft와 public 제출용 본문을 둔다.
+  - GitHub Architecture / Verification Issue, PR, PR 댓글, 상위 Plan Issue 댓글의 draft와 public 제출용 본문을 둔다.
   - `gh` CLI 업로드에는 `LocalNotes/github/public` 파일만 사용한다.
 - `LocalNotes/screenshots/`
   - Docs로 승격하기 전 임시 스크린샷을 둔다.
@@ -77,4 +77,3 @@
 
 - `05_Demo/Portfolio_Demo_KR.md`
   - 포트폴리오 프로젝트 적용 시연 시나리오와 촬영 체크리스트를 정리한다.
-
