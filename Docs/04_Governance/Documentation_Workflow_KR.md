@@ -377,7 +377,25 @@ PR 생성 또는 수정에는 `LocalNotes/github/public/prs` 파일만 사용한
 
 스크린샷 파일명은 snake_case를 사용하고 공백을 두지 않는다.
 
-현재 또는 미래 PR은 본문 `Screenshots` 섹션에서 Docs 이미지를 링크한다.
+현재 또는 미래 PR은 본문 `Screenshots` 섹션에서 Docs 이미지를 링크한다. GitHub PR / Issue / 댓글로 게시될 문서는 draft 단계부터 로컬 상대 경로가 아니라 GitHub에서 바로 렌더링되는 repo 이미지 직접 주소를 사용한다.
+
+PR 작성/검토 중인 브랜치의 이미지는 브랜치 기준 직접 주소를 사용한다.
+
+```markdown
+![Description](https://github.com/Razria93/Plugin_Portfolio_UE5.4/blob/<git-branch>/Docs/03_Verification/Screenshots/<screenshot-folder>/<image>.png?raw=true)
+```
+
+merge 이후 장기 보존용 public 본문, 과거 PR 보강 댓글, Issue 댓글은 `main` 기준 직접 주소를 사용한다.
+
+```markdown
+![Description](https://github.com/Razria93/Plugin_Portfolio_UE5.4/blob/main/Docs/03_Verification/Screenshots/<screenshot-folder>/<image>.png?raw=true)
+```
+
+`Docs/03_Verification/Build_Verification_Log_KR.md`처럼 저장소 내부 문서에서만 상대 경로를 사용한다.
+
+```markdown
+![Description](Screenshots/<screenshot-folder>/<image>.png)
+```
 
 PR 본문에 스크린샷이 3장 이상 들어가면 소제목으로 그룹화한다. Before / After 비교가 있는 경우에는 이미지 위에 짧은 설명을 붙이고, 비교 대상별로 섹션을 나눈다.
 
@@ -513,4 +531,3 @@ ARI-V02: feature/ari-ui-shell Verification
 - 검증 결과나 제한 사항으로 추적해야 한다.
 
 단순 Issue 본문 초안, PR 작성 초안, 개인 학습 과정은 승격하지 않는다.
-
