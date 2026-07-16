@@ -266,9 +266,9 @@ PR body와 Verification Issue는 `Screenshots` 섹션을 항상 둔다.
 
 이 문서는 public 본문의 섹션 순서, 금지 요소, 문체, `Screenshots` 구조만 검수한다.
 
-draft 작성, public 변환, validator 실행, 원격 게시 승인, `gh` 실행 순서는 `Docs/04_Governance/Documentation_Authoring_Workflow_KR.md`를 따른다.
+draft 작성, public 변환, 원격 게시 승인, `gh` 실행 순서는 `Docs/04_Governance/Documentation_Authoring_Workflow_KR.md`를 따른다.
 
-현재 로컬 validator는 다음 항목을 검사한다.
+로컬 작업장에 `LocalNotes/tools/validate_github_public_docs.ps1`가 있으면 다음 항목을 자동 검사한다. `LocalNotes/`는 ignored 영역이므로 clean checkout 기준 필수 도구로 간주하지 않는다.
 
 - PR body 섹션 순서와 `Screenshots` 구조
 - Architecture Issue H1 제목, 섹션 순서, 공통 금지 문구
@@ -278,7 +278,7 @@ draft 작성, public 변환, validator 실행, 원격 게시 승인, `gh` 실행
 - PR Screenshot Comment 섹션 구조, 이미지별 `###` 제목, 설명문, 이미지 URL
 - `LocalNotes/templates`의 고정 Issue 번호 사용 여부
 
-validator에서 warning으로 출력되는 항목은 예외 가능성이 있는 스타일 판단이므로, 원격 반영 전 수동으로 최종 판단한다. validator는 의미 품질을 보장하지 않으므로 Architecture Issue의 설계 타당성, Summary 품질, 링크 적합성 같은 내용 판단은 별도 수동 검토로 확인한다.
+validator에서 warning으로 출력되는 항목은 예외 가능성이 있는 스타일 판단이므로, 원격 반영 전 수동으로 최종 판단한다. validator가 있더라도 의미 품질을 보장하지 않으므로 Architecture Issue의 설계 타당성, Summary 품질, 링크 적합성 같은 내용 판단은 별도 수동 검토로 확인한다.
 
 ## 수동 검토 결과 기록
 

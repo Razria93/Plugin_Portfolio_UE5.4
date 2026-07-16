@@ -76,13 +76,17 @@ C++ 변경이 있으면 작업 종료 전 `Docs/02_Architecture/Code_Organizatio
 - Feature 작업 흐름: `Docs/04_Governance/Feature_Workflow_KR.md`
 - 코드 구성 규칙: `Docs/02_Architecture/Code_Organization_KR.md`
 
-GitHub public 본문은 draft가 아니라 `LocalNotes/github/public` 파일을 기준으로 준비한다. GitHub 원격 게시 또는 수정 전에는 다음 검증을 실행한다.
+GitHub public 본문은 draft가 아니라 `LocalNotes/github/public` 파일을 기준으로 준비한다. GitHub 원격 게시 또는 수정 전에는 `Docs/04_Governance/GitHub_Public_Body_Validation_Rules_KR.md` 기준을 수동으로 확인한다.
+
+로컬 작업장에 validator가 있으면 다음 검증도 함께 실행한다. `LocalNotes/`는 ignored 영역이므로 clean checkout에서는 이 명령이 없을 수 있다.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File LocalNotes/tools/validate_github_public_docs.ps1
+if (Test-Path LocalNotes/tools/validate_github_public_docs.ps1) {
+    powershell -ExecutionPolicy Bypass -File LocalNotes/tools/validate_github_public_docs.ps1
+}
 ```
 
-자동 validator 통과는 충분조건이 아니다. PR body, Issue body, Plan 댓글, PR 댓글은 `Docs/04_Governance/GitHub_Public_Body_Validation_Rules_KR.md`의 섹션 순서와 금지 요소를 수동으로도 확인한다.
+자동 validator 통과는 충분조건이 아니다. PR body, Issue body, Plan 댓글, PR 댓글은 섹션 순서와 금지 요소를 수동으로도 확인한다.
 
 원격 반영 전에는 대상 Issue / PR / 댓글, source public 파일, 실행할 `gh` 명령, 예상 변경 요약을 사용자에게 제시한다. 사용자가 승인하기 전에는 `gh` 명령을 실행하지 않는다.
 
