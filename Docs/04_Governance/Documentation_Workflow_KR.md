@@ -48,7 +48,7 @@ GitHub Issue, PR, PR 댓글, Plan Issue 댓글의 작성/게시 작업장은 `Do
 
 ```text
 LocalNotes/
-  feature-plans/
+  mini-plans/
   github/
     draft/
     public/
@@ -169,7 +169,7 @@ LocalNotes/github/
 예:
 
 ```text
-dependencies_depth1_feature_plan_KR.md
+dependencies_depth1_mini_plan_KR.md
 dependencies_depth1_pr_draft_KR.md
 dependencies_depth1_architecture_issue_KR.md
 dependencies_depth1_verification_issue_KR.md
@@ -514,3 +514,4 @@ ARI-V02: feature/ari-ui-shell Verification
 - 검증 결과나 제한 사항으로 추적해야 한다.
 
 단순 Issue 본문 초안, PR 작성 초안, 개인 학습 과정은 승격하지 않는다.
+

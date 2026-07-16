@@ -28,7 +28,7 @@ Mini plan이 불필요한 작업:
 - 작은 include 정리
 - 동작 변화 없는 주석 또는 formatting 수정
 
-Mini plan은 `LocalNotes/feature-plans/` 아래에 작성한다. 로컬 학습과 진행용 문서이므로 커밋 대상이 아니다.
+Mini plan은 `LocalNotes/mini-plans/` 아래에 작성한다. 로컬 학습과 진행용 문서이므로 커밋 대상이 아니다.
 
 ## Feature 범위 판단 기준
 
@@ -378,7 +378,7 @@ Amend 권장:
 - 
 ```
 
-## Feature Plan Template
+## Mini Plan Template
 
 ```markdown
 # Feature: <name>
@@ -412,3 +412,4 @@ Amend 권장:
 ## 예상 커밋 단위
 - 
 ```
+

@@ -63,7 +63,7 @@
 
 `LocalNotes/`는 ignored 되는 작업 공간이다. mini plan, GitHub 게시용 draft/public 본문, 학습 메모처럼 공개 문서로 커밋하지 않을 자료를 둔다.
 
-- `LocalNotes/feature-plans/`
+- `LocalNotes/mini-plans/`
   - feature 시작 전 mini plan을 둔다.
 - `LocalNotes/github/`
   - GitHub Issue, PR, PR 댓글, Plan Issue 댓글의 draft와 public 제출용 본문을 둔다.
@@ -77,3 +77,4 @@
 
 - `05_Demo/Portfolio_Demo_KR.md`
   - 포트폴리오 프로젝트 적용 시연 시나리오와 촬영 체크리스트를 정리한다.
+

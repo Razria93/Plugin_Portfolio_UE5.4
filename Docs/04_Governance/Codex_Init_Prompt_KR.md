@@ -25,7 +25,7 @@
 - Asset Size는 런타임 메모리가 아니라 디스크 파일 기준 추정값으로 표현합니다.
 
 Feature 작업 규칙:
-- 주요 feature는 작업 전 `LocalNotes/feature-plans/`에 mini plan을 작성한 뒤 진행합니다.
+- 주요 feature는 작업 전 `LocalNotes/mini-plans/`에 mini plan을 작성한 뒤 진행합니다.
 - Feature 범위는 내부 구현 조각이 아니라 사용자가 설명 가능한 기능 단위로 잡고, 내부 API 등록이나 의존성 추가는 feature 안의 구현 단계로 다룹니다.
 - mini plan에는 목표, 범위, 예상 변경 파일, 검증 방법, 완료 기준, 예상 커밋 단위를 포함합니다.
 - 작은 fix, 문서 링크 수정, formatting 변경은 mini plan 없이 작업 보고로 대체할 수 있습니다.
@@ -51,3 +51,4 @@ Feature 작업 규칙:
 작업 시작 시 현재 repo/git 상태, 확인한 UE/plugin 구조, 작업 계획, 위험 요소를 요약합니다.
 작업 종료 시 변경 파일, 핵심 변경 내용, 빌드/검증 결과, 미확인 항목, 다음 작업을 요약합니다.
 ```
+
