@@ -70,8 +70,36 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 						.AutoHeight()
 						.Padding(0.0f, 0.0f, 0.0f, 8.0f)
 						[
-							SNew(STextBlock)
-								.Text(FText::FromString(TEXT("Mode: Dependencies / Referencers")))
+							SNew(SVerticalBox)
+
+								+ SVerticalBox::Slot()
+								.AutoHeight()
+								.Padding(0.0f, 0.0f, 0.0f, 4.0f)
+								[
+									SNew(STextBlock)
+										.Text(this, &SAssetReferenceInspectorWidget::GetCurrentModeText)
+								]
+
+								+ SVerticalBox::Slot()
+								.AutoHeight()
+								[
+									SNew(SUniformGridPanel)
+										.SlotPadding(4.0f)
+
+										+ SUniformGridPanel::Slot(0, 0)
+										[
+											SNew(SButton)
+												.Text(FText::FromString(TEXT("Dependencies")))
+												.OnClicked(this, &SAssetReferenceInspectorWidget::OnDependenciesModeClicked)
+										]
+
+										+ SUniformGridPanel::Slot(1, 0)
+										[
+											SNew(SButton)
+												.Text(FText::FromString(TEXT("Referencers")))
+												.OnClicked(this, &SAssetReferenceInspectorWidget::OnReferencersModeClicked)
+										]
+								]
 						]
 
 						+ SVerticalBox::Slot()
@@ -112,9 +140,21 @@ FReply SAssetReferenceInspectorWidget::OnPickSelectedAssetClicked()
 
 FReply SAssetReferenceInspectorWidget::OnAnalyzeClicked()
 {
-	BuildDependencyTree();
+	BuildRelationTree();
 	RefreshTree();
 
+	return FReply::Handled();
+}
+
+FReply SAssetReferenceInspectorWidget::OnDependenciesModeClicked()
+{
+	AnalysisOptions.Mode = EAssetReferenceMode::Dependencies;
+	return FReply::Handled();
+}
+
+FReply SAssetReferenceInspectorWidget::OnReferencersModeClicked()
+{
+	AnalysisOptions.Mode = EAssetReferenceMode::Referencers;
 	return FReply::Handled();
 }
 
@@ -131,7 +171,16 @@ FText SAssetReferenceInspectorWidget::GetSelectedAssetText() const
 		*SelectedAssetData.PackageName.ToString()));
 }
 
-void SAssetReferenceInspectorWidget::BuildDependencyTree()
+FText SAssetReferenceInspectorWidget::GetCurrentModeText() const
+{
+	const FString ModeName = AnalysisOptions.Mode == EAssetReferenceMode::Referencers
+		? FString(TEXT("Referencers"))
+		: FString(TEXT("Dependencies"));
+
+	return FText::FromString(FString::Printf(TEXT("Mode: %s"), *ModeName));
+}
+
+void SAssetReferenceInspectorWidget::BuildRelationTree()
 {
 	TreeRootItems.Reset();
 
@@ -149,38 +198,36 @@ void SAssetReferenceInspectorWidget::BuildDependencyTree()
 	TArray<FName> CurrentPath;
 	CurrentPath.Add(SelectedAssetData.PackageName);
 
-	BuildDependencyChildren(RootNode, CurrentPath);
+	BuildRelationChildren(RootNode, CurrentPath);
 
 	TreeRootItems.Add(RootNode);
 }
 
-void SAssetReferenceInspectorWidget::BuildDependencyChildren(TSharedPtr<FAssetReferenceTreeNode> ParentNode, TArray<FName>& CurrentPath) const
+void SAssetReferenceInspectorWidget::BuildRelationChildren(TSharedPtr<FAssetReferenceTreeNode> ParentNode, TArray<FName>& CurrentPath) const
 {
 	if (!ParentNode.IsValid() || ParentNode->Depth >= AnalysisOptions.MaxDepth)
 	{
 		return;
 	}
 
-	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+	TArray<FName> RelatedPackageNames;
+	GetRelatedPackageNames(ParentNode->PackageName, RelatedPackageNames);
 
-	TArray<FName> DependencyPackageNames;
-	AssetRegistryModule.Get().GetDependencies(ParentNode->PackageName, DependencyPackageNames);
-
-	if (DependencyPackageNames.Num() == 0)
+	if (RelatedPackageNames.Num() == 0)
 	{
-		ParentNode->Children.Add(MakeShared<FAssetReferenceTreeNode>(TEXT("No dependencies found"), NAME_None, ParentNode->Depth + 1));
+		ParentNode->Children.Add(MakeShared<FAssetReferenceTreeNode>(GetEmptyRelationMessage(), NAME_None, ParentNode->Depth + 1));
 	}
 	else
 	{
-		for (const FName DependencyPackageName : DependencyPackageNames)
+		for (const FName RelatedPackageName : RelatedPackageNames)
 		{
-			if (!ShouldIncludeDependencyPackage(DependencyPackageName))
+			if (!ShouldIncludeRelatedPackage(RelatedPackageName))
 			{
 				continue;
 			}
 
-			const bool bIsCircular = CurrentPath.Contains(DependencyPackageName);
-			TSharedPtr<FAssetReferenceTreeNode> ChildNode = CreateDependencyNode(DependencyPackageName, ParentNode->Depth + 1, bIsCircular);
+			const bool bIsCircular = CurrentPath.Contains(RelatedPackageName);
+			TSharedPtr<FAssetReferenceTreeNode> ChildNode = CreateRelationNode(RelatedPackageName, ParentNode->Depth + 1, bIsCircular);
 			ParentNode->Children.Add(ChildNode);
 
 			if (bIsCircular)
@@ -188,11 +235,24 @@ void SAssetReferenceInspectorWidget::BuildDependencyChildren(TSharedPtr<FAssetRe
 				continue;
 			}
 
-			CurrentPath.Add(DependencyPackageName);
-			BuildDependencyChildren(ChildNode, CurrentPath);
+			CurrentPath.Add(RelatedPackageName);
+			BuildRelationChildren(ChildNode, CurrentPath);
 			CurrentPath.Pop();
 		}
 	}
+}
+
+void SAssetReferenceInspectorWidget::GetRelatedPackageNames(FName PackageName, TArray<FName>& OutPackageNames) const
+{
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+
+	if (AnalysisOptions.Mode == EAssetReferenceMode::Referencers)
+	{
+		AssetRegistryModule.Get().GetReferencers(PackageName, OutPackageNames);
+		return;
+	}
+
+	AssetRegistryModule.Get().GetDependencies(PackageName, OutPackageNames);
 }
 
 void SAssetReferenceInspectorWidget::RefreshTree()
@@ -224,7 +284,7 @@ void SAssetReferenceInspectorWidget::ExpandTreeItems(const TArray<TSharedPtr<FAs
 	}
 }
 
-TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateDependencyNode(FName PackageName, int32 Depth, bool bIsCircular) const
+TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateRelationNode(FName PackageName, int32 Depth, bool bIsCircular) const
 {
 	FString DisplayName = PackageName.ToString();
 
@@ -241,9 +301,16 @@ TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateDepend
 	return MakeShared<FAssetReferenceTreeNode>(DisplayName, PackageName, Depth, bIsCircular);
 }
 
-bool SAssetReferenceInspectorWidget::ShouldIncludeDependencyPackage(FName PackageName) const
+bool SAssetReferenceInspectorWidget::ShouldIncludeRelatedPackage(FName PackageName) const
 {
 	return PackageName.ToString().StartsWith(TEXT("/Game/"));
+}
+
+FString SAssetReferenceInspectorWidget::GetEmptyRelationMessage() const
+{
+	return AnalysisOptions.Mode == EAssetReferenceMode::Referencers
+		? FString(TEXT("No referencers found"))
+		: FString(TEXT("No dependencies found"));
 }
 
 TSharedRef<ITableRow> SAssetReferenceInspectorWidget::OnGenerateTreeRow(TSharedPtr<FAssetReferenceTreeNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const
