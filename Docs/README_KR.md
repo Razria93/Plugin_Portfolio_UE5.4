@@ -40,7 +40,7 @@
 빌드, 에디터 실행, 기능별 확인 결과와 검증 스크린샷을 기록하는 문서다. 직접 확인하지 못한 항목은 성공으로 쓰지 않고 `미확인`으로 남긴다.
 
 - `03_Verification/README_KR.md`
-  - 검증 기록과 스크린샷 보관 기준을 정리한다.
+  - 검증 기록 폴더의 역할과 문서 목록을 정리한다.
 - `03_Verification/Build_Verification_Log_KR.md`
   - UE 5.4 빌드와 에디터 UI 확인 결과를 기록한다.
 - `03_Verification/Screenshots/`
@@ -54,14 +54,20 @@
   - 저장소에서 플러그인을 개발할 때 지켜야 할 기본 작업 규칙을 정리한다.
 - `04_Governance/Feature_Workflow_KR.md`
   - feature 시작, mini plan 작성, 브랜치 판단, 검증, 문서화, 커밋 판단 기준을 정리한다.
-- `04_Governance/Documentation_Workflow_KR.md`
-  - `Docs`, `LocalNotes`, GitHub Issue, PR 본문의 책임 분리와 문서 네이밍 규칙을 정리한다.
+- `04_Governance/Documentation_Responsibility_KR.md`
+  - `Docs`, `LocalNotes`, GitHub Issue, PR 본문의 책임 경계와 문서 네이밍 규칙을 정리한다.
+- `04_Governance/Documentation_Authoring_Workflow_KR.md`
+  - draft 작성, public 변환, GitHub 게시 전 검수, 원격 반영 승인 절차를 정리한다.
+- `04_Governance/GitHub_Public_Body_Validation_Rules_KR.md`
+  - GitHub PR body, Issue body, 댓글 public 본문의 섹션 순서, 스크린샷 구조, 금지 요소 검사 기준을 정리한다.
+- `04_Governance/Screenshot_Workflow_KR.md`
+  - 검증 스크린샷 보관, 승격, 파일명, GitHub 이미지 링크 기준을 정리한다.
 - `04_Governance/Codex_Init_Prompt_KR.md`
   - 새 Codex 세션에서 사용할 초기 작업 지침을 정리한다.
 
 ## LocalNotes
 
-`LocalNotes/`는 ignored 되는 작업 공간이다. mini plan, GitHub 게시용 draft/public 본문, 학습 메모처럼 공개 문서로 커밋하지 않을 자료를 둔다.
+`LocalNotes/`는 ignored 작업장이다. mini plan, GitHub 게시용 draft/public 본문, 학습 메모처럼 공개 문서로 커밋하지 않을 자료를 둔다.
 
 - `LocalNotes/mini-plans/`
   - feature 시작 전 mini plan을 둔다.

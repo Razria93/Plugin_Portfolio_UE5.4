@@ -14,43 +14,14 @@
 - CSV Export 결과
 - 실제 Portfolio 프로젝트 적용 결과
 
-## 스크린샷 보관 기준
-
-검증 스크린샷은 기능 동작을 설명하는 핵심 증거일 때만 Git에 포함한다.
-
-임시 캡처, 중복 이미지, 실패한 캡처 후보는 `LocalNotes/screenshots`에만 둔다. PR 본문, 검증 로그, 과거 PR 보강 댓글에 사용할 최종 이미지만 `Docs/03_Verification/Screenshots/<branch-name>/`로 승격한다.
-
-파일명은 snake_case를 사용하고 공백을 두지 않는다.
-
-예:
-
-```text
-Docs/03_Verification/Screenshots/feature_ari_dependencies_depth1/
-  bp_dummy_dependencies.png
-  m_dummy_dependencies.png
-  t_dummy_color_dependencies.png
-```
-
-현재 또는 미래 PR은 PR 본문 `Screenshots` 섹션에서 Docs 이미지를 링크한다. GitHub PR / Issue / 댓글로 게시될 draft와 public 본문에는 상대 경로가 아니라 repo 이미지 직접 주소를 사용한다.
-
-PR 작성/검토 중에는 브랜치 기준 직접 주소를 사용한다.
-
-```markdown
-![Description](https://github.com/Razria93/Plugin_Portfolio_UE5.4/blob/<git-branch>/Docs/03_Verification/Screenshots/<screenshot-folder>/<image>.png?raw=true)
-```
-
-merge 이후 장기 보존용 public 본문이나 과거 PR 보강 댓글에는 `main` 기준 직접 주소를 사용한다.
-
-```markdown
-![Description](https://github.com/Razria93/Plugin_Portfolio_UE5.4/blob/main/Docs/03_Verification/Screenshots/<screenshot-folder>/<image>.png?raw=true)
-```
-
-`Build_Verification_Log_KR.md` 같은 저장소 내부 문서에서는 상대 경로를 사용한다.
-
-이미 merge된 과거 PR은 본문을 재작성하지 않고 댓글로 검증 스크린샷을 보강한다. 이때 댓글에는 현재 프로젝트 상태에서 해당 PR의 완료 조건을 재확인한 기록임을 명시하고, Docs에 보관된 이미지 링크를 사용한다.
-
-## 권장 파일
+## 문서 구성
 
 - `Build_Verification_Log_KR.md`
-- `Editor_UI_Verification_KR.md`
-- `Portfolio_Project_Application_Log_KR.md`
+  - 빌드, 에디터 실행, feature별 수동 검증 결과를 기록한다.
+- `Screenshots/`
+  - PR 또는 검증 로그에 사용할 최종 검증 스크린샷을 보관한다.
+
+## 관련 운영 기준
+
+- `../04_Governance/Screenshot_Workflow_KR.md`
+  - 검증 스크린샷 보관, 승격, 파일명, GitHub 이미지 링크 기준을 정의한다.

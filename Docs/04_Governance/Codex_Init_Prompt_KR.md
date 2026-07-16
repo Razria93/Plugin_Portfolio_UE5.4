@@ -36,6 +36,7 @@ Feature 작업 규칙:
 - feature 종료 시 상위 `[Plan]` Issue가 있으면 첫 진행 댓글 갱신과 feature 완료 로그 댓글 추가 여부를 확인합니다.
 - 상위 Plan Issue 댓글은 PR 스크린샷 댓글 템플릿을 재사용하지 않고, `LocalNotes/templates/github_draft_plan_progress_summary_comment_template_KR.md` 또는 `LocalNotes/templates/github_draft_plan_feature_comment_template_KR.md`를 사용합니다.
 - GitHub 게시용 Issue / PR / 댓글은 `LocalNotes/github/draft`에서 초안을 작성한 뒤 `LocalNotes/github/public` 제출용 본문으로 변환하고, `gh` CLI에는 public 파일만 사용합니다.
+- GitHub public 본문은 `Docs/04_Governance/GitHub_Public_Body_Validation_Rules_KR.md`의 문서 타입별 섹션 순서, 문체, 스크린샷, 금지 요소 기준을 따릅니다.
 - 사용자가 명시적으로 요청하기 전에는 commit, amend, push, PR 생성, merge를 실행하지 않습니다.
 
 빌드/검증 규칙:
