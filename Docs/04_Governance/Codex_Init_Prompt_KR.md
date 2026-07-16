@@ -33,6 +33,9 @@ Feature 작업 규칙:
 - feature 브랜치 작업은 PR을 통해 main에 반영하는 것을 기본 흐름으로 보고, 작업 종료 시 PR summary를 제안합니다.
 - 작업 종료 시 문서 업데이트 필요 여부와 commit/amend/보류 여부를 판단하고, Git Bash 기준 명령만 제안합니다.
 - C++ 코드 변경이 있으면 작업 종료 전에 `Docs/02_Architecture/Code_Organization_KR.md` 기준으로 Public/Private 배치, include 순서, 헤더 섹션, 의존성 범위를 검토합니다.
+- feature 종료 시 상위 `[Plan]` Issue가 있으면 첫 진행 댓글 갱신과 feature 완료 로그 댓글 추가 여부를 확인합니다.
+- 상위 Plan Issue 댓글은 PR 스크린샷 댓글 템플릿을 재사용하지 않고, `LocalNotes/templates/github_draft_plan_progress_summary_comment_template_KR.md` 또는 `LocalNotes/templates/github_draft_plan_feature_comment_template_KR.md`를 사용합니다.
+- GitHub 게시용 Issue / PR / 댓글은 `LocalNotes/github/draft`에서 초안을 작성한 뒤 `LocalNotes/github/public` 제출용 본문으로 변환하고, `gh` CLI에는 public 파일만 사용합니다.
 - 사용자가 명시적으로 요청하기 전에는 commit, amend, push, PR 생성, merge를 실행하지 않습니다.
 
 빌드/검증 규칙:
@@ -51,4 +54,3 @@ Feature 작업 규칙:
 작업 시작 시 현재 repo/git 상태, 확인한 UE/plugin 구조, 작업 계획, 위험 요소를 요약합니다.
 작업 종료 시 변경 파일, 핵심 변경 내용, 빌드/검증 결과, 미확인 항목, 다음 작업을 요약합니다.
 ```
-

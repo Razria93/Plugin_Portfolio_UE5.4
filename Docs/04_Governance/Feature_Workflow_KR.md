@@ -229,6 +229,11 @@ Feature 종료 시 상위 `[Plan]` Issue가 있으면 다음을 반복 확인한
 
 Plan Issue의 첫 진행 댓글은 현재까지 완료된 Phase 전체를 보여주는 진행판으로 본다. 각 feature 완료 로그는 그 아래에 새 댓글로 누적한다.
 
+Plan Issue 댓글 초안은 PR 스크린샷 댓글 템플릿을 재사용하지 않는다.
+
+- 첫 진행 댓글 갱신: `LocalNotes/templates/github_draft_plan_progress_summary_comment_template_KR.md`
+- feature 완료 로그 댓글 추가: `LocalNotes/templates/github_draft_plan_feature_comment_template_KR.md`
+
 ## 검증 기준
 
 C++ 코드, `.uplugin`, `Build.cs`, `.uproject` 변경은 가능한 경우 UE 5.4 Editor Target 빌드로 검증한다.

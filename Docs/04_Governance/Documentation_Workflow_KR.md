@@ -322,6 +322,15 @@ Plan Issue의 첫 진행 댓글은 현재까지 완료된 Phase를 누적 요약
 = 각 feature 완료 시점의 작업 내용, 검증 결과, 관련 PR
 ```
 
+로컬 초안 템플릿은 PR 스크린샷 댓글용 `github_draft_pr_comment_template_KR.md`를 사용하지 않는다. Plan Issue 댓글은 다음 템플릿을 사용한다.
+
+```text
+LocalNotes/templates/github_draft_plan_progress_summary_comment_template_KR.md
+LocalNotes/templates/github_draft_plan_feature_comment_template_KR.md
+```
+
+첫 진행 댓글은 기존 GitHub Issue #2의 최신 공개 댓글을 기준으로 전체 본문을 다시 작성해 갱신한다. 후속 feature 완료 댓글은 최근 feature 완료 댓글 형식을 기준으로 작성한다.
+
 Feature 종료 정리 과정에서는 다음을 확인한다.
 
 - 상위 Plan Issue가 있는가
