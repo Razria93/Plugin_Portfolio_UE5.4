@@ -537,3 +537,65 @@ Total execution time: 5.93 seconds
 
 - Max Depth 입력 UI는 이번 범위가 아니므로 미검증
 - 정식 Engine / Plugin Content 표시 옵션은 이번 범위가 아니므로 미검증
+
+### AssetReferenceInspector Referencers 모드 추가
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+일반 실행은 UBT 로그 백업 단계에서 `UnauthorizedAccessException`으로 실패했다. 동일 명령을 권한 상승으로 재실행해 실제 컴파일/링크를 확인했다. 내부 처리 함수명을 `Relation` 계열로 정리한 뒤 같은 명령으로 재검증했다.
+
+최종 재검증 UBT 출력 기준:
+
+```text
+[3/7] Compile [x64] Module.AssetReferenceInspector.cpp
+[4/7] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[5/7] Link [x64] UnrealEditor-AssetReferenceInspector-0001.lib
+[6/7] Link [x64] UnrealEditor-AssetReferenceInspector-0001.dll
+[7/7] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 4.60 seconds
+```
+
+#### 확인 범위
+
+- `EAssetReferenceMode`를 실제 분석 분기 조건으로 사용하는 상태에서 빌드 확인
+- `GetRelatedPackageNames`에서 `GetDependencies` / `GetReferencers`를 분기하는 상태에서 빌드 확인
+- Dependencies / Referencers가 같은 Tree Node 모델과 재귀 생성 흐름을 사용하는 상태에서 빌드 확인
+- 내부 처리 함수명을 `Relation` 계열로 정리한 상태에서 빌드 확인
+- 최소 Mode 전환 UI가 포함된 상태에서 빌드 확인
+
+#### 에디터 UI 확인
+
+- `BP_Dummy` 선택 후 `Dependencies` 모드에서 `Analyze` 클릭 시 `BP_Dummy -> M_Dummy -> T_Dummy_Color` 표시 확인
+- `M_Dummy` 선택 후 `Referencers` 모드에서 `Analyze` 클릭 시 `M_Dummy -> BP_Dummy` 표시 확인
+- `T_Dummy_Color` 선택 후 `Referencers` 모드에서 `Analyze` 클릭 시 `T_Dummy_Color -> M_Dummy -> BP_Dummy` 표시 확인
+- Mode 버튼 클릭 시 `Mode: Dependencies` / `Mode: Referencers` 표시가 전환되는 것 확인
+
+#### Screenshots
+
+![Dependencies BP_Dummy](Screenshots/feature_ari_referencers_mode/dependencies_bp_dummy.png)
+
+![Referencers M_Dummy](Screenshots/feature_ari_referencers_mode/referencers_m_dummy.png)
+
+![Referencers T_Dummy_Color](Screenshots/feature_ari_referencers_mode/referencers_t_dummy_color.png)
+
+#### 미확인
+
+- Max Depth 입력 UI는 이번 범위가 아니므로 미검증
+- 정식 Engine / Plugin Content 표시 옵션은 이번 범위가 아니므로 미검증
+- Content Browser Sync는 이번 범위가 아니므로 미검증

@@ -1,24 +1,21 @@
 # Asset Registry Analysis Flow
 
-이 문서는 `AssetReferenceInspector`에서 선택 Asset의 Dependencies를 Asset Registry로 조회해 Tree View에 표시하는 흐름을 정리한다.
+이 문서는 `AssetReferenceInspector`에서 선택 Asset의 Dependencies / Referencers 관계를 Asset Registry로 조회해 Tree View에 표시하는 흐름을 정리한다.
 
 ## 현재 범위
 
-현재 구현 범위는 Dependencies Depth 1이다.
+현재 구현 범위는 Dependencies / Referencers 모드 전환과 Max Depth 기반 재귀 Tree 생성이다.
 
 ```text
 선택 Asset
--> 직접 참조하는 Package 목록 조회
+-> 현재 모드에 맞는 관련 Package 목록 조회
 -> Tree View 자식 노드로 표시
 ```
 
 아직 포함하지 않는 범위:
 
-- 재귀 Depth 처리
-- Referencers 조회
-- Dependencies / Referencers 모드 전환
 - Engine / Plugin Content 필터
-- 순환 참조 탐지
+- 순환 참조 시각 강조
 - CSV Export
 
 ## 입력 Asset
@@ -31,7 +28,7 @@ FAssetData SelectedAssetData;
 
 `Pick Selected Asset` 버튼을 누르면 Content Browser의 현재 선택 Asset 중 첫 번째 Asset을 저장한다.
 
-Dependencies 조회는 `SelectedAssetData.PackageName`을 기준으로 수행한다.
+Asset Registry 조회는 `SelectedAssetData.PackageName`을 기준으로 수행한다.
 
 ```text
 SelectedAssetData.AssetName
@@ -48,7 +45,7 @@ SelectedAssetData.PackageName
 ```text
 Analyze 클릭
 -> OnAnalyzeClicked
--> BuildDependencyTree
+-> BuildRelationTree
 -> RefreshTree
 ```
 
@@ -63,23 +60,43 @@ FAssetRegistryModule& AssetRegistryModule =
 	FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 ```
 
-Depth 1 Dependencies는 다음 입력으로 조회한다.
+현재 모드는 `FAssetReferenceAnalysisOptions::Mode`가 결정한다.
 
 ```cpp
-AssetRegistryModule.Get().GetDependencies(
-	SelectedAssetData.PackageName,
-	DependencyPackageNames);
+enum class EAssetReferenceMode : uint8
+{
+	Dependencies,
+	Referencers
+};
+```
+
+실제 Asset Registry 조회는 `GetRelatedPackageNames`에서 분기한다.
+
+```cpp
+if (AnalysisOptions.Mode == EAssetReferenceMode::Referencers)
+{
+	AssetRegistryModule.Get().GetReferencers(PackageName, OutPackageNames);
+	return;
+}
+
+AssetRegistryModule.Get().GetDependencies(PackageName, OutPackageNames);
 ```
 
 반환되는 값은 Asset 객체 포인터가 아니라 PackageName 목록이다.
 
 ```text
+Dependencies:
 /Game/ARI_Demo/BP_Dummy
 -> /Game/ARI_Demo/M_Dummy
--> /Engine/... 또는 /Script/... Package
+
+Referencers:
+/Game/ARI_Demo/M_Dummy
+<- /Game/ARI_Demo/BP_Dummy
 ```
 
 따라서 UI에 표시할 이름은 PackageName을 그대로 쓰거나, 해당 Package의 `FAssetData`를 다시 조회해 `AssetName`으로 변환한다.
+
+플러그인 이름의 `Reference`는 Unreal Editor에서 통용되는 Asset 참조 관계 전체를 뜻한다. 내부 처리 함수는 Dependencies / Referencers 양방향 조회를 모두 다루므로 `Relation` 계열 이름을 사용한다.
 
 ## Tree Node 구성
 
@@ -113,12 +130,12 @@ struct FAssetReferenceAnalysisOptions
 };
 ```
 
-현재 UI는 Dependencies 모드만 사용한다. `FAssetReferenceAnalysisOptions::MaxDepth`는 재귀 Tree 생성의 깊이 제한으로 사용한다.
+`FAssetReferenceAnalysisOptions::MaxDepth`는 재귀 Tree 생성의 깊이 제한으로 사용한다.
 
 ```text
 Depth 0 = 선택 Asset root
-Depth 1 = root의 직접 Dependencies
-Depth 2 = Depth 1 노드의 Dependencies
+Depth 1 = root의 직접 관련 Package
+Depth 2 = Depth 1 노드의 관련 Package
 ```
 
 루트 노드:
@@ -131,24 +148,24 @@ PackageName = 선택 Asset PackageName
 자식 노드:
 
 ```text
-DisplayName = Dependency AssetName 또는 PackageName
-PackageName = Dependency PackageName
+DisplayName = 관련 AssetName 또는 PackageName
+PackageName = 관련 PackageName
 ```
 
-조회 결과가 없으면 `No dependencies found` 노드를 자식으로 추가한다.
+조회 결과가 없으면 현재 모드에 따라 `No dependencies found` 또는 `No referencers found` 노드를 자식으로 추가한다.
 
 ## Max Depth 재귀 생성
 
-Dependencies Tree는 `BuildDependencyChildren`에서 DFS 방식으로 생성한다.
+관계 Tree는 `BuildRelationChildren`에서 DFS 방식으로 생성한다.
 
 ```text
-BuildDependencyTree
+BuildRelationTree
 -> root node 생성
 -> CurrentPath에 root PackageName 추가
--> BuildDependencyChildren(root, CurrentPath)
+-> BuildRelationChildren(root, CurrentPath)
 ```
 
-`BuildDependencyChildren`은 다음 조건에서 자식 조회를 중단한다.
+`BuildRelationChildren`은 다음 조건에서 자식 조회를 중단한다.
 
 - ParentNode가 유효하지 않음
 - ParentNode의 Depth가 `MaxDepth` 이상
@@ -160,7 +177,7 @@ BuildDependencyTree
 
 현재 DFS 경로에 이미 포함된 PackageName을 다시 만나면 순환 후보로 본다.
 
-이 경우 해당 Package는 Parent의 실제 dependency이므로 Tree에는 추가한다. 다만 그 아래로 다시 확장하면 무한 재귀가 될 수 있으므로 children 조회는 중단한다.
+이 경우 해당 Package는 Parent와 실제 관계가 있으므로 Tree에는 추가한다. 다만 그 아래로 다시 확장하면 무한 재귀가 될 수 있으므로 children 조회는 중단한다.
 
 ```text
 A
@@ -174,7 +191,7 @@ A
 
 ## 임시 Project Content 필터
 
-Phase 4-1에서는 재귀 Tree 검증 범위를 통제하기 위해 `/Game` Package만 표시한다.
+Phase 4-1 이후에는 재귀 Tree 검증 범위를 통제하기 위해 `/Game` Package만 표시한다.
 
 ```cpp
 PackageName.ToString().StartsWith(TEXT("/Game/"))
@@ -237,14 +254,25 @@ BP_Dummy
     T_Dummy_Color
 ```
 
-Max Depth 검증 기준:
+Dependencies 검증 기준:
 
 - `BP_Dummy` 선택
 - `Pick Selected Asset` 클릭
+- `Dependencies` 모드 선택
 - `Analyze` 클릭
 - Tree 루트에 `BP_Dummy` 표시
 - Tree 자식에 `M_Dummy` 표시
 - `M_Dummy` 하위에 `T_Dummy_Color` 표시
+
+Referencers 검증 기준:
+
+- `M_Dummy` 선택
+- `Pick Selected Asset` 클릭
+- `Referencers` 모드 선택
+- `Analyze` 클릭
+- Tree 루트에 `M_Dummy` 표시
+- Tree 자식에 `BP_Dummy` 표시
+- `T_Dummy_Color` 선택 시 `T_Dummy_Color -> M_Dummy -> BP_Dummy` 표시
 
 현재는 `/Game` Package만 표시하므로 Engine 기본 Mesh 또는 Script Package는 결과 Tree에서 제외된다.
 
@@ -271,4 +299,4 @@ Options
 = Mode, Max Depth, 필터 조건
 ```
 
-Referencers, 정식 필터 UI, 순환 참조 표시, Analyzer 클래스 분리는 후속 작업에서 확장한다.
+정식 필터 UI, 순환 참조 표시, Analyzer 클래스 분리는 후속 작업에서 확장한다.
