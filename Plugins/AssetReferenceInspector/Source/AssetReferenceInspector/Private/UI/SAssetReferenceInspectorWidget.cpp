@@ -5,8 +5,10 @@
 
 #include "ContentBrowserModule.h"
 #include "IContentBrowserSingleton.h"
+#include "Interfaces/IPluginManager.h"
 
 #include "Widgets/Input/SButton.h"
+#include "Widgets/Input/SCheckBox.h"
 #include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SSeparator.h"
@@ -149,6 +151,50 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 								]
 						]
 
+					+ SVerticalBox::Slot()
+						.AutoHeight()
+						.Padding(0.0f, 0.0f, 0.0f, 8.0f)
+						[
+							SNew(SVerticalBox)
+
+								+ SVerticalBox::Slot()
+								.AutoHeight()
+								.Padding(0.0f, 0.0f, 0.0f, 4.0f)
+								[
+									SNew(STextBlock)
+										.Text(FText::FromString(TEXT("Include External Content")))
+								]
+
+								+ SVerticalBox::Slot()
+								.AutoHeight()
+								[
+									SNew(SUniformGridPanel)
+										.SlotPadding(4.0f)
+
+										+ SUniformGridPanel::Slot(0, 0)
+										[
+											SNew(SCheckBox)
+												.IsChecked(this, &SAssetReferenceInspectorWidget::GetIncludeEngineContentCheckState)
+												.OnCheckStateChanged(this, &SAssetReferenceInspectorWidget::OnIncludeEngineContentChanged)
+												[
+													SNew(STextBlock)
+														.Text(FText::FromString(TEXT("Engine Content")))
+												]
+										]
+
+										+ SUniformGridPanel::Slot(1, 0)
+										[
+											SNew(SCheckBox)
+												.IsChecked(this, &SAssetReferenceInspectorWidget::GetIncludePluginContentCheckState)
+												.OnCheckStateChanged(this, &SAssetReferenceInspectorWidget::OnIncludePluginContentChanged)
+												[
+													SNew(STextBlock)
+														.Text(FText::FromString(TEXT("Plugin Content")))
+												]
+										]
+								]
+						]
+
 						+ SVerticalBox::Slot()
 						.FillHeight(1.0f)
 						[
@@ -226,6 +272,16 @@ void SAssetReferenceInspectorWidget::OnClassFilterTextCommitted(const FText& InT
 	AnalysisOptions.ClassFilter = InText.ToString().TrimStartAndEnd();
 }
 
+void SAssetReferenceInspectorWidget::OnIncludeEngineContentChanged(ECheckBoxState NewState)
+{
+	AnalysisOptions.bIncludeEngineContent = NewState == ECheckBoxState::Checked;
+}
+
+void SAssetReferenceInspectorWidget::OnIncludePluginContentChanged(ECheckBoxState NewState)
+{
+	AnalysisOptions.bIncludePluginContent = NewState == ECheckBoxState::Checked;
+}
+
 void SAssetReferenceInspectorWidget::OnTreeNodeDoubleClicked(TSharedPtr<FAssetReferenceTreeNode> Item) const
 {
 	if (!Item.IsValid())
@@ -266,6 +322,20 @@ FText SAssetReferenceInspectorWidget::GetPathFilterText() const
 FText SAssetReferenceInspectorWidget::GetClassFilterText() const
 {
 	return FText::FromString(AnalysisOptions.ClassFilter);
+}
+
+ECheckBoxState SAssetReferenceInspectorWidget::GetIncludeEngineContentCheckState() const
+{
+	return AnalysisOptions.bIncludeEngineContent
+		? ECheckBoxState::Checked
+		: ECheckBoxState::Unchecked;
+}
+
+ECheckBoxState SAssetReferenceInspectorWidget::GetIncludePluginContentCheckState() const
+{
+	return AnalysisOptions.bIncludePluginContent
+		? ECheckBoxState::Checked
+		: ECheckBoxState::Unchecked;
 }
 
 void SAssetReferenceInspectorWidget::BuildRelationTree()
@@ -399,16 +469,46 @@ FString SAssetReferenceInspectorWidget::GetEmptyRelationMessage() const
 
 bool SAssetReferenceInspectorWidget::ShouldPassRelationFilters(FName PackageName) const
 {
-	return DoesPathPassFilter(PackageName)
+	return DoesContentSourcePassFilter(PackageName)
+		&& DoesPathPassFilter(PackageName)
 		&& DoesAssetClassPassFilter(PackageName);
+}
+
+bool SAssetReferenceInspectorWidget::DoesContentSourcePassFilter(FName PackageName) const
+{
+	if (IsEngineContentPackage(PackageName) && !AnalysisOptions.bIncludeEngineContent)
+	{
+		return false;
+	}
+
+	if (IsPluginContentPackage(PackageName) && !AnalysisOptions.bIncludePluginContent)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 bool SAssetReferenceInspectorWidget::DoesPathPassFilter(FName PackageName) const
 {
 	const FString PathFilter = AnalysisOptions.PathFilter.TrimStartAndEnd();
 
-	return PathFilter.IsEmpty()
-		|| PackageName.ToString().StartsWith(PathFilter);
+	if (PathFilter.IsEmpty() || PackageName.ToString().StartsWith(PathFilter))
+	{
+		return true;
+	}
+
+	if (AnalysisOptions.bIncludeEngineContent && IsEngineContentPackage(PackageName))
+	{
+		return true;
+	}
+
+	if (AnalysisOptions.bIncludePluginContent && IsPluginContentPackage(PackageName))
+	{
+		return true;
+	}
+
+	return false;
 }
 
 bool SAssetReferenceInspectorWidget::DoesAssetClassPassFilter(FName PackageName) const
@@ -431,6 +531,29 @@ bool SAssetReferenceInspectorWidget::DoesAssetClassPassFilter(FName PackageName)
 
 	return ClassPath.Contains(ClassFilter, ESearchCase::IgnoreCase)
 		|| ClassName.Contains(ClassFilter, ESearchCase::IgnoreCase);
+}
+
+bool SAssetReferenceInspectorWidget::IsEngineContentPackage(FName PackageName) const
+{
+	return PackageName.ToString().StartsWith(TEXT("/Engine/"));
+}
+
+bool SAssetReferenceInspectorWidget::IsPluginContentPackage(FName PackageName) const
+{
+	const FString PackageNameString = PackageName.ToString();
+
+	for (const TSharedRef<IPlugin>& Plugin : IPluginManager::Get().GetEnabledPluginsWithContent())
+	{
+		const FString MountedAssetPath = Plugin->GetMountedAssetPath();
+
+		if (!MountedAssetPath.IsEmpty()
+			&& PackageNameString.StartsWith(MountedAssetPath + TEXT("/")))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool SAssetReferenceInspectorWidget::TryGetPrimaryAssetDataForPackage(FName PackageName, FAssetData& OutAssetData) const
