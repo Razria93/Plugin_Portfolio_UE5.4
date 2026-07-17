@@ -134,6 +134,7 @@ private Button callbacks
 
 private Filter callbacks
 - OnPathFilterTextCommitted
+- OnClassFilterTextCommitted
 
 private Tree callbacks
 - OnTreeNodeDoubleClicked
@@ -142,12 +143,22 @@ private UI text
 - GetSelectedAssetText
 - GetCurrentModeText
 - GetPathFilterText
+- GetClassFilterText
 
 private Analysis
-- BuildDependencyTree
-- BuildDependencyChildren
-- CreateDependencyNode
-- ShouldIncludeDependencyPackage
+- BuildRelationTree
+- BuildRelationChildren
+- GetRelatedPackageNames
+- CreateRelationNode
+- GetEmptyRelationMessage
+
+private Filter
+- ShouldPassRelationFilters
+- DoesPathPassFilter
+- DoesAssetClassPassFilter
+
+private Asset data
+- TryGetPrimaryAssetDataForPackage
 
 private Tree view
 - RefreshTree
@@ -173,8 +184,10 @@ private Tree view state
 - 입력값 commit처럼 필터 UI에서 직접 호출되는 함수는 `Filter callbacks`에 둔다.
 - Tree item 더블 클릭처럼 `STreeView` 상호작용에서 직접 호출되는 함수는 `Tree callbacks`에 둔다.
 - Slate text binding 함수는 `UI text`에 둔다.
-- Asset Registry 조회, 노드 생성, 필터 판단은 `Analysis`에 둔다.
+- Asset Registry 관계 조회, 노드 생성, empty relation 메시지 결정은 `Analysis`에 둔다.
+- Path / Class 조건을 종합하거나 개별 필터를 판정하는 함수는 `Filter`에 둔다.
+- PackageName을 `FAssetData`로 해석하는 공통 helper는 `Asset data`에 둔다.
 - `STreeView` 갱신, expand, row 생성, children 제공은 `Tree view`에 둔다.
 - Content Browser 선택 동기화처럼 에디터 UI 외부 시스템과 연결되는 helper는 `Content Browser`에 둔다.
 - 분석 입력과 옵션은 `Analysis state`, Tree가 참조하는 데이터와 Slate 위젯 포인터는 `Tree view state`에 둔다.
-- 더 세부적인 `Dependency Query`, `Node Factory`, `Filter` 섹션은 실제 함수 수가 늘어난 뒤에만 추가한다.
+- 필터 종류가 늘어나면 `Filter` 내부를 더 세분화하지 않고, 우선 `ShouldPassRelationFilters`에서 조합 순서만 명확히 유지한다.

@@ -763,3 +763,64 @@ CommitType=3, Text=''
 #### 미확인
 
 없음.
+
+### AssetReferenceInspector Asset Class 필터 추가
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+UBT 출력 기준:
+
+```text
+[3/6] Compile [x64] Module.AssetReferenceInspector.cpp
+[4/6] Link [x64] UnrealEditor-AssetReferenceInspector-0008.lib
+[5/6] Link [x64] UnrealEditor-AssetReferenceInspector-0008.dll
+[6/6] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 6.42 seconds
+```
+
+#### 확인 범위
+
+- `FAssetReferenceAnalysisOptions::ClassFilter` 추가 상태에서 빌드 확인
+- `SEditableTextBox` 기반 Class Filter 입력 UI 추가 상태에서 빌드 확인
+- Class Filter commit callback에서 입력값을 trim해 분석 옵션에 저장하는 상태에서 빌드 확인
+- 관계 PackageName을 `FAssetData`로 해석해 `AssetClassPath` 기준으로 필터링하는 상태에서 빌드 확인
+- `ShouldPassRelationFilters`가 Path Filter와 Class Filter를 함께 적용하는 상태에서 빌드 확인
+- Tree row에 `DisplayName [ClassName]` 형식으로 Asset Class가 표시되는 상태에서 빌드 확인
+
+#### 에디터 UI 확인
+
+- Class Filter 빈 값, Path Filter `/Game/`, Dependencies 모드에서 `BP_Dummy [Blueprint] -> M_Dummy [Material] -> T_Dummy_Color [Texture2D]` 표시 확인
+- Class Filter `Material`, Path Filter `/Game/`, Dependencies 모드에서 `M_Dummy [Material]` 표시 확인
+- Class Filter `Texture2D`, Path Filter `/Game/`, Dependencies 모드에서 중간 노드 `M_Dummy [Material]`이 필터에서 탈락해 root 아래 `No dependencies found` placeholder 표시 확인
+- `Texture2D` 검증은 현재 strict filter 정책상 하위 매칭 노드가 있어도 중간 노드가 필터에서 탈락하면 더 내려가지 않는 것을 확인하기 위한 항목
+- Class Filter `Blueprint`, Path Filter `/Game/`, Referencers 모드에서 `M_Dummy [Material] -> BP_Dummy [Blueprint]` 표시 확인
+
+#### Screenshots
+
+![Class Filter Empty Baseline](Screenshots/feature_ari_class_filter/class_filter_empty_baseline.png)
+
+![Class Filter Material Only](Screenshots/feature_ari_class_filter/class_filter_material_only.png)
+
+![Class Filter Texture Strict Filter](Screenshots/feature_ari_class_filter/class_filter_texture_strict_filter.png)
+
+![Class Filter Referencers Blueprint](Screenshots/feature_ari_class_filter/class_filter_referencers_blueprint.png)
+
+#### 미확인
+
+- 하위에 매칭 노드가 있을 때 직접 매칭되지 않은 부모를 흐리게 표시하는 context-preserving filter mode는 후속 UX 개선 범위로 남김

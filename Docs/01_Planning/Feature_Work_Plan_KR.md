@@ -471,6 +471,31 @@ Phase 5는 2주차 목표의 후반부에 해당하며, 분석 결과를 실제 
 
 - Asset Class 기준으로 결과를 제한한다.
 
+완료 기준:
+
+- UI에서 Asset Class Filter 값을 입력하고 commit할 수 있다.
+- 빈 Asset Class Filter는 모든 Asset Class 통과로 처리한다.
+- 관계 PackageName을 `FAssetData`로 해석해 `AssetClassPath` 기준으로 필터링한다.
+- Path Filter와 Asset Class Filter가 함께 적용된다.
+- Tree row에 Asset Class 이름을 함께 표시한다.
+- Dependencies / Referencers 양쪽에서 Asset Class Filter가 적용된다.
+- Editor Target 빌드가 성공한다.
+
+상태:
+
+- 완료.
+- `feature/ari-class-filter` 브랜치에서 `FAssetReferenceAnalysisOptions::ClassFilter`와 Slate 입력 UI를 추가했다.
+- 관계 노드에 `ClassName`을 저장하고 Tree row에 `DisplayName [ClassName]` 형식으로 표시하도록 정리했다.
+- PackageName으로 `FAssetData`를 다시 조회하는 `TryGetPrimaryAssetDataForPackage` helper를 추가했다.
+- `ShouldPassRelationFilters`에서 Path Filter와 Class Filter를 함께 적용하도록 정리했다.
+- Class Filter는 `AssetClassPath`와 Class 이름을 대소문자 구분 없이 비교한다.
+- 현재 필터 정책은 필터를 통과한 노드만 표시하고, 통과한 노드만 계속 재귀 탐색한다.
+- 중간 노드가 필터에 걸리면 하위에 매칭되는 노드가 있어도 현재 구현에서는 표시하지 않는다.
+- 향후 필터 UX 확장 시 하위 매칭을 보존하기 위해 부모 경로를 유지하고 직접 매칭되지 않은 부모를 흐리게 표시하는 방식을 검토한다.
+- `Portfolio_PlugInEditor` 빌드는 성공했다.
+- 빈 Class Filter, `Material`, `Texture2D`, Referencers + `Blueprint` 적용을 에디터에서 수동 확인했다.
+- 검증 스크린샷은 `Docs/03_Verification/Screenshots/feature_ari_class_filter/`에 정리했다.
+
 ### 5-3. Engine / Plugin Content 옵션
 
 목적:

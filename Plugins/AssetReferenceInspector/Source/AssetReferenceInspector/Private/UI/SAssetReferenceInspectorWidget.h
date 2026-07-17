@@ -27,6 +27,7 @@ private:
 
 	// Filter callbacks
 	void OnPathFilterTextCommitted(const FText& InText, ETextCommit::Type CommitType);
+	void OnClassFilterTextCommitted(const FText& InText, ETextCommit::Type CommitType);
 
 	// Tree callbacks
 	void OnTreeNodeDoubleClicked(TSharedPtr<FAssetReferenceTreeNode> Item) const;
@@ -35,14 +36,22 @@ private:
 	FText GetSelectedAssetText() const;
 	FText GetCurrentModeText() const;
 	FText GetPathFilterText() const;
+	FText GetClassFilterText() const;
 
 	// Analysis
 	void BuildRelationTree();
 	void BuildRelationChildren(TSharedPtr<FAssetReferenceTreeNode> ParentNode, TArray<FName>& CurrentPath) const;
 	void GetRelatedPackageNames(FName PackageName, TArray<FName>& OutPackageNames) const;
 	TSharedPtr<FAssetReferenceTreeNode> CreateRelationNode(FName PackageName, int32 Depth, bool bIsCircular = false) const;
-	bool ShouldIncludeRelatedPackage(FName PackageName) const;
 	FString GetEmptyRelationMessage() const;
+
+	// Filter
+	bool ShouldPassRelationFilters(FName PackageName) const;
+	bool DoesPathPassFilter(FName PackageName) const;
+	bool DoesAssetClassPassFilter(FName PackageName) const;
+
+	// Asset data
+	bool TryGetPrimaryAssetDataForPackage(FName PackageName, FAssetData& OutAssetData) const;
 
 	// Tree view
 	void RefreshTree();

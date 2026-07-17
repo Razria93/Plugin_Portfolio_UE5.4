@@ -225,7 +225,7 @@ SVerticalBox
 = 제목, 선택 Asset, 버튼, 모드, 필터, 결과 영역을 세로로 배치
 
 STextBlock
-= 제목, 선택 Asset, 모드, Path Filter label, Tree row text 표시
+= 제목, 선택 Asset, 모드, Path / Class Filter label, Tree row text 표시
 
 SSeparator
 = 제목과 조작 영역 구분
@@ -237,7 +237,7 @@ SButton
 = Pick Selected Asset / Analyze / Mode 전환 실행 버튼
 
 SEditableTextBox
-= Path Filter 입력
+= Path Filter / Class Filter 입력
 
 STreeView
 = Asset 참조 관계를 계층 구조로 표시할 결과 영역
@@ -286,11 +286,12 @@ struct FAssetReferenceTreeNode
 	FName PackageName;
 	int32 Depth;
 	bool bIsCircular;
+	FString ClassName;
 	TArray<TSharedPtr<FAssetReferenceTreeNode>> Children;
 };
 ```
 
-`DisplayName`은 row에 표시할 이름이고, `PackageName`은 Asset Registry 조회 기준이 되는 Package 이름이다. `Children`은 노드를 펼쳤을 때 보여줄 자식 노드 목록이다.
+`DisplayName`은 row에 표시할 이름이고, `PackageName`은 Asset Registry 조회 기준이 되는 Package 이름이다. `ClassName`은 AssetData를 찾을 수 있는 Asset row에 함께 표시할 Class 이름이다. `Children`은 노드를 펼쳤을 때 보여줄 자식 노드 목록이다.
 
 Tree View 연결의 핵심은 세 가지다.
 
@@ -319,7 +320,7 @@ TSharedRef<ITableRow> OnGenerateTreeRow(
 	const TSharedRef<STableViewBase>& OwnerTable) const;
 ```
 
-현재는 `FAssetReferenceTreeNode::DisplayName`을 `STextBlock`으로 표시하는 `STableRow`를 반환한다.
+현재는 `FAssetReferenceTreeNode::DisplayName`과 `ClassName`을 `STextBlock`으로 표시하는 `STableRow`를 반환한다. `ClassName`이 있으면 `DisplayName [ClassName]` 형식으로 표시하고, Class 정보를 찾을 수 없는 Package나 placeholder는 `DisplayName`만 표시한다.
 
 ```cpp
 return SNew(STableRow<TSharedPtr<FAssetReferenceTreeNode>>, OwnerTable)
