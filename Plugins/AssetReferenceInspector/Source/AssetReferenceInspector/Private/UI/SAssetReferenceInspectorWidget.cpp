@@ -7,6 +7,7 @@
 #include "IContentBrowserSingleton.h"
 
 #include "Widgets/Input/SButton.h"
+#include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SSeparator.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
@@ -102,6 +103,29 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 								]
 						]
 
+					+ SVerticalBox::Slot()
+						.AutoHeight()
+						.Padding(0.0f, 0.0f, 0.0f, 8.0f)
+						[
+							SNew(SVerticalBox)
+
+								+ SVerticalBox::Slot()
+								.AutoHeight()
+								.Padding(0.0f, 0.0f, 0.0f, 4.0f)
+								[
+									SNew(STextBlock)
+										.Text(FText::FromString(TEXT("Path Filter")))
+								]
+
+								+ SVerticalBox::Slot()
+								.AutoHeight()
+								[
+									SNew(SEditableTextBox)
+										.Text(this, &SAssetReferenceInspectorWidget::GetPathFilterText)
+										.OnTextCommitted(this, &SAssetReferenceInspectorWidget::OnPathFilterTextCommitted)
+								]
+						]
+
 						+ SVerticalBox::Slot()
 						.FillHeight(1.0f)
 						[
@@ -159,6 +183,16 @@ FReply SAssetReferenceInspectorWidget::OnReferencersModeClicked()
 	return FReply::Handled();
 }
 
+void SAssetReferenceInspectorWidget::OnPathFilterTextCommitted(const FText& InText, ETextCommit::Type CommitType)
+{
+	if (CommitType == ETextCommit::OnCleared)
+	{
+		return;
+	}
+
+	AnalysisOptions.PathFilter = InText.ToString().TrimStartAndEnd();
+}
+
 void SAssetReferenceInspectorWidget::OnTreeNodeDoubleClicked(TSharedPtr<FAssetReferenceTreeNode> Item) const
 {
 	if (!Item.IsValid())
@@ -189,6 +223,11 @@ FText SAssetReferenceInspectorWidget::GetCurrentModeText() const
 		: FString(TEXT("Dependencies"));
 
 	return FText::FromString(FString::Printf(TEXT("Mode: %s"), *ModeName));
+}
+
+FText SAssetReferenceInspectorWidget::GetPathFilterText() const
+{
+	return FText::FromString(AnalysisOptions.PathFilter);
 }
 
 void SAssetReferenceInspectorWidget::BuildRelationTree()
@@ -224,32 +263,33 @@ void SAssetReferenceInspectorWidget::BuildRelationChildren(TSharedPtr<FAssetRefe
 	TArray<FName> RelatedPackageNames;
 	GetRelatedPackageNames(ParentNode->PackageName, RelatedPackageNames);
 
-	if (RelatedPackageNames.Num() == 0)
+	bool bAddedChild = false;
+
+	for (const FName RelatedPackageName : RelatedPackageNames)
+	{
+		if (!ShouldIncludeRelatedPackage(RelatedPackageName))
+		{
+			continue;
+		}
+
+		const bool bIsCircular = CurrentPath.Contains(RelatedPackageName);
+		TSharedPtr<FAssetReferenceTreeNode> ChildNode = CreateRelationNode(RelatedPackageName, ParentNode->Depth + 1, bIsCircular);
+		ParentNode->Children.Add(ChildNode);
+		bAddedChild = true;
+
+		if (bIsCircular)
+		{
+			continue;
+		}
+
+		CurrentPath.Add(RelatedPackageName);
+		BuildRelationChildren(ChildNode, CurrentPath);
+		CurrentPath.Pop();
+	}
+
+	if (!bAddedChild)
 	{
 		ParentNode->Children.Add(MakeShared<FAssetReferenceTreeNode>(GetEmptyRelationMessage(), NAME_None, ParentNode->Depth + 1));
-	}
-	else
-	{
-		for (const FName RelatedPackageName : RelatedPackageNames)
-		{
-			if (!ShouldIncludeRelatedPackage(RelatedPackageName))
-			{
-				continue;
-			}
-
-			const bool bIsCircular = CurrentPath.Contains(RelatedPackageName);
-			TSharedPtr<FAssetReferenceTreeNode> ChildNode = CreateRelationNode(RelatedPackageName, ParentNode->Depth + 1, bIsCircular);
-			ParentNode->Children.Add(ChildNode);
-
-			if (bIsCircular)
-			{
-				continue;
-			}
-
-			CurrentPath.Add(RelatedPackageName);
-			BuildRelationChildren(ChildNode, CurrentPath);
-			CurrentPath.Pop();
-		}
 	}
 }
 
@@ -314,7 +354,14 @@ TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateRelati
 
 bool SAssetReferenceInspectorWidget::ShouldIncludeRelatedPackage(FName PackageName) const
 {
-	return PackageName.ToString().StartsWith(TEXT("/Game/"));
+	const FString PathFilter = AnalysisOptions.PathFilter.TrimStartAndEnd();
+
+	if (PathFilter.IsEmpty())
+	{
+		return true;
+	}
+
+	return PackageName.ToString().StartsWith(PathFilter);
 }
 
 FString SAssetReferenceInspectorWidget::GetEmptyRelationMessage() const

@@ -4,6 +4,7 @@
 #include "Analysis/AssetReferenceTypes.h"
 #include "AssetRegistry/AssetData.h"
 #include "Input/Reply.h"
+#include "Types/SlateEnums.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/Views/STreeView.h"
 
@@ -24,12 +25,16 @@ private:
 	FReply OnDependenciesModeClicked();
 	FReply OnReferencersModeClicked();
 
+	// Filter callbacks
+	void OnPathFilterTextCommitted(const FText& InText, ETextCommit::Type CommitType);
+
 	// Tree callbacks
 	void OnTreeNodeDoubleClicked(TSharedPtr<FAssetReferenceTreeNode> Item) const;
 
 	// UI text
 	FText GetSelectedAssetText() const;
 	FText GetCurrentModeText() const;
+	FText GetPathFilterText() const;
 
 	// Analysis
 	void BuildRelationTree();
