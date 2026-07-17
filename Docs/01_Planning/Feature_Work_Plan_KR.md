@@ -446,6 +446,25 @@ Phase 5는 2주차 목표의 후반부에 해당하며, 분석 결과를 실제 
 
 - 특정 경로만 포함하거나 제외한다.
 
+완료 기준:
+
+- 기존 `/Game/` 고정 필터를 분석 옵션의 Path Filter 기본값으로 옮긴다.
+- UI에서 Path Filter 값을 입력하고 commit할 수 있다.
+- 빈 Path Filter는 전체 Package 표시로 처리한다.
+- Path Filter 적용 후 표시 가능한 자식이 없으면 기존 empty relation 메시지를 표시한다.
+- Editor Target 빌드가 성공한다.
+
+상태:
+
+- 완료.
+- `feature/ari-path-filter` 브랜치에서 `FAssetReferenceAnalysisOptions::PathFilter`와 Slate 입력 UI를 추가했다.
+- `ShouldIncludeRelatedPackage`가 고정 `/Game/` 대신 현재 Path Filter 값을 기준으로 PackageName을 판정하도록 변경했다.
+- 필터 적용 후 표시 가능한 자식이 없는 경우 `No dependencies found` 또는 `No referencers found` placeholder를 추가하도록 정리했다.
+- `OnTextCommitted`에서 Enter 후 `OnCleared`가 추가로 들어오는 사례를 확인하고, `OnCleared`가 Path Filter 값을 빈 문자열로 덮어쓰지 않도록 조치했다.
+- `Portfolio_PlugInEditor` 빌드는 성공했다.
+- `/Game/`, `/Script/`, 빈 Path Filter, `/NoMatch/` Path Filter 적용을 에디터에서 수동 확인했다.
+- 검증 스크린샷은 `Docs/03_Verification/Screenshots/feature_ari_path_filter/`에 정리했다.
+
 ### 5-2. Asset Class 필터
 
 목적:

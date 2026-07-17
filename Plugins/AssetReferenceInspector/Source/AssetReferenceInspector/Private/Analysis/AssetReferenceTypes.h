@@ -13,6 +13,7 @@ struct FAssetReferenceAnalysisOptions
 {
 	EAssetReferenceMode Mode = EAssetReferenceMode::Dependencies;
 	int32 MaxDepth = 2;
+	FString PathFilter = TEXT("/Game/");
 };
 
 struct FAssetReferenceTreeNode

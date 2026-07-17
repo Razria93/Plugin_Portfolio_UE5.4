@@ -667,3 +667,99 @@ Total execution time: 0.58 seconds
 #### 미확인
 
 - 필터링 이후 표시 결과가 비어 있는 경우의 메시지 정책은 Phase 5 필터 작업에서 정리
+
+### AssetReferenceInspector Path 필터 추가
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+UBT 출력 기준:
+
+```text
+[1/5] Compile [x64] Module.AssetReferenceInspector.cpp
+[2/5] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[3/5] Link [x64] UnrealEditor-AssetReferenceInspector.lib
+[4/5] Link [x64] UnrealEditor-AssetReferenceInspector.dll
+[5/5] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 6.00 seconds
+```
+
+Path Filter Enter commit 처리 수정 후 동일 명령으로 재검증했다.
+
+최종 재검증 UBT 출력 기준:
+
+```text
+[3/6] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[4/6] Link [x64] UnrealEditor-AssetReferenceInspector-0001.lib
+[5/6] Link [x64] UnrealEditor-AssetReferenceInspector-0001.dll
+[6/6] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 4.90 seconds
+```
+
+#### 확인 범위
+
+- `FAssetReferenceAnalysisOptions::PathFilter` 기본값 `/Game/` 추가 상태에서 빌드 확인
+- `SEditableTextBox` 기반 Path Filter 입력 UI 추가 상태에서 빌드 확인
+- Path Filter commit callback에서 입력값을 trim해 분석 옵션에 저장하는 상태에서 빌드 확인
+- `ShouldIncludeRelatedPackage`가 고정 `/Game/` 대신 현재 Path Filter 값으로 PackageName을 판정하는 상태에서 빌드 확인
+- Path Filter 적용 후 표시 가능한 자식이 없으면 현재 모드의 empty relation placeholder를 추가하는 상태에서 빌드 확인
+- `OnTextCommitted`에서 `ETextCommit::OnCleared`가 들어오면 기존 Path Filter 상태를 덮어쓰지 않는 상태에서 빌드 확인
+
+#### 에디터 UI 확인
+
+- Path Filter에 `/Game/` 입력 후 `Analyze` 클릭 시 `/Game/` 기준으로 결과가 표시되는 것 확인
+- Path Filter에 `/Script/` 입력 후 `Analyze` 클릭 시 `/Script/` 기준으로 결과가 표시되는 것 확인
+- Path Filter를 빈 값으로 둔 뒤 `Analyze` 클릭 시 `/Game`, `/Script`, Engine 기본 Asset 관계가 함께 표시되는 것 확인
+- Path Filter에 `/NoMatch/` 입력 후 `Analyze` 클릭 시 표시 가능한 자식이 없어 `No dependencies found` placeholder가 표시되는 것 확인
+- Path Filter 입력 후 `Enter`를 누르면 `OnEnter` 뒤에 `OnCleared`가 추가로 호출되는 것을 로그로 확인
+- Enter는 `OnEnter`로 commit된 뒤, commit 후 키보드 포커스 clear 경로에서 `OnCleared`가 추가 호출되는 것으로 해석
+- `Analyze` 버튼 클릭은 마우스 포커스 이동이므로 `OnUserMovedFocus`로 호출되는 것을 로그로 확인
+- `OnCleared`를 무시하도록 수정해 Enter 입력 후 Path Filter 값이 빈 문자열로 덮이지 않도록 조치
+
+#### Commit 로그 확인
+
+```text
+/Game/ 입력 후 Enter:
+CommitType=1, Text='/Game/'
+CommitType=3, Text='/Game/'
+
+/Game/ 입력 후 Analyze 버튼 클릭:
+CommitType=2, Text='/Game/'
+
+/Script/ 입력 후 Enter:
+CommitType=1, Text='/Script/'
+CommitType=3, Text='/Script/'
+
+텍스트 전체 삭제 후 Enter:
+CommitType=1, Text=''
+CommitType=3, Text=''
+```
+
+#### Screenshots
+
+![Path Filter Game Only](Screenshots/feature_ari_path_filter/path_filter_game_only.png)
+
+![Path Filter Script Only](Screenshots/feature_ari_path_filter/path_filter_script_only.png)
+
+![Path Filter Empty All Packages](Screenshots/feature_ari_path_filter/path_filter_empty_all_packages.png)
+
+![Path Filter No Match Placeholder](Screenshots/feature_ari_path_filter/path_filter_no_match_placeholder.png)
+
+#### 미확인
+
+없음.

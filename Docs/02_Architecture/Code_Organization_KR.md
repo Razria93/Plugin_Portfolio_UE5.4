@@ -132,11 +132,16 @@ private Button callbacks
 - OnPickSelectedAssetClicked
 - OnAnalyzeClicked
 
+private Filter callbacks
+- OnPathFilterTextCommitted
+
 private Tree callbacks
 - OnTreeNodeDoubleClicked
 
 private UI text
 - GetSelectedAssetText
+- GetCurrentModeText
+- GetPathFilterText
 
 private Analysis
 - BuildDependencyTree
@@ -165,6 +170,7 @@ private Tree view state
 기준:
 
 - 버튼 클릭처럼 `SButton::OnClicked`에서 직접 호출되는 함수는 `Button callbacks`에 둔다.
+- 입력값 commit처럼 필터 UI에서 직접 호출되는 함수는 `Filter callbacks`에 둔다.
 - Tree item 더블 클릭처럼 `STreeView` 상호작용에서 직접 호출되는 함수는 `Tree callbacks`에 둔다.
 - Slate text binding 함수는 `UI text`에 둔다.
 - Asset Registry 조회, 노드 생성, 필터 판단은 `Analysis`에 둔다.

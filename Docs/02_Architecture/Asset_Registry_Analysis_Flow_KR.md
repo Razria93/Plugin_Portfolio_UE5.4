@@ -127,10 +127,13 @@ struct FAssetReferenceAnalysisOptions
 {
 	EAssetReferenceMode Mode;
 	int32 MaxDepth;
+	FString PathFilter;
 };
 ```
 
 `FAssetReferenceAnalysisOptions::MaxDepth`는 재귀 Tree 생성의 깊이 제한으로 사용한다.
+
+`FAssetReferenceAnalysisOptions::PathFilter`는 표시할 PackageName 경로 prefix를 결정한다. 기본값은 `/Game/`이며, 입력값이 비어 있으면 Engine / Script / Plugin Package를 포함한 전체 관계를 표시할 수 있다.
 
 ```text
 Depth 0 = 선택 Asset root
@@ -189,17 +192,26 @@ A
 
 이 정책은 순환 참조 정보를 숨기지 않기 위한 것이다. 후속 순환 참조 탐지 단계에서는 `bIsCircular` 상태를 UI에 표시해 순환 후보 노드임을 명확히 보여준다.
 
-## 임시 Project Content 필터
+## Path Filter
 
-Phase 4-1 이후에는 재귀 Tree 검증 범위를 통제하기 위해 `/Game` Package만 표시한다.
+Phase 5-1 이후에는 재귀 Tree 검증 범위를 통제하기 위해 사용자가 입력한 Path Filter 값을 기준으로 PackageName을 표시한다.
 
 ```cpp
-PackageName.ToString().StartsWith(TEXT("/Game/"))
+PackageName.ToString().StartsWith(AnalysisOptions.PathFilter)
 ```
 
-이 정책은 정식 필터 UI가 아니다. `/Script`, `/Engine` 같은 Engine / Script dependency가 재귀 결과를 과도하게 복잡하게 만들면, Demo Asset 간의 참조 관계를 검증하기 어렵다. 따라서 이번 단계에서는 Project Content만 남겨 Max Depth 재귀 구조를 확인한다.
+기본값은 `/Game/`이다. `/Script`, `/Engine` 같은 Engine / Script dependency가 재귀 결과를 과도하게 복잡하게 만들면 Demo Asset 간의 참조 관계를 검증하기 어렵기 때문에, 기본 상태에서는 Project Content만 남긴다.
+
+Path Filter 입력값을 비우면 모든 PackageName을 통과시킨다. 이 상태는 `/Script` Package나 Engine 기본 Asset이 어떻게 조회되는지 디버깅할 때 사용한다.
 
 Engine Content / Plugin Content 표시 옵션은 후속 필터 작업에서 별도 UI와 옵션으로 다룬다.
+
+Path Filter 적용 후 실제 Asset Registry 조회 결과는 있지만 표시 가능한 자식이 모두 걸러질 수 있다. 이 경우에도 Tree가 빈 것처럼 보이지 않도록 현재 모드에 맞는 placeholder 노드를 추가한다.
+
+```text
+Dependencies mode = No dependencies found
+Referencers mode = No referencers found
+```
 
 검증 기준으로 사용한 Before / After는 다음과 같다.
 
@@ -290,7 +302,14 @@ Referencers 검증 기준:
 - Tree 자식에 `BP_Dummy` 표시
 - `T_Dummy_Color` 선택 시 `T_Dummy_Color -> M_Dummy -> BP_Dummy` 표시
 
-현재는 `/Game` Package만 표시하므로 Engine 기본 Mesh 또는 Script Package는 결과 Tree에서 제외된다.
+기본 Path Filter는 `/Game/`이므로 Engine 기본 Mesh 또는 Script Package는 결과 Tree에서 제외된다.
+
+Path Filter 검증 기준:
+
+- 기본값 `/Game/` 상태에서 `BP_Dummy -> M_Dummy -> T_Dummy_Color`만 표시
+- Path Filter를 비운 상태에서 `/Script`, Engine 기본 Asset 등 비-Project Package도 표시
+- Path Filter에 매칭되는 자식이 없으면 현재 모드에 맞는 placeholder 표시
+- Path Filter 변경 후 `Analyze`를 다시 클릭하면 변경된 조건으로 Tree 갱신
 
 순환 방어 검증 기준:
 
