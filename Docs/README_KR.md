@@ -58,6 +58,8 @@
   - `Docs`, `LocalNotes`, GitHub Issue, PR 본문의 책임 경계와 문서 네이밍 규칙을 정리한다.
 - `04_Governance/Documentation_Authoring_Workflow_KR.md`
   - draft 작성, public 변환, GitHub 게시 전 검수, 원격 반영 승인 절차를 정리한다.
+- `04_Governance/GitHub_CLI_Execution_Workflow_KR.md`
+  - GitHub CLI 실행 경로, keyring 오류 진단, `require_escalated` 재시도 기준을 정리한다.
 - `04_Governance/GitHub_Public_Body_Validation_Rules_KR.md`
   - GitHub PR body, Issue body, 댓글 public 본문의 섹션 순서, 스크린샷 구조, 금지 요소 검사 기준을 정리한다.
 - `04_Governance/Screenshot_Workflow_KR.md`
