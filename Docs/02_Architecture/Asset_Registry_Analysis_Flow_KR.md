@@ -232,6 +232,22 @@ TreeView->SetItemExpansion(RootItem, true);
 
 `RequestTreeRefresh`는 Tree View가 `TreeItemsSource`, `OnGenerateRow`, `OnGetChildren`을 다시 사용해 화면을 갱신하도록 요청한다.
 
+## Content Browser Sync
+
+Tree View의 노드를 더블 클릭하면 해당 노드가 가진 PackageName을 기준으로 Asset Registry에서 `FAssetData`를 다시 조회한다.
+
+```text
+Tree Node double click
+  -> PackageName 확인
+  -> GetAssetsByPackageName
+  -> 유효한 FAssetData 확인
+  -> SyncBrowserToAssets
+```
+
+Tree Node는 표시용 이름과 PackageName을 들고 있고, Content Browser Sync에는 `FAssetData`가 필요하다. 따라서 더블 클릭 시점에 PackageName으로 AssetData를 재조회한다.
+
+`NAME_None` 또는 `/Script` Package처럼 Content Browser에서 선택할 수 있는 AssetData가 없는 노드는 에디터 오류 없이 무시한다. 이 정책은 분석 결과 Tree에 placeholder나 비-Content Package가 포함되더라도 UI 조작이 실패로 이어지지 않게 하기 위한 최소 방어다.
+
 ## 검증 기준
 
 현재 Demo Asset 구성:
@@ -283,6 +299,13 @@ Referencers 검증 기준:
 - `Analyze` 클릭
 - `BP_CycleA -> BP_CycleB -> BP_CycleA` 표시
 - 마지막 `BP_CycleA` 아래로 다시 `BP_CycleB`가 확장되지 않음
+
+Content Browser Sync 검증 기준:
+
+- 분석 결과 Tree에서 `/Game` Asset 노드를 더블 클릭
+- Content Browser가 해당 Asset 위치로 이동하고 Asset을 선택
+- `M_Dummy`, `T_Dummy_Color` 같은 child node에서도 동일하게 동작
+- `No dependencies found` 또는 `/Script`처럼 AssetData가 없는 노드는 오류 없이 무시
 
 ## 후속 확장
 

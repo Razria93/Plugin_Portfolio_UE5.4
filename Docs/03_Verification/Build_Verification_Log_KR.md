@@ -599,3 +599,71 @@ Total execution time: 4.60 seconds
 - Max Depth 입력 UI는 이번 범위가 아니므로 미검증
 - 정식 Engine / Plugin Content 표시 옵션은 이번 범위가 아니므로 미검증
 - Content Browser Sync는 이번 범위가 아니므로 미검증
+
+### AssetReferenceInspector Content Browser Sync 추가
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+UBT 출력 기준:
+
+```text
+[1/5] Compile [x64] Module.AssetReferenceInspector.cpp
+[2/5] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[3/5] Link [x64] UnrealEditor-AssetReferenceInspector.lib
+[4/5] Link [x64] UnrealEditor-AssetReferenceInspector.dll
+[5/5] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 6.86 seconds
+```
+
+헤더/소스 섹션 정리와 검증 로그 보완 이후 동일 명령으로 재검증했다.
+
+최종 재검증 UBT 출력 기준:
+
+```text
+Target is up to date
+Total execution time: 0.58 seconds
+```
+
+#### 확인 범위
+
+- `STreeView` 더블 클릭 콜백을 연결한 상태에서 빌드 확인
+- Tree Node PackageName으로 `FAssetData`를 재조회하는 상태에서 빌드 확인
+- 유효한 AssetData에 대해 `IContentBrowserSingleton::SyncBrowserToAssets`를 호출하는 상태에서 빌드 확인
+- AssetData가 없는 PackageName은 실패 없이 무시하는 상태에서 빌드 확인
+
+#### 에디터 UI 확인
+
+- `BP_Dummy` 분석 결과에서 `M_Dummy` 노드 더블 클릭 시 Content Browser가 `M_Dummy`를 선택하는 것 확인
+- `BP_Dummy` 분석 결과에서 `T_Dummy_Color` 노드 더블 클릭 시 Content Browser가 `T_Dummy_Color`를 선택하는 것 확인
+- Referencers 모드에서 `BP_Dummy` 노드 더블 클릭 시 Content Browser가 `BP_Dummy`를 선택하는 것 확인
+- `No dependencies found` placeholder 노드 더블 클릭 시 별도 오류 없이 무시되는 것 확인
+- `No referencers found` placeholder 노드 더블 클릭 시 별도 오류 없이 무시되는 것 확인
+- 검증을 위해 `/Game` 최소 필터를 일시 해제한 상태에서 `/Script/InterchangeEngine` Package 노드 더블 클릭 시 별도 오류 없이 무시되는 것 확인
+
+#### Screenshots
+
+![Sync M_Dummy From Dependencies](Screenshots/feature_ari_content_browser_sync/sync_m_dummy_from_dependencies.png)
+
+![Sync T_Dummy_Color From Dependencies](Screenshots/feature_ari_content_browser_sync/sync_t_dummy_color_from_dependencies.png)
+
+![Sync BP_Dummy From Referencers](Screenshots/feature_ari_content_browser_sync/sync_bp_dummy_from_referencers.png)
+
+#### 미확인
+
+- 필터링 이후 표시 결과가 비어 있는 경우의 메시지 정책은 Phase 5 필터 작업에서 정리
