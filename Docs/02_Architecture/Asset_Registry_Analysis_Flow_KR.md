@@ -110,6 +110,8 @@ struct FAssetReferenceTreeNode
 	FString DisplayName;
 	FName PackageName;
 	int32 Depth;
+	bool bIsCircular;
+	FString ClassName;
 	TArray<TSharedPtr<FAssetReferenceTreeNode>> Children;
 };
 ```
@@ -128,12 +130,15 @@ struct FAssetReferenceAnalysisOptions
 	EAssetReferenceMode Mode;
 	int32 MaxDepth;
 	FString PathFilter;
+	FString ClassFilter;
 };
 ```
 
 `FAssetReferenceAnalysisOptions::MaxDepth`는 재귀 Tree 생성의 깊이 제한으로 사용한다.
 
 `FAssetReferenceAnalysisOptions::PathFilter`는 표시할 PackageName 경로 prefix를 결정한다. 기본값은 `/Game/`이며, 입력값이 비어 있으면 Engine / Script / Plugin Package를 포함한 전체 관계를 표시할 수 있다.
+
+`FAssetReferenceAnalysisOptions::ClassFilter`는 `FAssetData::AssetClassPath`를 기준으로 표시할 Asset Class를 제한한다. 입력값이 비어 있으면 모든 Asset Class를 통과시킨다.
 
 ```text
 Depth 0 = 선택 Asset root
@@ -146,6 +151,7 @@ Depth 2 = Depth 1 노드의 관련 Package
 ```text
 DisplayName = 선택 Asset 이름
 PackageName = 선택 Asset PackageName
+ClassName = 선택 Asset Class 이름
 ```
 
 자식 노드:
@@ -153,6 +159,7 @@ PackageName = 선택 Asset PackageName
 ```text
 DisplayName = 관련 AssetName 또는 PackageName
 PackageName = 관련 PackageName
+ClassName = 관련 Asset Class 이름. AssetData를 찾을 수 없으면 비어 있음
 ```
 
 조회 결과가 없으면 현재 모드에 따라 `No dependencies found` 또는 `No referencers found` 노드를 자식으로 추가한다.
@@ -232,6 +239,69 @@ BP_Dummy
 ```
 
 Before는 Asset Registry dependency를 그대로 재귀 표시한 결과다. After는 `/Game` Package만 표시해 Demo Asset 간 참조 관계만 남긴 결과다.
+
+## Asset Class Filter
+
+Phase 5-2 이후에는 Asset Class Filter 입력값을 기준으로 표시할 Asset 종류를 제한한다.
+
+Class Filter는 PackageName 자체가 아니라 PackageName으로 다시 조회한 `FAssetData::AssetClassPath`를 사용한다.
+
+```text
+PackageName
+-> GetAssetsByPackageName
+-> FAssetData
+-> AssetClassPath
+-> ClassPath / ClassName 비교
+```
+
+현재 판정 기준은 다음과 같다.
+
+```cpp
+ClassPath.Contains(ClassFilter, ESearchCase::IgnoreCase)
+|| ClassName.Contains(ClassFilter, ESearchCase::IgnoreCase)
+```
+
+따라서 `Material`, `Texture2D`, `Blueprint`처럼 Class 이름 일부를 입력해도 대소문자와 관계없이 매칭된다.
+
+Path Filter와 Class Filter는 `ShouldPassRelationFilters`에서 함께 적용한다.
+
+```text
+ShouldPassRelationFilters
+-> DoesPathPassFilter
+-> DoesAssetClassPassFilter
+```
+
+두 필터 중 하나라도 통과하지 못하면 해당 Package는 Tree에 추가하지 않는다.
+
+### 현재 필터 정책
+
+현재 필터는 노드를 Tree에 추가하기 전에 적용한다. 즉 어떤 중간 노드가 필터를 통과하지 못하면, 그 노드의 하위 관계도 더 이상 탐색하지 않는다.
+
+```text
+Root
+  A
+  B
+    C
+```
+
+위 구조에서 `C`는 Class Filter에 맞지만 `B`가 필터를 통과하지 못하면, 현재 구현은 `C`까지 내려가지 않는다.
+
+현재 정책:
+
+```text
+필터를 통과한 노드만 표시하고,
+통과한 노드만 계속 재귀 탐색한다.
+```
+
+이 정책은 MVP 단계에서 결과를 단순하게 유지하기 위한 선택이다.
+
+향후 필터 UX를 확장한다면 `Context-Preserving Filter Mode`를 고려한다. 이 방식은 하위에 매칭되는 노드가 있으면 부모 경로를 유지하고, 직접 매칭되지 않은 부모 노드는 흐리게 표시한다.
+
+```text
+Root
+  B   // dimmed, context only
+    C // matched
+```
 
 ## Tree 갱신
 

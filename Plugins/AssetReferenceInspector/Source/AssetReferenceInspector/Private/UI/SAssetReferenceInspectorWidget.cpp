@@ -126,6 +126,29 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 								]
 						]
 
+					+ SVerticalBox::Slot()
+						.AutoHeight()
+						.Padding(0.0f, 0.0f, 0.0f, 8.0f)
+						[
+							SNew(SVerticalBox)
+
+								+ SVerticalBox::Slot()
+								.AutoHeight()
+								.Padding(0.0f, 0.0f, 0.0f, 4.0f)
+								[
+									SNew(STextBlock)
+										.Text(FText::FromString(TEXT("Class Filter")))
+								]
+
+								+ SVerticalBox::Slot()
+								.AutoHeight()
+								[
+									SNew(SEditableTextBox)
+										.Text(this, &SAssetReferenceInspectorWidget::GetClassFilterText)
+										.OnTextCommitted(this, &SAssetReferenceInspectorWidget::OnClassFilterTextCommitted)
+								]
+						]
+
 						+ SVerticalBox::Slot()
 						.FillHeight(1.0f)
 						[
@@ -193,6 +216,16 @@ void SAssetReferenceInspectorWidget::OnPathFilterTextCommitted(const FText& InTe
 	AnalysisOptions.PathFilter = InText.ToString().TrimStartAndEnd();
 }
 
+void SAssetReferenceInspectorWidget::OnClassFilterTextCommitted(const FText& InText, ETextCommit::Type CommitType)
+{
+	if (CommitType == ETextCommit::OnCleared)
+	{
+		return;
+	}
+
+	AnalysisOptions.ClassFilter = InText.ToString().TrimStartAndEnd();
+}
+
 void SAssetReferenceInspectorWidget::OnTreeNodeDoubleClicked(TSharedPtr<FAssetReferenceTreeNode> Item) const
 {
 	if (!Item.IsValid())
@@ -230,6 +263,11 @@ FText SAssetReferenceInspectorWidget::GetPathFilterText() const
 	return FText::FromString(AnalysisOptions.PathFilter);
 }
 
+FText SAssetReferenceInspectorWidget::GetClassFilterText() const
+{
+	return FText::FromString(AnalysisOptions.ClassFilter);
+}
+
 void SAssetReferenceInspectorWidget::BuildRelationTree()
 {
 	TreeRootItems.Reset();
@@ -243,7 +281,9 @@ void SAssetReferenceInspectorWidget::BuildRelationTree()
 	TSharedPtr<FAssetReferenceTreeNode> RootNode = MakeShared<FAssetReferenceTreeNode>(
 		SelectedAssetData.AssetName.ToString(),
 		SelectedAssetData.PackageName,
-		0);
+		0,
+		false,
+		SelectedAssetData.AssetClassPath.GetAssetName().ToString());
 
 	TArray<FName> CurrentPath;
 	CurrentPath.Add(SelectedAssetData.PackageName);
@@ -267,7 +307,7 @@ void SAssetReferenceInspectorWidget::BuildRelationChildren(TSharedPtr<FAssetRefe
 
 	for (const FName RelatedPackageName : RelatedPackageNames)
 	{
-		if (!ShouldIncludeRelatedPackage(RelatedPackageName))
+		if (!ShouldPassRelationFilters(RelatedPackageName))
 		{
 			continue;
 		}
@@ -338,30 +378,16 @@ void SAssetReferenceInspectorWidget::ExpandTreeItems(const TArray<TSharedPtr<FAs
 TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateRelationNode(FName PackageName, int32 Depth, bool bIsCircular) const
 {
 	FString DisplayName = PackageName.ToString();
+	FString ClassName;
 
-	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
-
-	TArray<FAssetData> AssetsInPackage;
-	AssetRegistryModule.Get().GetAssetsByPackageName(PackageName, AssetsInPackage);
-
-	if (AssetsInPackage.Num() > 0)
+	FAssetData AssetData;
+	if (TryGetPrimaryAssetDataForPackage(PackageName, AssetData))
 	{
-		DisplayName = AssetsInPackage[0].AssetName.ToString();
+		DisplayName = AssetData.AssetName.ToString();
+		ClassName = AssetData.AssetClassPath.GetAssetName().ToString();
 	}
 
-	return MakeShared<FAssetReferenceTreeNode>(DisplayName, PackageName, Depth, bIsCircular);
-}
-
-bool SAssetReferenceInspectorWidget::ShouldIncludeRelatedPackage(FName PackageName) const
-{
-	const FString PathFilter = AnalysisOptions.PathFilter.TrimStartAndEnd();
-
-	if (PathFilter.IsEmpty())
-	{
-		return true;
-	}
-
-	return PackageName.ToString().StartsWith(PathFilter);
+	return MakeShared<FAssetReferenceTreeNode>(DisplayName, PackageName, Depth, bIsCircular, ClassName);
 }
 
 FString SAssetReferenceInspectorWidget::GetEmptyRelationMessage() const
@@ -371,9 +397,65 @@ FString SAssetReferenceInspectorWidget::GetEmptyRelationMessage() const
 		: FString(TEXT("No dependencies found"));
 }
 
+bool SAssetReferenceInspectorWidget::ShouldPassRelationFilters(FName PackageName) const
+{
+	return DoesPathPassFilter(PackageName)
+		&& DoesAssetClassPassFilter(PackageName);
+}
+
+bool SAssetReferenceInspectorWidget::DoesPathPassFilter(FName PackageName) const
+{
+	const FString PathFilter = AnalysisOptions.PathFilter.TrimStartAndEnd();
+
+	return PathFilter.IsEmpty()
+		|| PackageName.ToString().StartsWith(PathFilter);
+}
+
+bool SAssetReferenceInspectorWidget::DoesAssetClassPassFilter(FName PackageName) const
+{
+	const FString ClassFilter = AnalysisOptions.ClassFilter.TrimStartAndEnd();
+
+	if (ClassFilter.IsEmpty())
+	{
+		return true;
+	}
+
+	FAssetData AssetData;
+	if (!TryGetPrimaryAssetDataForPackage(PackageName, AssetData))
+	{
+		return false;
+	}
+
+	const FString ClassPath = AssetData.AssetClassPath.ToString();
+	const FString ClassName = AssetData.AssetClassPath.GetAssetName().ToString();
+
+	return ClassPath.Contains(ClassFilter, ESearchCase::IgnoreCase)
+		|| ClassName.Contains(ClassFilter, ESearchCase::IgnoreCase);
+}
+
+bool SAssetReferenceInspectorWidget::TryGetPrimaryAssetDataForPackage(FName PackageName, FAssetData& OutAssetData) const
+{
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+
+	TArray<FAssetData> AssetsInPackage;
+	AssetRegistryModule.Get().GetAssetsByPackageName(PackageName, AssetsInPackage);
+
+	if (AssetsInPackage.Num() == 0 || !AssetsInPackage[0].IsValid())
+	{
+		return false;
+	}
+
+	OutAssetData = AssetsInPackage[0];
+	return true;
+}
+
 TSharedRef<ITableRow> SAssetReferenceInspectorWidget::OnGenerateTreeRow(TSharedPtr<FAssetReferenceTreeNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const
 {
-	const FString DisplayName = Item.IsValid() ? Item->DisplayName : FString(TEXT("Invalid Node"));
+	const FString DisplayName = !Item.IsValid()
+		? FString(TEXT("Invalid Node"))
+		: Item->ClassName.IsEmpty()
+			? Item->DisplayName
+			: FString::Printf(TEXT("%s [%s]"), *Item->DisplayName, *Item->ClassName);
 
 	return SNew(STableRow<TSharedPtr<FAssetReferenceTreeNode>>, OwnerTable)
 		[
@@ -397,12 +479,8 @@ bool SAssetReferenceInspectorWidget::TrySyncContentBrowserToPackage(FName Packag
 		return false;
 	}
 
-	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
-
-	TArray<FAssetData> AssetsInPackage;
-	AssetRegistryModule.Get().GetAssetsByPackageName(PackageName, AssetsInPackage);
-
-	if (AssetsInPackage.Num() == 0 || !AssetsInPackage[0].IsValid())
+	FAssetData AssetData;
+	if (!TryGetPrimaryAssetDataForPackage(PackageName, AssetData))
 	{
 		return false;
 	}
@@ -410,7 +488,7 @@ bool SAssetReferenceInspectorWidget::TrySyncContentBrowserToPackage(FName Packag
 	FContentBrowserModule& ContentBrowserModule = FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
 
 	TArray<FAssetData> AssetsToSync;
-	AssetsToSync.Add(AssetsInPackage[0]);
+	AssetsToSync.Add(AssetData);
 	ContentBrowserModule.Get().SyncBrowserToAssets(AssetsToSync);
 
 	return true;
