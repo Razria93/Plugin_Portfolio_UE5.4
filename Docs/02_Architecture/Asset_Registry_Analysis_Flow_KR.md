@@ -211,7 +211,19 @@ PackageName.ToString().StartsWith(AnalysisOptions.PathFilter)
 
 Path Filter 입력값을 비우면 모든 PackageName을 통과시킨다. 이 상태는 `/Script` Package나 Engine 기본 Asset이 어떻게 조회되는지 디버깅할 때 사용한다.
 
-Engine Content / Plugin Content 표시 옵션은 후속 필터 작업에서 별도 UI와 옵션으로 다룬다.
+Engine Content / Plugin Content 표시 옵션은 Project Content 기본 분석 범위를 외부 Content로 확장하는 옵션이다. 기본 상태에서는 `/Game/` 중심으로 표시하고, 체크 시 `/Engine/` 또는 Content를 가진 활성 플러그인의 mount path 아래 PackageName도 표시한다.
+
+### Plugin Content 판정 정책
+
+Engine Content는 `/Engine/` root로 판정할 수 있다. 반면 Plugin Content는 플러그인마다 Content mount root가 다르므로 `/Plugin/` 같은 고정 prefix로 판정하지 않는다.
+
+`AssetReferenceInspector`는 `IPluginManager::Get().GetEnabledPluginsWithContent()`로 Content를 가진 활성 플러그인 목록을 가져오고, 각 플러그인의 `GetMountedAssetPath()`와 PackageName prefix를 비교한다.
+
+```cpp
+PackageNameString.StartsWith(MountedAssetPath + TEXT("/"))
+```
+
+`PackageNameString == MountedAssetPath` 조건은 사용하지 않는다. 현재 분석 단위는 실제 Asset Package이며, 플러그인 mount root 자체는 일반적인 Asset PackageName이 아니기 때문이다. 나중에 플러그인 root를 그룹 노드로 표시해야 한다면 Asset Package 판정 함수가 아니라 별도 node type으로 처리한다.
 
 Path Filter 적용 후 실제 Asset Registry 조회 결과는 있지만 표시 가능한 자식이 모두 걸러질 수 있다. 이 경우에도 Tree가 빈 것처럼 보이지 않도록 현재 모드에 맞는 placeholder 노드를 추가한다.
 
@@ -411,4 +423,4 @@ Options
 = Mode, Max Depth, 필터 조건
 ```
 
-정식 필터 UI, 순환 참조 표시, Analyzer 클래스 분리는 후속 작업에서 확장한다.
+순환 참조 표시 강화, Analyzer 클래스 분리, Max Depth 전용 입력 UI는 후속 작업에서 확장한다. Path / Class / Engine / Plugin Content 필터 UI는 현재 `SAssetReferenceInspectorWidget`에서 직접 관리한다.
