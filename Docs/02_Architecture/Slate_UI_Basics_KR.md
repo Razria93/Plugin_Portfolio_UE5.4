@@ -1,4 +1,4 @@
-﻿# Slate UI Basics
+# Slate UI Basics
 
 이 문서는 `AssetReferenceInspector` Editor Plugin에서 사용하는 Slate UI 구조와 주요 Slate API 사용 기준을 정리한다.
 
