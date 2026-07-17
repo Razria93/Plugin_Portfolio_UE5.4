@@ -112,6 +112,7 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 										.TreeItemsSource(&TreeRootItems)
 										.OnGenerateRow(this, &SAssetReferenceInspectorWidget::OnGenerateTreeRow)
 										.OnGetChildren(this, &SAssetReferenceInspectorWidget::OnGetTreeChildren)
+										.OnMouseButtonDoubleClick(this, &SAssetReferenceInspectorWidget::OnTreeNodeDoubleClicked)
 								]
 						]
 				]
@@ -156,6 +157,16 @@ FReply SAssetReferenceInspectorWidget::OnReferencersModeClicked()
 {
 	AnalysisOptions.Mode = EAssetReferenceMode::Referencers;
 	return FReply::Handled();
+}
+
+void SAssetReferenceInspectorWidget::OnTreeNodeDoubleClicked(TSharedPtr<FAssetReferenceTreeNode> Item) const
+{
+	if (!Item.IsValid())
+	{
+		return;
+	}
+
+	TrySyncContentBrowserToPackage(Item->PackageName);
 }
 
 FText SAssetReferenceInspectorWidget::GetSelectedAssetText() const
@@ -330,4 +341,30 @@ void SAssetReferenceInspectorWidget::OnGetTreeChildren(TSharedPtr<FAssetReferenc
 	{
 		OutChildren.Append(Item->Children);
 	}
+}
+
+bool SAssetReferenceInspectorWidget::TrySyncContentBrowserToPackage(FName PackageName) const
+{
+	if (PackageName.IsNone())
+	{
+		return false;
+	}
+
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+
+	TArray<FAssetData> AssetsInPackage;
+	AssetRegistryModule.Get().GetAssetsByPackageName(PackageName, AssetsInPackage);
+
+	if (AssetsInPackage.Num() == 0 || !AssetsInPackage[0].IsValid())
+	{
+		return false;
+	}
+
+	FContentBrowserModule& ContentBrowserModule = FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
+
+	TArray<FAssetData> AssetsToSync;
+	AssetsToSync.Add(AssetsInPackage[0]);
+	ContentBrowserModule.Get().SyncBrowserToAssets(AssetsToSync);
+
+	return true;
 }

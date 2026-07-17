@@ -18,11 +18,14 @@ public:
 	void Construct(const FArguments& InArgs);
 
 private:
-	// UI callbacks
+	// Button callbacks
 	FReply OnPickSelectedAssetClicked();
 	FReply OnAnalyzeClicked();
 	FReply OnDependenciesModeClicked();
 	FReply OnReferencersModeClicked();
+
+	// Tree callbacks
+	void OnTreeNodeDoubleClicked(TSharedPtr<FAssetReferenceTreeNode> Item) const;
 
 	// UI text
 	FText GetSelectedAssetText() const;
@@ -41,6 +44,9 @@ private:
 	void ExpandTreeItems(const TArray<TSharedPtr<FAssetReferenceTreeNode>>& Items);
 	TSharedRef<ITableRow> OnGenerateTreeRow(TSharedPtr<FAssetReferenceTreeNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const;
 	void OnGetTreeChildren(TSharedPtr<FAssetReferenceTreeNode> Item, TArray<TSharedPtr<FAssetReferenceTreeNode>>& OutChildren) const;
+
+	// Content Browser
+	bool TrySyncContentBrowserToPackage(FName PackageName) const;
 
 private:
 	// Analysis state

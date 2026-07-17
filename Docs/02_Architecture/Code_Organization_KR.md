@@ -128,9 +128,12 @@ private Commands
 `SAssetReferenceInspectorWidget`은 UI 이벤트, 분석 데이터 생성, Tree View 표시가 한 클래스 안에 공존한다. 이 경우 `private` helper를 하나의 `Tree data` 섹션에 모두 넣지 않고 다음 기준으로 나눈다.
 
 ```text
-private UI callbacks
+private Button callbacks
 - OnPickSelectedAssetClicked
 - OnAnalyzeClicked
+
+private Tree callbacks
+- OnTreeNodeDoubleClicked
 
 private UI text
 - GetSelectedAssetText
@@ -147,6 +150,9 @@ private Tree view
 - OnGenerateTreeRow
 - OnGetTreeChildren
 
+private Content Browser
+- TrySyncContentBrowserToPackage
+
 private Analysis state
 - AnalysisOptions
 - SelectedAssetData
@@ -158,9 +164,11 @@ private Tree view state
 
 기준:
 
-- 버튼 클릭처럼 Slate 이벤트에서 직접 호출되는 함수는 `UI callbacks`에 둔다.
+- 버튼 클릭처럼 `SButton::OnClicked`에서 직접 호출되는 함수는 `Button callbacks`에 둔다.
+- Tree item 더블 클릭처럼 `STreeView` 상호작용에서 직접 호출되는 함수는 `Tree callbacks`에 둔다.
 - Slate text binding 함수는 `UI text`에 둔다.
 - Asset Registry 조회, 노드 생성, 필터 판단은 `Analysis`에 둔다.
 - `STreeView` 갱신, expand, row 생성, children 제공은 `Tree view`에 둔다.
+- Content Browser 선택 동기화처럼 에디터 UI 외부 시스템과 연결되는 helper는 `Content Browser`에 둔다.
 - 분석 입력과 옵션은 `Analysis state`, Tree가 참조하는 데이터와 Slate 위젯 포인터는 `Tree view state`에 둔다.
 - 더 세부적인 `Dependency Query`, `Node Factory`, `Filter` 섹션은 실제 함수 수가 늘어난 뒤에만 추가한다.
