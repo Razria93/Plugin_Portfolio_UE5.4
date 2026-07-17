@@ -1,4 +1,4 @@
-# Slate UI Basics
+﻿# Slate UI Basics
 
 이 문서는 `AssetReferenceInspector` Editor Plugin에서 사용하는 Slate UI 구조와 주요 Slate API 사용 기준을 정리한다.
 
@@ -18,7 +18,7 @@ Slate API 사용 노트
 = SNew, SAssignNew, Text binding, OnClicked, OnTextCommitted 같은 API 사용 방식과 주의사항을 설명한다.
 ```
 
-별도 파일로 분리하지 않는 이유는 기존 문서 참조를 유지하고, Path Filter feature 범위를 문서 구조 변경으로 과하게 키우지 않기 위해서다.
+위젯과 API의 목록형 참조는 `Slate_Widget_API_Catalog_KR.md`에서 다룬다. 이 문서는 현재 플러그인 UI 구조와 핵심 사용 흐름을 설명하는 데 집중한다.
 
 ---
 
@@ -33,6 +33,7 @@ SButton = 버튼
 STextBlock = 텍스트
 SBorder = 테두리 / 배경 / 패딩 컨테이너
 SBox = 크기 제약 컨테이너
+SCheckBox = 체크 상태 입력 위젯
 SVerticalBox = 세로 배치 컨테이너
 SHorizontalBox = 가로 배치 컨테이너
 SUniformGridPanel = 같은 크기 셀 그리드
@@ -41,6 +42,148 @@ SSeparator = 구분선
 STreeView = 트리 표시 위젯
 SDockTab = 에디터 도킹 탭
 ```
+
+### Slate 위젯 분류와 구조
+
+Slate 위젯을 이해할 때는 먼저 "이 위젯이 자식을 받는가", "자식을 받는다면 하나인가 여러 개인가", "직접 받는가 callback으로 생성하는가"를 구분한다.
+
+`SNew(SomeWidget)`은 위젯 인스턴스를 생성한다. 그 뒤의 `[]`는 해당 위젯이 제공하는 content slot에 자식 위젯을 넣는 문법이고, `+ SomePanel::Slot()`은 여러 자식을 받는 panel에 slot을 하나 추가하는 문법이다.
+
+#### Leaf Widget
+
+Leaf Widget은 자식 위젯을 받지 않고 자기 자신을 그리는 위젯이다.
+
+```text
+STextBlock
+= 텍스트를 표시하는 leaf widget
+```
+
+보통 leaf widget은 다음처럼 속성만 지정한다.
+
+```cpp
+SNew(STextBlock)
+	.Text(FText::FromString(TEXT("Asset Reference Inspector")))
+```
+
+#### Single Child / Compound Widget
+
+Single Child 또는 Compound 계열 위젯은 하나의 content slot을 가진다.
+
+```text
+SBorder
+= 테두리, 배경, padding을 제공하고 자식 하나를 담는 컨테이너
+
+SCheckBox
+= 체크 상태를 표시하고, content slot에 label 또는 custom content를 담는 위젯
+
+SBox
+= 크기 제약을 적용하고 자식 하나를 담는 컨테이너
+```
+
+예를 들어 `SBorder [ STextBlock ]`은 Border 내부 content slot에 TextBlock을 넣는 구조다.
+
+```cpp
+SNew(SBorder)
+[
+	SNew(STextBlock)
+]
+```
+
+`SCheckBox [ STextBlock ]`도 같은 방식으로 이해한다. 이 경우 `STextBlock`은 체크박스 오른쪽에 붙는 label/content로 표시된다.
+
+```cpp
+SNew(SCheckBox)
+[
+	SNew(STextBlock)
+		.Text(FText::FromString(TEXT("Engine Content")))
+]
+```
+
+#### Panel / Multi Slot Widget
+
+Panel 계열 위젯은 여러 자식을 slot collection으로 받는다.
+
+```text
+SVerticalBox
+= 자식을 세로 방향 slot으로 배치
+
+SHorizontalBox
+= 자식을 가로 방향 slot으로 배치
+
+SUniformGridPanel
+= 자식을 같은 크기의 grid cell에 배치
+
+SScrollBox
+= 자식을 스크롤 가능한 slot으로 배치
+```
+
+Panel 계열은 `[]` 하나에 자식을 넣는 대신 `+ Slot()`으로 자식 slot을 계속 추가한다.
+
+```cpp
+SNew(SHorizontalBox)
+
++ SHorizontalBox::Slot()
+[
+	SNew(STextBlock)
+]
+
++ SHorizontalBox::Slot()
+[
+	SNew(SCheckBox)
+]
+```
+
+`SUniformGridPanel`은 slot에 좌표를 지정한다.
+
+```cpp
+SNew(SUniformGridPanel)
+
++ SUniformGridPanel::Slot(0, 0)
+[
+	SNew(SButton)
+]
+
++ SUniformGridPanel::Slot(1, 0)
+[
+	SNew(SButton)
+]
+```
+
+각 slot은 `Padding`, `AutoHeight`, `FillWidth`, `HAlign`, `VAlign` 같은 배치 규칙을 가질 수 있다.
+
+#### Table / Generated Row Widget
+
+Table 계열 위젯은 데이터를 반복 표시한다. 자식 위젯을 직접 나열하기보다, 데이터 소스와 callback을 연결해 필요한 row를 생성한다.
+
+```text
+STreeView
+= 계층 데이터 표시
+
+SListView
+= 목록 데이터 표시
+
+STileView
+= tile 형태 데이터 표시
+```
+
+`STreeView`는 `TreeItemsSource`, `OnGenerateRow`, `OnGetChildren` 같은 callback을 통해 "데이터 모델 -> Row 위젯" 변환을 수행한다.
+
+```text
+Tree data node
+-> OnGenerateRow
+-> STableRow
+```
+
+#### Dock / Editor Container Widget
+
+Editor 확장에서는 탭이나 창을 담당하는 컨테이너도 사용한다.
+
+```text
+SDockTab
+= Editor tab 하나를 나타내는 Dock widget
+```
+
+`AssetReferenceInspector`는 `SDockTab` 안에 `SAssetReferenceInspectorWidget`을 넣고, 그 내부에서 실제 도구 UI를 구성한다.
 
 ### SCompoundWidget
 
@@ -209,6 +352,12 @@ SAssetReferenceInspectorWidget
         SButton
       STextBlock
       SEditableTextBox
+      STextBlock
+      SEditableTextBox
+      STextBlock
+      SUniformGridPanel
+        SCheckBox
+        SCheckBox
       SBorder
         STreeView
           STableRow
@@ -225,7 +374,7 @@ SVerticalBox
 = 제목, 선택 Asset, 버튼, 모드, 필터, 결과 영역을 세로로 배치
 
 STextBlock
-= 제목, 선택 Asset, 모드, Path / Class Filter label, Tree row text 표시
+= 제목, 선택 Asset, 모드, Path / Class Filter label, Include External Content label, Engine / Plugin Content label, Tree row text 표시
 
 SSeparator
 = 제목과 조작 영역 구분
@@ -238,6 +387,9 @@ SButton
 
 SEditableTextBox
 = Path Filter / Class Filter 입력
+
+SCheckBox
+= Project Content 기본 분석 범위에 Engine Content / Plugin Content를 추가로 포함할지 입력
 
 STreeView
 = Asset 참조 관계를 계층 구조로 표시할 결과 영역
@@ -369,184 +521,35 @@ Analyze 클릭
 
 ### SNew / SAssignNew
 
-Slate 위젯은 보통 `SNew` 매크로로 생성한다.
+`SNew`는 위젯을 생성하고, `SAssignNew`는 위젯을 생성하면서 멤버 포인터에도 저장한다. `AssetReferenceInspector`는 생성 이후 `TreeView->RequestTreeRefresh()`와 `TreeView->SetItemExpansion(...)`을 호출해야 하므로 `STreeView`만 `SAssignNew`로 보관한다.
 
-```cpp
-SNew(STextBlock)
-	.Text(FText::FromString(TEXT("Asset Reference Inspector")))
-```
-
-생성한 위젯을 이후 코드에서 다시 접근해야 할 때는 `SAssignNew`를 사용한다.
-
-```cpp
-SAssignNew(TreeView, STreeView<TSharedPtr<FAssetReferenceTreeNode>>)
-```
-
-차이는 다음과 같다.
-
-```text
-SNew
-= Slate 위젯을 생성해서 바로 사용한다.
-
-SAssignNew
-= Slate 위젯을 생성하면서 `TSharedPtr` 변수에도 저장한다.
-```
-
-`AssetReferenceInspector`에서는 `TreeView->SetItemExpansion(...)`처럼 생성 이후 Tree View API를 호출해야 하므로 `SAssignNew`로 `TreeView` 멤버에 저장한다.
-
-위젯은 대괄호 `[]`로 자식 위젯을 중첩해 UI 트리를 만든다.
-
-```cpp
-SNew(SBorder)
-[
-	SNew(STextBlock)
-		.Text(FText::FromString(TEXT("Selected Asset: None")))
-]
-```
+자세한 항목은 `Slate_Widget_API_Catalog_KR.md`의 `SNew`, `SAssignNew`, `[] Content Slot`을 참고한다.
 
 ### Text Binding
 
-`STextBlock`의 텍스트는 고정값과 동적 바인딩을 구분한다.
+`Text(FText::FromString(...))`는 고정 표시값이고, `Text(this, &...)`는 표시 시점에 위젯 상태를 읽는 동적 바인딩이다. 선택 Asset, 현재 모드, Path / Class Filter는 위젯 상태가 바뀔 수 있으므로 동적 바인딩을 사용한다.
 
-```cpp
-.Text(FText::FromString(TEXT("Selected Asset: None")))
-```
-
-위 코드는 고정 텍스트 값을 넣는다.
-
-```cpp
-.Text(this, &SAssetReferenceInspectorWidget::GetSelectedAssetText)
-```
-
-위 코드는 텍스트 값이 필요할 때 `GetSelectedAssetText`를 호출하도록 바인딩한다. `SelectedAssetData` 같은 위젯 상태가 바뀌면, Slate가 다음 표시 갱신 시점에 이 함수를 호출해 현재 상태 기준의 텍스트를 가져온다.
+자세한 항목은 `Slate_Widget_API_Catalog_KR.md`의 `STextBlock`, `SEditableTextBox`를 참고한다.
 
 ### SButton::OnClicked / FReply
 
-예를 들어 `Pick Selected Asset` 버튼은 `Construct`에서 생성되고, 클릭 이벤트에 함수가 연결된다.
+`OnClicked`는 버튼 클릭 시 실행할 함수를 등록한다. `Construct`에서 함수를 즉시 실행하는 것이 아니라, 클릭 이벤트가 발생했을 때 호출할 callback을 연결한다. 버튼 callback은 Slate 입력 처리 결과인 `FReply`를 반환한다.
 
-```cpp
-SNew(SButton)
-	.Text(FText::FromString(TEXT("Pick Selected Asset")))
-	.OnClicked(this, &SAssetReferenceInspectorWidget::OnPickSelectedAssetClicked)
-```
+현재 버튼들은 선택 Asset 가져오기, 분석 실행, Dependencies / Referencers 모드 전환을 담당한다. 자세한 항목은 `Slate_Widget_API_Catalog_KR.md`의 `SButton`, `OnClicked`, `FReply`를 참고한다.
 
-이 코드는 `Construct` 시점에 `OnPickSelectedAssetClicked`를 실행하는 것이 아니다. 버튼이 클릭되었을 때 호출할 함수를 등록한다.
+### SCheckBox / ECheckBoxState
 
-`SButton::OnClicked`에 연결하는 함수는 `FReply`를 반환해야 한다.
+`SCheckBox`는 `IsChecked`로 현재 상태를 읽고, `OnCheckStateChanged`로 상태 변경을 저장한다. 현재 Engine / Plugin Content 옵션은 Project Content 기본 분석 범위를 확장하는 `Include External Content` 옵션이며, `ECheckBoxState::Checked`와 `Unchecked`만 사용한다.
 
-```cpp
-FReply OnPickSelectedAssetClicked();
-```
-
-`FReply`는 Slate 입력 이벤트 처리 결과를 담는 응답 객체다.
-
-```text
-FReply::Handled()
-= 이 위젯이 이벤트를 처리했다.
-
-FReply::Unhandled()
-= 이 위젯이 이벤트를 처리하지 않았다.
-```
-
-현재 `Pick Selected Asset` 버튼은 클릭 이벤트 안에서 Content Browser 선택 Asset을 가져오고 `FReply::Handled()`를 반환한다.
+`SCheckBox [ STextBlock ]`에서 `STextBlock`은 체크박스 옆 label/content로 표시된다. 자세한 항목은 `Slate_Widget_API_Catalog_KR.md`의 `SCheckBox`, `IsChecked`, `OnCheckStateChanged`, `ECheckBoxState`를 참고한다.
 
 ### SEditableTextBox와 입력 Commit
 
-`SEditableTextBox`는 한 줄 텍스트 입력 위젯이다. `Text`에는 현재 표시할 값을 바인딩하고, `OnTextCommitted`에는 사용자가 입력을 확정했을 때 호출할 함수를 바인딩한다.
+`SEditableTextBox`는 `Text`로 저장된 상태를 표시하고, `OnTextCommitted`에서 입력 확정 시점에 상태를 갱신한다. 현재 Path / Class Filter는 입력 중 실시간 반영하지 않고, Enter 또는 포커스 이동으로 commit될 때만 저장한다.
 
-```cpp
-SNew(SEditableTextBox)
-	.Text(this, &SAssetReferenceInspectorWidget::GetPathFilterText)
-	.OnTextCommitted(this, &SAssetReferenceInspectorWidget::OnPathFilterTextCommitted)
-```
+`OnCleared`는 텍스트가 비었다는 뜻이 아니라 focus clear 계열 commit 원인이다. 이 프로젝트에서는 Enter 직후 `OnCleared`가 추가로 들어오는 사례를 확인했기 때문에, 상태 덮어쓰기를 막기 위해 `OnCleared`를 무시한다.
 
-`Text(this, &...)`는 위젯 상태를 화면에 보여주는 읽기 바인딩이다. `OnTextCommitted`는 사용자가 Enter를 누르거나, 다른 위젯으로 포커스를 옮기거나, 입력이 clear/cancel 계열로 종료될 때 호출된다.
-
-`SEditableTextBox` 입력은 외부 상태값과 편집 중 임시값을 구분해서 이해한다.
-
-```text
-외부 상태값
-= AnalysisOptions.PathFilter
-= Text binding이 읽어오는 값
-
-편집 중 임시값
-= 텍스트 박스 내부 edit buffer
-= 사용자가 포커스 인 상태에서 타이핑 중인 값
-```
-
-현재 Path Filter는 `OnTextChanged`를 사용하지 않고 `OnTextCommitted`에서만 외부 상태값을 갱신한다. 따라서 사용자가 입력 중인 값은 commit 전까지 `AnalysisOptions.PathFilter`에 저장되지 않는다.
-
-```text
-저장값: /Script/
-포커스 인 후 /Game/ 입력
--> edit buffer = /Game/
--> AnalysisOptions.PathFilter = /Script/
-
-Enter 또는 마우스 포커스 이동
--> commit
--> AnalysisOptions.PathFilter = /Game/
-
-Esc
--> edit buffer 폐기
--> Text binding이 저장값 /Script/를 다시 표시
-```
-
-이 동작은 Path Filter UX와 맞다. 사용자가 입력 중 Enter 또는 포커스 이동으로 확정하면 필터값을 저장하고, Esc로 취소하면 마지막 저장값으로 되돌아간다.
-
-`ETextCommit::Type`은 commit이 발생한 이유를 나타낸다.
-
-```text
-Default
-= 포커스 손실 등 암시적 commit
-
-OnEnter
-= Enter 키로 commit
-
-OnUserMovedFocus
-= 사용자가 다른 UI로 포커스를 옮겨 commit
-
-OnCleared
-= Escape 또는 명시적 focus clear 계열
-```
-
-Path Filter 입력 검증 중 Enter를 누르면 `OnEnter`가 먼저 호출되고, 같은 텍스트로 `OnCleared`가 뒤따라 호출되는 사례를 확인했다.
-
-```text
-CommitType=1, Text='/Game/'
-CommitType=3, Text='/Game/'
-```
-
-이는 Enter가 `OnCleared`로 분류된다는 뜻이 아니다. Enter는 먼저 `OnEnter`로 commit된다. 이후 `SEditableTextBox`가 commit 후 키보드 포커스를 명시적으로 clear하면, focus lost 처리 경로에서 `EFocusCause::Cleared`가 `ETextCommit::OnCleared`로 다시 전달될 수 있다.
-
-```text
-Enter
--> OnTextCommitted(..., OnEnter)
--> ClearKeyboardFocus(EFocusCause::Cleared)
--> focus lost
--> OnTextCommitted(..., OnCleared)
-```
-
-반대로 `Analyze` 버튼 클릭처럼 마우스로 다른 UI에 포커스를 옮기는 경우는 `OnUserMovedFocus`로 들어온다.
-
-```text
-Mouse / Navigation focus move
--> OnTextCommitted(..., OnUserMovedFocus)
-```
-
-따라서 `OnCleared`는 텍스트 내용이 비었다는 뜻이 아니라, 키보드 포커스가 clear 원인으로 빠졌다는 뜻으로 해석한다.
-
-`OnCleared`를 빈 입력으로 해석해 상태를 덮어쓰면, 정상 입력값이 저장된 직후 빈 필터로 다시 바뀔 수 있다. 현재 Path Filter는 `OnCleared`를 무시하고, `OnEnter` 또는 `OnUserMovedFocus` 같은 정상 commit에서만 `AnalysisOptions.PathFilter`를 갱신한다.
-
-```cpp
-if (CommitType == ETextCommit::OnCleared)
-{
-	return;
-}
-
-AnalysisOptions.PathFilter = InText.ToString().TrimStartAndEnd();
-```
-
-사용자가 텍스트를 직접 모두 지우고 Enter를 누르는 경우에는 `OnEnter`와 빈 텍스트가 전달되므로, 빈 Path Filter가 정상적으로 저장된다.
+자세한 commit 종류와 검증 기록은 `Slate_Widget_API_Catalog_KR.md`의 `SEditableTextBox`, `OnTextCommitted`, `ETextCommit::Type`을 참고한다.
 
 ---
 
@@ -635,14 +638,16 @@ SAssetReferenceInspectorWidget
 
 이 구조를 유지하면 이후 기능이 늘어나도 모듈 cpp가 UI 코드로 커지지 않는다.
 
-다음 단계에서 `SAssetReferenceInspectorWidget`은 다음 역할을 갖게 된다.
+현재 `SAssetReferenceInspectorWidget`은 다음 역할을 가진다.
 
 ```text
 - 선택 Asset 표시 상태 관리
 - Analyze 버튼 이벤트 연결
 - Dependencies / Referencers 모드 선택 UI
-- Max Depth 입력 UI
-- STreeView 결과를 실제 Asset 분석 데이터와 연결
+- Path / Class Filter 입력 UI
+- Include External Content 표시 옵션 UI
+- STreeView 결과를 Asset Registry 분석 데이터와 연결
+- Tree node 더블 클릭 시 Content Browser Sync
 ```
 
 ---
