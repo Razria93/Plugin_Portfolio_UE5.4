@@ -90,6 +90,8 @@ if (Test-Path LocalNotes/tools/validate_github_public_docs.ps1) {
 
 원격 반영 전에는 대상 Issue / PR / 댓글, source public 파일, 실행할 `gh` 명령, 예상 변경 요약을 사용자에게 제시한다. 사용자가 승인하기 전에는 `gh` 명령을 실행하지 않는다.
 
+Windows Codex 환경에서 `gh auth status`가 `token in keyring is invalid` 등으로 실패하면 인증 만료로 단정하지 않는다. 같은 `gh` 명령을 PowerShell + `require_escalated`로 재시도한다. 이 경로에서 성공하면 Codex 샌드박스의 Windows Credential Manager/keyring 접근 제한으로 판단한다. 세부 기준은 `Docs/04_Governance/GitHub_CLI_Execution_Workflow_KR.md`를 따른다.
+
 ## 커밋 스타일
 
 커밋 메시지는 가벼운 Conventional Commit 형식을 사용하고 요약은 한국어로 작성한다.
