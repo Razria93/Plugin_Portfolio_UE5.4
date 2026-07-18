@@ -1021,12 +1021,11 @@ Total execution time: 7.31 seconds
 UBT 출력 기준:
 
 ```text
-[3/7] Compile [x64] Module.AssetReferenceInspector.cpp
-[4/7] Compile [x64] SAssetReferenceInspectorWidget.cpp
-[5/7] Link [x64] UnrealEditor-AssetReferenceInspector-0005.lib
-[6/7] Link [x64] UnrealEditor-AssetReferenceInspector-0005.dll
-[7/7] WriteMetadata Portfolio_PlugInEditor.target
-Total execution time: 7.31 seconds
+[3/6] Compile [x64] Module.AssetReferenceInspector.cpp
+[4/6] Link [x64] UnrealEditor-AssetReferenceInspector-0001.lib
+[5/6] Link [x64] UnrealEditor-AssetReferenceInspector-0001.dll
+[6/6] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 6.98 seconds
 ```
 
 #### 확인 범위
@@ -1038,13 +1037,14 @@ Total execution time: 7.31 seconds
 
 #### 에디터 UI 확인
 
-- 미확인. `BP_CycleA -> BP_CycleB -> BP_CycleA [Circular]` 표시와 마지막 순환 후보 노드의 하위 확장 중단은 에디터에서 수동 확인이 필요하다.
+- `BP_CycleA` 선택 후 Dependencies 모드에서 `BP_CycleA [Blueprint] -> BP_CycleB [Blueprint] -> BP_CycleA [Blueprint] [Circular]` 표시 확인
+- 마지막 `BP_CycleA [Blueprint] [Circular]` 아래로 다시 `BP_CycleB`가 확장되지 않는 것 확인
+- Content Browser에서 순환 검증용 `BP_CycleA`, `BP_CycleB` Demo Asset이 `ARI_Demo/Validation` 아래에 있는 것 확인
 
 #### Screenshots
 
-- 미확인. 에디터 UI 수동 확인 후 순환 후보 row 표시 스크린샷을 추가한다.
+![Circular Reference Indicator Cycle Node](Screenshots/feature_ari_circular_reference_indicator/circular_reference_indicator_cycle_node.png)
 
 #### 미확인
 
-- 순환 후보 row의 `[Circular]` 표시 수동 확인
-- 순환 후보 row 하위 확장 중단 수동 확인
+- 없음
