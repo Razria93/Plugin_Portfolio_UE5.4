@@ -49,14 +49,6 @@ private:
 	TSharedPtr<FAssetReferenceTreeNode> CreateRelationNode(FName PackageName, int32 Depth, bool bIsCircular = false) const;
 	FString GetEmptyRelationMessage() const;
 
-	// Filter
-	bool ShouldPassRelationFilters(FName PackageName) const;
-	bool DoesContentSourcePassFilter(FName PackageName) const;
-	bool DoesPathPassFilter(FName PackageName) const;
-	bool DoesAssetClassPassFilter(FName PackageName) const;
-	bool IsEngineContentPackage(FName PackageName) const;
-	bool IsPluginContentPackage(FName PackageName) const;
-
 	// Asset data
 	bool TryGetPrimaryAssetDataForPackage(FName PackageName, FAssetData& OutAssetData) const;
 

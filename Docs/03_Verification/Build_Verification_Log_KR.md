@@ -879,3 +879,57 @@ Total execution time: 0.63 seconds
 #### 미확인
 
 - Plugin Content positive 표시 검증은 Content mount를 가진 테스트 플러그인 Asset dependency fixture가 없어 미확인
+
+### AssetReferenceInspector Filter Predicate 분리
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+UBT 출력 기준:
+
+```text
+[1/5] Compile [x64] AssetReferenceFilter.cpp
+[2/5] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[3/5] Link [x64] UnrealEditor-AssetReferenceInspector.lib
+[4/5] Link [x64] UnrealEditor-AssetReferenceInspector.dll
+[5/5] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 4.70 seconds
+```
+
+#### 확인 범위
+
+- `Private/Analysis/AssetReferenceFilter.h/.cpp` 추가 상태에서 빌드 확인
+- `SAssetReferenceInspectorWidget`이 filter predicate 세부 구현을 직접 보유하지 않는 상태에서 빌드 확인
+- Tree 생성 중 `FAssetReferenceFilter::ShouldPassRelationFilters`를 호출하는 상태에서 빌드 확인
+- Path / Class / Engine Content / Plugin Content 판정이 Analysis 계층으로 이동한 상태에서 빌드 확인
+
+#### 에디터 UI 확인
+
+- 기본 Project Content 관계 표시 유지 확인
+- Path Filter 결과 유지 확인
+- Class Filter 결과 유지 확인
+- Engine Content 옵션 결과 유지 확인
+- Plugin Content 옵션 UI와 제한사항 유지 확인
+
+#### Screenshots
+
+- 없음. 이번 작업은 filter predicate 위치를 분리하는 리팩토링이며, 화면상 신규 UI가 없다.
+
+#### 미확인
+
+- Plugin Content positive 표시 검증은 Content mount를 가진 테스트 플러그인 Asset dependency fixture가 없어 기존과 동일하게 미확인
