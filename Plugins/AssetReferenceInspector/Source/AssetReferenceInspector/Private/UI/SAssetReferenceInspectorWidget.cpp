@@ -544,7 +544,8 @@ bool SAssetReferenceInspectorWidget::IsPluginContentPackage(FName PackageName) c
 
 	for (const TSharedRef<IPlugin>& Plugin : IPluginManager::Get().GetEnabledPluginsWithContent())
 	{
-		const FString MountedAssetPath = Plugin->GetMountedAssetPath();
+		FString MountedAssetPath = Plugin->GetMountedAssetPath();
+		MountedAssetPath.RemoveFromEnd(TEXT("/"));
 
 		if (!MountedAssetPath.IsEmpty()
 			&& PackageNameString.StartsWith(MountedAssetPath + TEXT("/")))

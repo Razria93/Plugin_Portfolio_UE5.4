@@ -219,7 +219,10 @@ Engine Content는 `/Engine/` root로 판정할 수 있다. 반면 Plugin Content
 
 `AssetReferenceInspector`는 `IPluginManager::Get().GetEnabledPluginsWithContent()`로 Content를 가진 활성 플러그인 목록을 가져오고, 각 플러그인의 `GetMountedAssetPath()`와 PackageName prefix를 비교한다.
 
+`GetMountedAssetPath()`는 플러그인 mount root를 trailing slash가 붙은 형태로 반환할 수 있으므로, 비교 전 끝의 `/`를 제거해 root path를 정규화한다.
+
 ```cpp
+MountedAssetPath.RemoveFromEnd(TEXT("/"));
 PackageNameString.StartsWith(MountedAssetPath + TEXT("/"))
 ```
 
