@@ -332,6 +332,105 @@ SNew(SUniformGridPanel)
 	.SlotPadding(4.0f)
 ```
 
+### 위젯 트리 갱신과 Attribute 호출 메커니즘
+
+이 섹션의 초점은 `Font(this, &...)`처럼 위젯에 바인딩한 getter가 "언제, 어떤 과정을 거쳐 호출되는가"이다.
+
+`Construct` 시점에는 위젯을 한 번 그리는 것이 아니라 위젯 트리와 호출 정보를 구성한다.
+
+```text
+SButton
+  OnClicked delegate = OnDependenciesModeClicked
+  Child = STextBlock
+    Text attribute = "Dependencies"
+    Font attribute = GetDependenciesModeFont
+```
+
+위 구조에서 `SButton`은 자기 click delegate와 child widget을 가진다. `STextBlock`은 자기 `Text`, `Font`, `ColorAndOpacity` 같은 attribute를 가진다. 바인딩 정보는 중앙 목록 하나에 모이는 것이 아니라 각 위젯 객체의 attribute / delegate에 저장된다.
+
+현재 Mode 버튼 코드는 다음 구조를 만든다.
+
+```cpp
+SNew(SButton)
+	.OnClicked(this, &SAssetReferenceInspectorWidget::OnDependenciesModeClicked)
+	[
+		SNew(STextBlock)
+			.Text(FText::FromString(TEXT("Dependencies")))
+			.Font(this, &SAssetReferenceInspectorWidget::GetDependenciesModeFont)
+	]
+```
+
+호출 흐름은 다음과 같다.
+
+```text
+1. 사용자가 Dependencies 버튼을 클릭한다.
+
+2. Slate 입력 처리 과정에서 해당 SButton이 click을 처리한다.
+
+3. SButton에 저장된 OnClicked delegate가 호출된다.
+   -> OnDependenciesModeClicked()
+
+4. callback 안에서 상태값이 바뀐다.
+   -> AnalysisOptions.Mode = Dependencies
+
+5. 이후 Slate 갱신 / paint 과정에서 필요한 위젯 트리 영역을 다시 처리한다.
+   이때 Construct를 다시 실행하는 것이 아니라, 이미 생성된 위젯 트리를 순회한다.
+
+6. SButton을 그리는 과정에서 child인 STextBlock도 처리된다.
+
+7. STextBlock은 자기 표현에 필요한 attribute 값을 평가한다.
+   Text attribute가 상수면 그대로 사용한다.
+   Font attribute가 바인딩이면 저장된 getter를 호출한다.
+   -> GetDependenciesModeFont()
+
+8. getter는 현재 상태값을 읽고 font 값을 반환한다.
+   Dependencies 모드면 NormalFontBold, 아니면 NormalFont를 반환한다.
+
+9. STextBlock은 반환된 font로 텍스트를 그린다.
+```
+
+즉 클릭 이벤트가 `GetDependenciesModeFont`를 직접 호출하는 구조는 아니다. 클릭 이벤트는 상태를 바꾸고, 이후 Slate의 위젯 트리 갱신 / paint 과정에서 `STextBlock`이 자기 `Font` 값을 필요로 할 때 바인딩된 getter가 호출된다.
+
+```cpp
+FReply SAssetReferenceInspectorWidget::OnDependenciesModeClicked()
+{
+	AnalysisOptions.Mode = EAssetReferenceMode::Dependencies;
+	return FReply::Handled();
+}
+```
+
+```cpp
+FSlateFontInfo SAssetReferenceInspectorWidget::GetDependenciesModeFont() const
+{
+	return AnalysisOptions.Mode == EAssetReferenceMode::Dependencies
+		? FAppStyle::GetFontStyle(TEXT("NormalFontBold"))
+		: FAppStyle::GetFontStyle(TEXT("NormalFont"));
+}
+```
+
+정리:
+
+```text
+이벤트 callback
+= 사용자 입력에 반응해 상태를 변경한다.
+
+위젯 트리 갱신 / paint
+= Slate가 필요한 위젯 영역을 순회하며 각 위젯의 표현값을 평가한다.
+
+Attribute getter
+= 특정 위젯이 자기 표현값을 필요로 할 때 호출된다.
+```
+
+상수 attribute와 바인딩 attribute는 독립적으로 평가된다.
+
+```cpp
+SNew(STextBlock)
+	.Text(FText::FromString(TEXT("Dependencies")))
+	.Font(this, &SAssetReferenceInspectorWidget::GetDependenciesModeFont)
+```
+
+위 예시에서 `Text`는 상수이므로 getter 호출 없이 그대로 사용한다. `Font`는 바인딩이므로 `STextBlock`이 font 값을 평가할 때 `GetDependenciesModeFont`를 호출한다.
+
 ### 현재 UI Shell 구조
 
 현재 `SAssetReferenceInspectorWidget`은 다음 구조를 가진다.
@@ -346,18 +445,35 @@ SAssetReferenceInspectorWidget
       SUniformGridPanel
         SButton
         SButton
-      STextBlock
-      SUniformGridPanel
-        SButton
-        SButton
-      STextBlock
-      SEditableTextBox
-      STextBlock
-      SEditableTextBox
-      STextBlock
-      SUniformGridPanel
-        SCheckBox
-        SCheckBox
+      SVerticalBox
+        STextBlock
+        SBorder
+          SVerticalBox
+            STextBlock
+            STextBlock
+            SUniformGridPanel
+              SButton
+                STextBlock
+              SButton
+                STextBlock
+        SBorder
+          SVerticalBox
+            STextBlock
+            SGridPanel
+              STextBlock
+              SEditableTextBox
+              STextBlock
+              SEditableTextBox
+              STextBlock
+              SEditableTextBox
+        SBorder
+          SVerticalBox
+            STextBlock
+            SUniformGridPanel
+              SCheckBox
+                STextBlock
+              SCheckBox
+                STextBlock
       SBorder
         STreeView
           STableRow
@@ -371,22 +487,25 @@ SBorder
 = 탭 내부 전체 여백과 결과 영역 테두리 구성
 
 SVerticalBox
-= 제목, 선택 Asset, 버튼, 모드, 필터, 결과 영역을 세로로 배치
+= 제목, 선택 Asset, 버튼, 분석 옵션, 결과 영역을 세로로 배치
 
 STextBlock
-= 제목, 선택 Asset, 모드, Path / Class Filter label, Include External Content label, Engine / Plugin Content label, Tree row text 표시
+= 제목, 선택 Asset, 섹션 제목, 모드, 필터 label, 체크박스 label, Tree row text 표시
 
 SSeparator
 = 제목과 조작 영역 구분
 
 SUniformGridPanel
-= 버튼을 같은 크기로 배치
+= 버튼 또는 체크박스를 같은 크기로 배치
+
+SGridPanel
+= Filters 섹션에서 label과 입력칸을 2열로 배치
 
 SButton
-= Pick Selected Asset / Analyze / Mode 전환 실행 버튼
+= Pick Selected Asset / Analyze / Mode 전환 실행 버튼. Mode 버튼은 child `STextBlock`의 font attribute binding으로 선택 상태를 표시
 
 SEditableTextBox
-= Path Filter / Class Filter 입력
+= Max Depth / Path Filter / Class Filter 입력
 
 SCheckBox
 = Project Content 기본 분석 범위에 Engine Content / Plugin Content를 추가로 포함할지 입력
@@ -545,11 +664,60 @@ Analyze 클릭
 
 ### SEditableTextBox와 입력 Commit
 
-`SEditableTextBox`는 `Text`로 저장된 상태를 표시하고, `OnTextCommitted`에서 입력 확정 시점에 상태를 갱신한다. 현재 Path / Class Filter는 입력 중 실시간 반영하지 않고, Enter 또는 포커스 이동으로 commit될 때만 저장한다.
+`SEditableTextBox`는 `Text`로 저장된 상태를 표시하고, `OnTextCommitted`에서 입력 확정 시점에 상태를 갱신한다. 현재 Max Depth / Path / Class Filter는 입력 중 실시간 반영하지 않고, Enter 또는 포커스 이동으로 commit될 때만 저장한다.
 
 `OnCleared`는 텍스트가 비었다는 뜻이 아니라 focus clear 계열 commit 원인이다. 이 프로젝트에서는 Enter 직후 `OnCleared`가 추가로 들어오는 사례를 확인했기 때문에, 상태 덮어쓰기를 막기 위해 `OnCleared`를 무시한다.
 
 자세한 commit 종류와 검증 기록은 `Slate_Widget_API_Catalog_KR.md`의 `SEditableTextBox`, `OnTextCommitted`, `ETextCommit::Type`을 참고한다.
+
+### Max Depth 입력 정책
+
+Max Depth는 `SEditableTextBox`로 입력받지만 내부 옵션은 `int32` 값이다. 따라서 commit 시점에 텍스트를 정수로 파싱하고, 유효한 정수일 때만 `AnalysisOptions.MaxDepth`에 반영한다. 입력값은 관계 Tree 재귀 탐색 범위에 직접 영향을 주므로 `0~10` 범위로 제한한다.
+
+```cpp
+namespace
+{
+	constexpr int32 MaxAllowedRelationDepth = 10;
+}
+
+int32 ParsedMaxDepth = AnalysisOptions.MaxDepth;
+if (FDefaultValueHelper::ParseInt(InText.ToString().TrimStartAndEnd(), ParsedMaxDepth))
+{
+	AnalysisOptions.MaxDepth = FMath::Clamp(ParsedMaxDepth, 0, MaxAllowedRelationDepth);
+}
+```
+
+정책:
+
+```text
+"3"
+= 정수 파싱 성공, MaxDepth = 3
+
+" 2 "
+= 앞뒤 공백 제거 후 정수 파싱 성공, MaxDepth = 2
+
+"-1"
+= 정수 파싱은 성공하지만 0으로 보정, MaxDepth = 0
+
+"999"
+= 정수 파싱은 성공하지만 10으로 보정, MaxDepth = 10
+
+"abc", "1.5", ""
+= 정수 파싱 실패, 기존 MaxDepth 유지
+```
+
+`FMath::Clamp(ParsedMaxDepth, 0, MaxAllowedRelationDepth)`를 사용하는 이유는 음수 depth를 분석 옵션으로 허용하지 않고, 동시에 과도하게 큰 depth 입력으로 Asset Registry 조회와 Tree 재귀 탐색이 폭증하는 상황을 막기 위해서다. 현재 Tree 생성 조건은 부모 노드의 `Depth`가 `MaxDepth` 이상이면 하위 탐색을 중단한다.
+
+```cpp
+if (!ParentNode.IsValid() || ParentNode->Depth >= AnalysisOptions.MaxDepth)
+{
+	return;
+}
+```
+
+따라서 `MaxDepth = 0`은 선택한 root Asset만 표시하고 자식 관계는 탐색하지 않는 값으로 해석한다.
+
+`MaxAllowedRelationDepth = 10`은 현재 UI 입력 방어선이다. 실제 프로젝트 규모와 필터 정책이 확장되면 별도 설정값 또는 고급 옵션으로 분리할 수 있다.
 
 ---
 

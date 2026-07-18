@@ -933,3 +933,67 @@ Total execution time: 4.70 seconds
 #### 미확인
 
 - Plugin Content positive 표시 검증은 Content mount를 가진 테스트 플러그인 Asset dependency fixture가 없어 기존과 동일하게 미확인
+
+### AssetReferenceInspector Analysis Options UI 정리
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+UBT 출력 기준:
+
+```text
+[3/6] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[4/6] Link [x64] UnrealEditor-AssetReferenceInspector-0004.lib
+[5/6] Link [x64] UnrealEditor-AssetReferenceInspector-0004.dll
+[6/6] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 7.31 seconds
+```
+
+#### 확인 범위
+
+- Analysis Options 영역이 `Mode`, `Filters`, `Content Scope` 섹션으로 구분된 상태에서 빌드 확인
+- `Filters` 섹션이 `SGridPanel` 기반 label / input 2열 구조로 표시되는 상태에서 빌드 확인
+- Max Depth 입력 UI가 `AnalysisOptions.MaxDepth`에 연결된 상태에서 빌드 확인
+- Max Depth 입력값이 0~10 범위로 clamp되는 코드 경로에서 빌드 확인
+- Mode 버튼의 선택 상태가 child `STextBlock` font binding으로 표시되는 상태에서 빌드 확인
+- Slate 위젯 트리 갱신과 attribute 호출 메커니즘 문서 보강 상태에서 빌드 확인
+
+#### 에디터 UI 확인
+
+- 기본 상태에서 Analysis Options가 `Mode`, `Filters`, `Content Scope`로 계층 구분되어 표시되는 것 확인
+- Max Depth `0` 입력 시 root Asset만 표시되는 것 확인
+- Max Depth `1` 입력 시 root의 1-depth 관계까지만 표시되는 것 확인
+- Max Depth `2` 입력 시 `BP_Dummy [Blueprint] -> M_Dummy [Material] -> T_Dummy_Color [Texture2D]`까지 표시되는 것 확인
+- Max Depth에 `10`보다 큰 값을 입력하고 commit하면 `10`으로 보정되어 적용되는 것 확인
+- Referencers 모드 선택 시 `Referencers` 버튼 텍스트가 bold 처리되고, referencer 관계가 표시되는 것 확인
+
+#### Screenshots
+
+![Analysis Options UI Default](Screenshots/refactor_ari_analysis_options_ui/analysis_options_ui_default.png)
+
+![Analysis Options UI Max Depth 0](Screenshots/refactor_ari_analysis_options_ui/analysis_options_ui_max_depth_0.png)
+
+![Analysis Options UI Max Depth 1](Screenshots/refactor_ari_analysis_options_ui/analysis_options_ui_max_depth_1.png)
+
+![Analysis Options UI Max Depth 2](Screenshots/refactor_ari_analysis_options_ui/analysis_options_ui_max_depth_2.png)
+
+![Analysis Options UI Referencers Selected](Screenshots/refactor_ari_analysis_options_ui/analysis_options_ui_referencers_selected.png)
+
+#### 미확인
+
+- Plugin Content positive 표시 검증은 Content mount를 가진 테스트 플러그인 Asset dependency fixture가 없어 기존과 동일하게 미확인

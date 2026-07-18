@@ -6,15 +6,23 @@
 
 #include "ContentBrowserModule.h"
 #include "IContentBrowserSingleton.h"
+#include "Misc/DefaultValueHelper.h"
+#include "Styling/AppStyle.h"
 
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SCheckBox.h"
 #include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/Layout/SBorder.h"
+#include "Widgets/Layout/SGridPanel.h"
 #include "Widgets/Layout/SSeparator.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Text/STextBlock.h"
+
+namespace
+{
+	constexpr int32 MaxAllowedRelationDepth = 10;
+}
 
 void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 {
@@ -80,116 +88,183 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 								.Padding(0.0f, 0.0f, 0.0f, 4.0f)
 								[
 									SNew(STextBlock)
-										.Text(this, &SAssetReferenceInspectorWidget::GetCurrentModeText)
+										.Text(FText::FromString(TEXT("Analysis Options")))
+										.Font(this, &SAssetReferenceInspectorWidget::GetSectionHeaderFont)
 								]
 
 								+ SVerticalBox::Slot()
 								.AutoHeight()
+								.Padding(0.0f, 0.0f, 0.0f, 8.0f)
 								[
-									SNew(SUniformGridPanel)
-										.SlotPadding(4.0f)
-
-										+ SUniformGridPanel::Slot(0, 0)
+									SNew(SBorder)
+										.Padding(8.0f)
 										[
-											SNew(SButton)
-												.Text(FText::FromString(TEXT("Dependencies")))
-												.OnClicked(this, &SAssetReferenceInspectorWidget::OnDependenciesModeClicked)
-										]
+											SNew(SVerticalBox)
 
-										+ SUniformGridPanel::Slot(1, 0)
-										[
-											SNew(SButton)
-												.Text(FText::FromString(TEXT("Referencers")))
-												.OnClicked(this, &SAssetReferenceInspectorWidget::OnReferencersModeClicked)
-										]
-								]
-						]
-
-					+ SVerticalBox::Slot()
-						.AutoHeight()
-						.Padding(0.0f, 0.0f, 0.0f, 8.0f)
-						[
-							SNew(SVerticalBox)
-
-								+ SVerticalBox::Slot()
-								.AutoHeight()
-								.Padding(0.0f, 0.0f, 0.0f, 4.0f)
-								[
-									SNew(STextBlock)
-										.Text(FText::FromString(TEXT("Path Filter")))
-								]
-
-								+ SVerticalBox::Slot()
-								.AutoHeight()
-								[
-									SNew(SEditableTextBox)
-										.Text(this, &SAssetReferenceInspectorWidget::GetPathFilterText)
-										.OnTextCommitted(this, &SAssetReferenceInspectorWidget::OnPathFilterTextCommitted)
-								]
-						]
-
-					+ SVerticalBox::Slot()
-						.AutoHeight()
-						.Padding(0.0f, 0.0f, 0.0f, 8.0f)
-						[
-							SNew(SVerticalBox)
-
-								+ SVerticalBox::Slot()
-								.AutoHeight()
-								.Padding(0.0f, 0.0f, 0.0f, 4.0f)
-								[
-									SNew(STextBlock)
-										.Text(FText::FromString(TEXT("Class Filter")))
-								]
-
-								+ SVerticalBox::Slot()
-								.AutoHeight()
-								[
-									SNew(SEditableTextBox)
-										.Text(this, &SAssetReferenceInspectorWidget::GetClassFilterText)
-										.OnTextCommitted(this, &SAssetReferenceInspectorWidget::OnClassFilterTextCommitted)
-								]
-						]
-
-					+ SVerticalBox::Slot()
-						.AutoHeight()
-						.Padding(0.0f, 0.0f, 0.0f, 8.0f)
-						[
-							SNew(SVerticalBox)
-
-								+ SVerticalBox::Slot()
-								.AutoHeight()
-								.Padding(0.0f, 0.0f, 0.0f, 4.0f)
-								[
-									SNew(STextBlock)
-										.Text(FText::FromString(TEXT("Include External Content")))
-								]
-
-								+ SVerticalBox::Slot()
-								.AutoHeight()
-								[
-									SNew(SUniformGridPanel)
-										.SlotPadding(4.0f)
-
-										+ SUniformGridPanel::Slot(0, 0)
-										[
-											SNew(SCheckBox)
-												.IsChecked(this, &SAssetReferenceInspectorWidget::GetIncludeEngineContentCheckState)
-												.OnCheckStateChanged(this, &SAssetReferenceInspectorWidget::OnIncludeEngineContentChanged)
+												+ SVerticalBox::Slot()
+												.AutoHeight()
+												.Padding(0.0f, 0.0f, 0.0f, 4.0f)
 												[
 													SNew(STextBlock)
-														.Text(FText::FromString(TEXT("Engine Content")))
+														.Text(FText::FromString(TEXT("Mode")))
+														.Font(this, &SAssetReferenceInspectorWidget::GetSectionHeaderFont)
+												]
+
+												+ SVerticalBox::Slot()
+												.AutoHeight()
+												.Padding(0.0f, 0.0f, 0.0f, 4.0f)
+												[
+													SNew(STextBlock)
+														.Text(this, &SAssetReferenceInspectorWidget::GetCurrentModeText)
+												]
+
+												+ SVerticalBox::Slot()
+												.AutoHeight()
+												[
+													SNew(SUniformGridPanel)
+														.SlotPadding(4.0f)
+
+														+ SUniformGridPanel::Slot(0, 0)
+														[
+															SNew(SButton)
+																.OnClicked(this, &SAssetReferenceInspectorWidget::OnDependenciesModeClicked)
+																[
+																	SNew(STextBlock)
+																		.Text(FText::FromString(TEXT("Dependencies")))
+																		.Font(this, &SAssetReferenceInspectorWidget::GetDependenciesModeFont)
+																]
+														]
+
+														+ SUniformGridPanel::Slot(1, 0)
+														[
+															SNew(SButton)
+																.OnClicked(this, &SAssetReferenceInspectorWidget::OnReferencersModeClicked)
+																[
+																	SNew(STextBlock)
+																		.Text(FText::FromString(TEXT("Referencers")))
+																		.Font(this, &SAssetReferenceInspectorWidget::GetReferencersModeFont)
+																]
+														]
 												]
 										]
+								]
 
-										+ SUniformGridPanel::Slot(1, 0)
+								+ SVerticalBox::Slot()
+								.AutoHeight()
+								.Padding(0.0f, 0.0f, 0.0f, 8.0f)
+								[
+									SNew(SBorder)
+										.Padding(8.0f)
 										[
-											SNew(SCheckBox)
-												.IsChecked(this, &SAssetReferenceInspectorWidget::GetIncludePluginContentCheckState)
-												.OnCheckStateChanged(this, &SAssetReferenceInspectorWidget::OnIncludePluginContentChanged)
+											SNew(SVerticalBox)
+
+												+ SVerticalBox::Slot()
+												.AutoHeight()
+												.Padding(0.0f, 0.0f, 0.0f, 6.0f)
 												[
 													SNew(STextBlock)
-														.Text(FText::FromString(TEXT("Plugin Content")))
+														.Text(FText::FromString(TEXT("Filters")))
+														.Font(this, &SAssetReferenceInspectorWidget::GetSectionHeaderFont)
+												]
+
+												+ SVerticalBox::Slot()
+												.AutoHeight()
+												[
+													SNew(SGridPanel)
+														.FillColumn(1, 1.0f)
+
+														+ SGridPanel::Slot(0, 0)
+														.Padding(0.0f, 0.0f, 8.0f, 6.0f)
+														[
+															SNew(STextBlock)
+																.Text(FText::FromString(TEXT("Max Depth")))
+														]
+
+														+ SGridPanel::Slot(1, 0)
+														.Padding(0.0f, 0.0f, 0.0f, 6.0f)
+														[
+															SNew(SEditableTextBox)
+																.Text(this, &SAssetReferenceInspectorWidget::GetMaxDepthText)
+																.OnTextCommitted(this, &SAssetReferenceInspectorWidget::OnMaxDepthTextCommitted)
+														]
+
+														+ SGridPanel::Slot(0, 1)
+														.Padding(0.0f, 0.0f, 8.0f, 6.0f)
+														[
+															SNew(STextBlock)
+																.Text(FText::FromString(TEXT("Path Filter")))
+														]
+
+														+ SGridPanel::Slot(1, 1)
+														.Padding(0.0f, 0.0f, 0.0f, 6.0f)
+														[
+															SNew(SEditableTextBox)
+																.Text(this, &SAssetReferenceInspectorWidget::GetPathFilterText)
+																.OnTextCommitted(this, &SAssetReferenceInspectorWidget::OnPathFilterTextCommitted)
+														]
+
+														+ SGridPanel::Slot(0, 2)
+														.Padding(0.0f, 0.0f, 8.0f, 0.0f)
+														[
+															SNew(STextBlock)
+																.Text(FText::FromString(TEXT("Class Filter")))
+														]
+
+														+ SGridPanel::Slot(1, 2)
+														[
+															SNew(SEditableTextBox)
+																.Text(this, &SAssetReferenceInspectorWidget::GetClassFilterText)
+																.OnTextCommitted(this, &SAssetReferenceInspectorWidget::OnClassFilterTextCommitted)
+														]
+												]
+										]
+								]
+
+								+ SVerticalBox::Slot()
+								.AutoHeight()
+								.Padding(0.0f)
+								[
+									SNew(SBorder)
+										.Padding(8.0f)
+										[
+											SNew(SVerticalBox)
+
+												+ SVerticalBox::Slot()
+												.AutoHeight()
+												.Padding(0.0f, 0.0f, 0.0f, 6.0f)
+												[
+													SNew(STextBlock)
+														.Text(FText::FromString(TEXT("Content Scope")))
+														.Font(this, &SAssetReferenceInspectorWidget::GetSectionHeaderFont)
+												]
+
+												+ SVerticalBox::Slot()
+												.AutoHeight()
+												[
+													SNew(SUniformGridPanel)
+														.SlotPadding(4.0f)
+
+														+ SUniformGridPanel::Slot(0, 0)
+														[
+															SNew(SCheckBox)
+																.IsChecked(this, &SAssetReferenceInspectorWidget::GetIncludeEngineContentCheckState)
+																.OnCheckStateChanged(this, &SAssetReferenceInspectorWidget::OnIncludeEngineContentChanged)
+																[
+																	SNew(STextBlock)
+																		.Text(FText::FromString(TEXT("Engine Content")))
+																]
+														]
+
+														+ SUniformGridPanel::Slot(1, 0)
+														[
+															SNew(SCheckBox)
+																.IsChecked(this, &SAssetReferenceInspectorWidget::GetIncludePluginContentCheckState)
+																.OnCheckStateChanged(this, &SAssetReferenceInspectorWidget::OnIncludePluginContentChanged)
+																[
+																	SNew(STextBlock)
+																		.Text(FText::FromString(TEXT("Plugin Content")))
+																]
+														]
 												]
 										]
 								]
@@ -250,6 +325,20 @@ FReply SAssetReferenceInspectorWidget::OnReferencersModeClicked()
 {
 	AnalysisOptions.Mode = EAssetReferenceMode::Referencers;
 	return FReply::Handled();
+}
+
+void SAssetReferenceInspectorWidget::OnMaxDepthTextCommitted(const FText& InText, ETextCommit::Type CommitType)
+{
+	if (CommitType == ETextCommit::OnCleared)
+	{
+		return;
+	}
+
+	int32 ParsedMaxDepth = AnalysisOptions.MaxDepth;
+	if (FDefaultValueHelper::ParseInt(InText.ToString().TrimStartAndEnd(), ParsedMaxDepth))
+	{
+		AnalysisOptions.MaxDepth = FMath::Clamp(ParsedMaxDepth, 0, MaxAllowedRelationDepth);
+	}
 }
 
 void SAssetReferenceInspectorWidget::OnPathFilterTextCommitted(const FText& InText, ETextCommit::Type CommitType)
@@ -314,6 +403,11 @@ FText SAssetReferenceInspectorWidget::GetCurrentModeText() const
 	return FText::FromString(FString::Printf(TEXT("Mode: %s"), *ModeName));
 }
 
+FText SAssetReferenceInspectorWidget::GetMaxDepthText() const
+{
+	return FText::AsNumber(AnalysisOptions.MaxDepth);
+}
+
 FText SAssetReferenceInspectorWidget::GetPathFilterText() const
 {
 	return FText::FromString(AnalysisOptions.PathFilter);
@@ -322,6 +416,25 @@ FText SAssetReferenceInspectorWidget::GetPathFilterText() const
 FText SAssetReferenceInspectorWidget::GetClassFilterText() const
 {
 	return FText::FromString(AnalysisOptions.ClassFilter);
+}
+
+FSlateFontInfo SAssetReferenceInspectorWidget::GetSectionHeaderFont() const
+{
+	return FAppStyle::GetFontStyle(TEXT("NormalFontBold"));
+}
+
+FSlateFontInfo SAssetReferenceInspectorWidget::GetDependenciesModeFont() const
+{
+	return AnalysisOptions.Mode == EAssetReferenceMode::Dependencies
+		? FAppStyle::GetFontStyle(TEXT("NormalFontBold"))
+		: FAppStyle::GetFontStyle(TEXT("NormalFont"));
+}
+
+FSlateFontInfo SAssetReferenceInspectorWidget::GetReferencersModeFont() const
+{
+	return AnalysisOptions.Mode == EAssetReferenceMode::Referencers
+		? FAppStyle::GetFontStyle(TEXT("NormalFontBold"))
+		: FAppStyle::GetFontStyle(TEXT("NormalFont"));
 }
 
 ECheckBoxState SAssetReferenceInspectorWidget::GetIncludeEngineContentCheckState() const

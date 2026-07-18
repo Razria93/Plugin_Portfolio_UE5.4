@@ -26,6 +26,7 @@ private:
 	FReply OnReferencersModeClicked();
 
 	// Filter callbacks
+	void OnMaxDepthTextCommitted(const FText& InText, ETextCommit::Type CommitType);
 	void OnPathFilterTextCommitted(const FText& InText, ETextCommit::Type CommitType);
 	void OnClassFilterTextCommitted(const FText& InText, ETextCommit::Type CommitType);
 	void OnIncludeEngineContentChanged(ECheckBoxState NewState);
@@ -37,8 +38,12 @@ private:
 	// UI text
 	FText GetSelectedAssetText() const;
 	FText GetCurrentModeText() const;
+	FText GetMaxDepthText() const;
 	FText GetPathFilterText() const;
 	FText GetClassFilterText() const;
+	FSlateFontInfo GetSectionHeaderFont() const;
+	FSlateFontInfo GetDependenciesModeFont() const;
+	FSlateFontInfo GetReferencersModeFont() const;
 	ECheckBoxState GetIncludeEngineContentCheckState() const;
 	ECheckBoxState GetIncludePluginContentCheckState() const;
 
