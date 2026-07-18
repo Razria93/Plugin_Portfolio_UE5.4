@@ -60,6 +60,7 @@ private:
 	// Tree view
 	void RefreshTree();
 	void ExpandTreeItems(const TArray<TSharedPtr<FAssetReferenceTreeNode>>& Items);
+	FString GetTreeNodeDisplayText(TSharedPtr<FAssetReferenceTreeNode> Item) const;
 	TSharedRef<ITableRow> OnGenerateTreeRow(TSharedPtr<FAssetReferenceTreeNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const;
 	void OnGetTreeChildren(TSharedPtr<FAssetReferenceTreeNode> Item, TArray<TSharedPtr<FAssetReferenceTreeNode>>& OutChildren) const;
 

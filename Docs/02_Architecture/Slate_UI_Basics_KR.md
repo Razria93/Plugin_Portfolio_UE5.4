@@ -591,13 +591,13 @@ TSharedRef<ITableRow> OnGenerateTreeRow(
 	const TSharedRef<STableViewBase>& OwnerTable) const;
 ```
 
-현재는 `FAssetReferenceTreeNode::DisplayName`과 `ClassName`을 `STextBlock`으로 표시하는 `STableRow`를 반환한다. `ClassName`이 있으면 `DisplayName [ClassName]` 형식으로 표시하고, Class 정보를 찾을 수 없는 Package나 placeholder는 `DisplayName`만 표시한다.
+현재는 `GetTreeNodeDisplayText`에서 `FAssetReferenceTreeNode`의 표시 문자열을 만든 뒤, 그 값을 `STextBlock`으로 표시하는 `STableRow`를 반환한다. `ClassName`이 있으면 `DisplayName [ClassName]` 형식으로 표시하고, Class 정보를 찾을 수 없는 Package나 placeholder는 `DisplayName`만 표시한다. `bIsCircular`가 true이면 뒤에 `[Circular]`을 붙여 현재 DFS 경로에서 다시 등장한 순환 후보 노드임을 보여준다.
 
 ```cpp
 return SNew(STableRow<TSharedPtr<FAssetReferenceTreeNode>>, OwnerTable)
 	[
 		SNew(STextBlock)
-			.Text(FText::FromString(DisplayName))
+			.Text(FText::FromString(GetTreeNodeDisplayText(Item)))
 	];
 ```
 
@@ -607,7 +607,7 @@ return SNew(STableRow<TSharedPtr<FAssetReferenceTreeNode>>, OwnerTable)
 데이터 노드 하나
 -> STableRow 한 줄 생성
 -> Row 내부에 STextBlock 배치
--> TextBlock의 Text 값으로 DisplayName 표시
+-> TextBlock의 Text 값으로 GetTreeNodeDisplayText 결과 표시
 ```
 
 `STableRow`는 `SListView`, `STreeView` 같은 테이블 계열 위젯에서 아이템 하나를 표현하는 화면 줄이다. 여기서 테이블 계열은 위계가 있다는 뜻이 아니라, 여러 데이터 아이템을 row 또는 tile 형태로 반복 표시하는 위젯 계열을 뜻한다.
