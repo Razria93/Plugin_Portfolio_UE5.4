@@ -18,6 +18,7 @@ public class AssetReferenceInspector : ModuleRules
 			"CoreUObject",
 			"Engine",
 			"InputCore",
+			"Projects",
 			"Slate",
 			"SlateCore",
 			"ToolMenus"

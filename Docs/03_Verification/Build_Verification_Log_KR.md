@@ -824,3 +824,58 @@ Total execution time: 6.42 seconds
 #### 미확인
 
 - 하위에 매칭 노드가 있을 때 직접 매칭되지 않은 부모를 흐리게 표시하는 context-preserving filter mode는 후속 UX 개선 범위로 남김
+
+### AssetReferenceInspector Engine / Plugin Content 옵션 추가
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+UBT 출력 기준:
+
+```text
+Target is up to date
+Total execution time: 0.63 seconds
+```
+
+#### 확인 범위
+
+- `FAssetReferenceAnalysisOptions`에 Engine / Plugin Content 포함 옵션이 추가된 상태에서 빌드 확인
+- `Include External Content` 라벨과 `Engine Content`, `Plugin Content` 체크박스 UI 추가 상태에서 빌드 확인
+- `Engine Content` 체크 상태가 `/Engine/` Package 표시 여부에 반영되는 상태에서 빌드 확인
+- `Plugin Content` 체크 상태가 Content를 가진 활성 플러그인의 mounted asset path 표시 여부에 반영되는 상태에서 빌드 확인
+- 기본 Path Filter `/Game/` 상태에서도 Engine / Plugin Content 체크 시 해당 외부 Content root를 통과시키는 상태에서 빌드 확인
+
+#### 에디터 UI 확인
+
+- `Engine Content`, `Plugin Content` 모두 해제 상태에서 `BP_Dummy [Blueprint] -> M_Dummy [Material] -> T_Dummy_Color [Texture2D]`만 표시되는 것 확인
+- `Engine Content` 체크 시 `Cube [StaticMesh]`, `WorldGridMaterial [Material]` 같은 Engine 기본 Asset 관계가 추가 표시되는 것 확인
+- `Plugin Content` 체크 UI는 표시되고 상태 변경이 가능함을 확인
+- 현재 `BP_Dummy` fixture에는 plugin-mounted asset dependency가 없어 Plugin Content positive 표시 검증은 미확인
+- 세 스크린샷 모두 `Include External Content` 라벨과 두 체크박스가 표시되는 것을 확인
+
+#### Screenshots
+
+![Engine Plugin Options Default Project Content Only](Screenshots/feature_ari_engine_plugin_content_options/engine_plugin_options_default_project_content_only.png)
+
+![Engine Plugin Options Include Engine Content](Screenshots/feature_ari_engine_plugin_content_options/engine_plugin_options_include_engine_content.png)
+
+![Engine Plugin Options Plugin Content No Matching Dependency](Screenshots/feature_ari_engine_plugin_content_options/engine_plugin_options_plugin_content_no_matching_dependency.png)
+
+#### 미확인
+
+- Plugin Content positive 표시 검증은 Content mount를 가진 테스트 플러그인 Asset dependency fixture가 없어 미확인

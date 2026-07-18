@@ -15,6 +15,8 @@ struct FAssetReferenceAnalysisOptions
 	int32 MaxDepth = 2;
 	FString PathFilter = TEXT("/Game/");
 	FString ClassFilter;
+	bool bIncludeEngineContent = false;
+	bool bIncludePluginContent = false;
 };
 
 struct FAssetReferenceTreeNode

@@ -28,6 +28,8 @@ private:
 	// Filter callbacks
 	void OnPathFilterTextCommitted(const FText& InText, ETextCommit::Type CommitType);
 	void OnClassFilterTextCommitted(const FText& InText, ETextCommit::Type CommitType);
+	void OnIncludeEngineContentChanged(ECheckBoxState NewState);
+	void OnIncludePluginContentChanged(ECheckBoxState NewState);
 
 	// Tree callbacks
 	void OnTreeNodeDoubleClicked(TSharedPtr<FAssetReferenceTreeNode> Item) const;
@@ -37,6 +39,8 @@ private:
 	FText GetCurrentModeText() const;
 	FText GetPathFilterText() const;
 	FText GetClassFilterText() const;
+	ECheckBoxState GetIncludeEngineContentCheckState() const;
+	ECheckBoxState GetIncludePluginContentCheckState() const;
 
 	// Analysis
 	void BuildRelationTree();
@@ -47,8 +51,11 @@ private:
 
 	// Filter
 	bool ShouldPassRelationFilters(FName PackageName) const;
+	bool DoesContentSourcePassFilter(FName PackageName) const;
 	bool DoesPathPassFilter(FName PackageName) const;
 	bool DoesAssetClassPassFilter(FName PackageName) const;
+	bool IsEngineContentPackage(FName PackageName) const;
+	bool IsPluginContentPackage(FName PackageName) const;
 
 	// Asset data
 	bool TryGetPrimaryAssetDataForPackage(FName PackageName, FAssetData& OutAssetData) const;
