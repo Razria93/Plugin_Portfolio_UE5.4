@@ -997,3 +997,54 @@ Total execution time: 7.31 seconds
 #### 미확인
 
 - Plugin Content positive 표시 검증은 Content mount를 가진 테스트 플러그인 Asset dependency fixture가 없어 기존과 동일하게 미확인
+
+### AssetReferenceInspector Circular Reference Indicator
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+UBT 출력 기준:
+
+```text
+[3/7] Compile [x64] Module.AssetReferenceInspector.cpp
+[4/7] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[5/7] Link [x64] UnrealEditor-AssetReferenceInspector-0005.lib
+[6/7] Link [x64] UnrealEditor-AssetReferenceInspector-0005.dll
+[7/7] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 7.31 seconds
+```
+
+#### 확인 범위
+
+- `FAssetReferenceTreeNode::bIsCircular` 값을 Tree row 표시 문자열에 반영하는 상태에서 빌드 확인
+- 순환 후보 노드에 `[Circular]` suffix를 붙이는 `GetTreeNodeDisplayText` 경로에서 빌드 확인
+- 순환 후보 노드는 Tree에 표시하되 하위 확장은 중단하는 기존 정책과 함께 빌드 확인
+- 관련 Architecture / Slate UI 문서가 현재 구현 상태를 설명하도록 갱신
+
+#### 에디터 UI 확인
+
+- 미확인. `BP_CycleA -> BP_CycleB -> BP_CycleA [Circular]` 표시와 마지막 순환 후보 노드의 하위 확장 중단은 에디터에서 수동 확인이 필요하다.
+
+#### Screenshots
+
+- 미확인. 에디터 UI 수동 확인 후 순환 후보 row 표시 스크린샷을 추가한다.
+
+#### 미확인
+
+- 순환 후보 row의 `[Circular]` 표시 수동 확인
+- 순환 후보 row 하위 확장 중단 수동 확인

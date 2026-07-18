@@ -559,6 +559,13 @@ Phase 6부터는 3주차 목표에 해당한다. 참조 관계 조회 도구를 
 완료 기준:
 
 - 같은 PackageName이 현재 경로에 다시 등장하면 `Circular`로 표시한다.
+- 순환 후보 노드는 실제 관계로 Tree에 남기되 하위 확장은 중단한다.
+- Tree row에는 `[Circular]` suffix를 표시한다.
+
+진행 기록:
+
+- `feature/ari-circular-reference-indicator` 브랜치에서 기존 `bIsCircular` 상태를 Tree row 표시 문자열에 연결했다.
+- 순환 후보 노드가 `DisplayName [ClassName] [Circular]` 형식으로 표시되도록 `GetTreeNodeDisplayText`를 추가했다.
 
 ### 6-2. Asset 디스크 크기 표시
 

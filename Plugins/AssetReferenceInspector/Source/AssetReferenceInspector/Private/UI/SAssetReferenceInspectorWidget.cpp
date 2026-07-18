@@ -596,18 +596,34 @@ bool SAssetReferenceInspectorWidget::TryGetPrimaryAssetDataForPackage(FName Pack
 	return true;
 }
 
+FString SAssetReferenceInspectorWidget::GetTreeNodeDisplayText(TSharedPtr<FAssetReferenceTreeNode> Item) const
+{
+	if (!Item.IsValid())
+	{
+		return FString(TEXT("Invalid Node"));
+	}
+
+	FString DisplayText = Item->DisplayName;
+
+	if (!Item->ClassName.IsEmpty())
+	{
+		DisplayText = FString::Printf(TEXT("%s [%s]"), *DisplayText, *Item->ClassName);
+	}
+
+	if (Item->bIsCircular)
+	{
+		DisplayText = FString::Printf(TEXT("%s [Circular]"), *DisplayText);
+	}
+
+	return DisplayText;
+}
+
 TSharedRef<ITableRow> SAssetReferenceInspectorWidget::OnGenerateTreeRow(TSharedPtr<FAssetReferenceTreeNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const
 {
-	const FString DisplayName = !Item.IsValid()
-		? FString(TEXT("Invalid Node"))
-		: Item->ClassName.IsEmpty()
-			? Item->DisplayName
-			: FString::Printf(TEXT("%s [%s]"), *Item->DisplayName, *Item->ClassName);
-
 	return SNew(STableRow<TSharedPtr<FAssetReferenceTreeNode>>, OwnerTable)
 		[
 			SNew(STextBlock)
-				.Text(FText::FromString(DisplayName))
+				.Text(FText::FromString(GetTreeNodeDisplayText(Item)))
 		];
 }
 

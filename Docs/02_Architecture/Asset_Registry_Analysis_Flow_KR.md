@@ -4,7 +4,7 @@
 
 ## 현재 범위
 
-현재 구현 범위는 Dependencies / Referencers 모드 전환과 Max Depth 기반 재귀 Tree 생성이다.
+현재 구현 범위는 Dependencies / Referencers 모드 전환, Max Depth 기반 재귀 Tree 생성, Path / Class / Content Scope 필터, 순환 후보 노드 표시다.
 
 ```text
 선택 Asset
@@ -14,9 +14,9 @@
 
 아직 포함하지 않는 범위:
 
-- Engine / Plugin Content 필터
-- 순환 참조 시각 강조
 - CSV Export
+- Asset Size 표시
+- Unused Candidate 표시
 
 ## 입력 Asset
 
@@ -197,7 +197,7 @@ A
 
 위 구조에서 마지막 `A`는 표시하지만, 다시 `B`로 확장하지 않는다.
 
-이 정책은 순환 참조 정보를 숨기지 않기 위한 것이다. 후속 순환 참조 탐지 단계에서는 `bIsCircular` 상태를 UI에 표시해 순환 후보 노드임을 명확히 보여준다.
+이 정책은 순환 참조 정보를 숨기지 않기 위한 것이다. 순환 후보 노드는 `bIsCircular` 상태를 가진 채 Tree에 남기고, row text에는 `[Circular]` suffix를 붙여 순환 후보임을 표시한다.
 
 ## Path Filter
 
@@ -403,6 +403,7 @@ Path Filter 검증 기준:
 - `Pick Selected Asset` 클릭
 - `Analyze` 클릭
 - `BP_CycleA -> BP_CycleB -> BP_CycleA` 표시
+- 마지막 `BP_CycleA` row에 `[Circular]` 표시
 - 마지막 `BP_CycleA` 아래로 다시 `BP_CycleB`가 확장되지 않음
 
 Content Browser Sync 검증 기준:
@@ -427,4 +428,4 @@ Options
 = Mode, Max Depth, 필터 조건
 ```
 
-순환 참조 표시 강화, Analyzer 클래스 분리, Max Depth 전용 입력 UI는 후속 작업에서 확장한다. Path / Class / Engine / Plugin Content 필터 UI는 현재 `SAssetReferenceInspectorWidget`에서 직접 관리한다.
+Analyzer 클래스 분리, Asset Size 표시, Unused Candidate 표시, CSV Export는 후속 작업에서 확장한다. Path / Class / Engine / Plugin Content 필터 UI와 순환 후보 row 표시는 현재 `SAssetReferenceInspectorWidget`에서 직접 관리한다.
