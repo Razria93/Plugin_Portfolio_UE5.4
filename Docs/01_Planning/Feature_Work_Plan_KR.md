@@ -520,6 +520,32 @@ Phase 5는 2주차 목표의 후반부에 해당하며, 분석 결과를 실제 
 refactor: Asset Reference 필터 조건 분리
 ```
 
+## 2주차 마감 보완: Analysis Options UI 정리
+
+목적:
+
+- Phase 4-5에서 추가된 모드, Max Depth, 필터, Content Scope 옵션을 한 화면에서 읽기 쉬운 도구 UI로 정리한다.
+
+완료 기준:
+
+- 분석 옵션 영역을 `Mode`, `Filters`, `Content Scope`로 구분한다.
+- 선택된 Dependencies / Referencers 모드가 텍스트 스타일로 구분된다.
+- Max Depth 입력 UI를 제공하고 0 이상의 정수로 저장한다.
+- Path Filter, Class Filter, Max Depth 입력이 같은 label/input 구조로 정렬된다.
+- 기존 Dependencies / Referencers, Path Filter, Class Filter, Engine / Plugin Content 동작이 유지된다.
+- Editor Target 빌드가 성공한다.
+
+상태:
+
+- 완료.
+- `refactor/ari-analysis-options-ui` 브랜치에서 Analysis Options UI를 섹션 단위로 재배치했다.
+- `SGridPanel` 기반 label/input 배치로 Max Depth, Path Filter, Class Filter를 정렬했다.
+- Dependencies / Referencers 버튼은 선택된 모드의 `STextBlock` font를 bold로 표시하도록 변경했다.
+- Max Depth 입력은 `SEditableTextBox::OnTextCommitted`에서 정수로 파싱하고, 음수 입력은 0으로 보정한다.
+- `Portfolio_PlugInEditor` 빌드는 성공했다.
+- Max Depth 0, 1, 2와 Referencers 선택 상태를 에디터에서 수동 확인했다.
+- 검증 스크린샷은 `Docs/03_Verification/Screenshots/refactor_ari_analysis_options_ui/`에 정리했다.
+
 ## Phase 6: 실무형 분석 기능
 
 Phase 6부터는 3주차 목표에 해당한다. 참조 관계 조회 도구를 포트폴리오에서 설명 가능한 실무형 분석 기능으로 확장한다.

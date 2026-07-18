@@ -56,8 +56,10 @@ Slate 위젯 인스턴스를 생성하는 기본 매크로다.
 
 텍스트를 표시하는 가장 기본적인 leaf widget이다.
 
-- 핵심 API: `Text`
-- 현재 사용: 제목, 선택 Asset, 필터 label, Tree row text
+- 핵심 API: `Text`, `Font`
+- 현재 사용: 제목, 선택 Asset, 옵션 label, Tree row text, 선택된 모드 버튼의 bold 표시
+
+`Font`에는 고정 `FSlateFontInfo` 값을 넣을 수도 있고, 현재 상태를 읽는 getter를 바인딩할 수도 있다. `AssetReferenceInspector`는 선택된 Dependencies / Referencers 버튼의 텍스트를 bold로 표시하기 위해 `Font(this, &SAssetReferenceInspectorWidget::GetDependenciesModeFont)` 형태를 사용한다.
 
 ### SImage
 
@@ -83,6 +85,8 @@ Slate 위젯 인스턴스를 생성하는 기본 매크로다.
 - 관련 타입: `FReply`
 - 현재 사용: Pick Selected Asset, Analyze, Dependencies / Referencers 모드 버튼
 
+단순 버튼은 `Text` 속성으로 label을 지정할 수 있다. 버튼 내부 텍스트의 font, color, padding 같은 표현을 직접 제어해야 하면 `SButton [ STextBlock ]`처럼 content slot에 별도 위젯을 넣는다. 현재 모드 버튼은 선택 상태에 따라 `STextBlock::Font`를 바꾸기 위해 이 방식을 사용한다.
+
 ### SCheckBox
 
 체크 상태를 가진 입력 위젯이다. `[]` 안의 content는 체크박스 옆 label 또는 custom content로 표시된다.
@@ -98,7 +102,7 @@ Slate 위젯 인스턴스를 생성하는 기본 매크로다.
 
 - 핵심 API: `Text`, `OnTextCommitted`
 - 관련 타입: `ETextCommit::Type`
-- 현재 사용: Path Filter, Class Filter 입력
+- 현재 사용: Max Depth, Path Filter, Class Filter 입력
 
 `Text`는 화면에 표시할 값을 읽는 바인딩이고, `OnTextCommitted`는 사용자가 입력을 확정했을 때 외부 상태를 갱신하는 callback이다.
 
@@ -222,7 +226,11 @@ Esc
 
 행/열 기반 grid에 자식을 배치한다. 각 cell 크기를 더 세밀하게 다룰 수 있다.
 
+- 핵심 API: `FillColumn`
 - 핵심 Slot: `SGridPanel::Slot(Column, Row)`
+- 현재 사용: Analysis Options의 Max Depth, Path Filter, Class Filter label/input 정렬
+
+`FillColumn(ColumnIndex, Weight)`는 지정한 column이 남는 가로 공간을 어떤 비율로 가져갈지 정한다. 현재 UI는 label column은 내용 크기에 가깝게 두고, 입력 column만 `FillColumn(1, 1.0f)`로 늘려 텍스트 박스가 창 폭을 따라 확장되도록 구성한다.
 
 ### SOverlay
 
@@ -247,6 +255,19 @@ Esc
 자식을 가로로 배치하다가 공간이 부족하면 다음 줄로 넘긴다.
 
 - 후보 용도: filter chip, tag 목록 표시
+
+---
+
+## 스타일과 표현값
+
+### FAppStyle
+
+Unreal Editor가 제공하는 Slate style set에 접근하는 API다. Editor 기본 font, color, brush 같은 스타일 리소스를 가져올 때 사용한다.
+
+- 핵심 API: `FAppStyle::GetFontStyle`
+- 현재 사용: section header와 선택된 mode button text에 `NormalFontBold`, `NormalFont` 적용
+
+현재 UI는 별도 custom style set을 만들지 않고, Editor 기본 스타일을 사용한다. 따라서 `Mode`, `Filters`, `Content Scope` 같은 section header와 selected mode text는 Unreal Editor와 시각적으로 어긋나지 않는다.
 
 ---
 
