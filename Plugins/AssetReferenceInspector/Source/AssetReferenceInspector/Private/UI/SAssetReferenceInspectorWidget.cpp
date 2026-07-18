@@ -19,6 +19,11 @@
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Text/STextBlock.h"
 
+namespace
+{
+	constexpr int32 MaxAllowedRelationDepth = 10;
+}
+
 void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 {
 	ChildSlot
@@ -332,7 +337,7 @@ void SAssetReferenceInspectorWidget::OnMaxDepthTextCommitted(const FText& InText
 	int32 ParsedMaxDepth = AnalysisOptions.MaxDepth;
 	if (FDefaultValueHelper::ParseInt(InText.ToString().TrimStartAndEnd(), ParsedMaxDepth))
 	{
-		AnalysisOptions.MaxDepth = FMath::Max(0, ParsedMaxDepth);
+		AnalysisOptions.MaxDepth = FMath::Clamp(ParsedMaxDepth, 0, MaxAllowedRelationDepth);
 	}
 }
 

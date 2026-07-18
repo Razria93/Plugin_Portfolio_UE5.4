@@ -672,13 +672,18 @@ Analyze 클릭
 
 ### Max Depth 입력 정책
 
-Max Depth는 `SEditableTextBox`로 입력받지만 내부 옵션은 `int32` 값이다. 따라서 commit 시점에 텍스트를 정수로 파싱하고, 유효한 정수일 때만 `AnalysisOptions.MaxDepth`에 반영한다.
+Max Depth는 `SEditableTextBox`로 입력받지만 내부 옵션은 `int32` 값이다. 따라서 commit 시점에 텍스트를 정수로 파싱하고, 유효한 정수일 때만 `AnalysisOptions.MaxDepth`에 반영한다. 입력값은 관계 Tree 재귀 탐색 범위에 직접 영향을 주므로 `0~10` 범위로 제한한다.
 
 ```cpp
+namespace
+{
+	constexpr int32 MaxAllowedRelationDepth = 10;
+}
+
 int32 ParsedMaxDepth = AnalysisOptions.MaxDepth;
 if (FDefaultValueHelper::ParseInt(InText.ToString().TrimStartAndEnd(), ParsedMaxDepth))
 {
-	AnalysisOptions.MaxDepth = FMath::Max(0, ParsedMaxDepth);
+	AnalysisOptions.MaxDepth = FMath::Clamp(ParsedMaxDepth, 0, MaxAllowedRelationDepth);
 }
 ```
 
@@ -694,11 +699,14 @@ if (FDefaultValueHelper::ParseInt(InText.ToString().TrimStartAndEnd(), ParsedMax
 "-1"
 = 정수 파싱은 성공하지만 0으로 보정, MaxDepth = 0
 
+"999"
+= 정수 파싱은 성공하지만 10으로 보정, MaxDepth = 10
+
 "abc", "1.5", ""
 = 정수 파싱 실패, 기존 MaxDepth 유지
 ```
 
-`FMath::Max(0, ParsedMaxDepth)`를 사용하는 이유는 음수 depth를 분석 옵션으로 허용하지 않기 위해서다. 현재 Tree 생성 조건은 부모 노드의 `Depth`가 `MaxDepth` 이상이면 하위 탐색을 중단한다.
+`FMath::Clamp(ParsedMaxDepth, 0, MaxAllowedRelationDepth)`를 사용하는 이유는 음수 depth를 분석 옵션으로 허용하지 않고, 동시에 과도하게 큰 depth 입력으로 Asset Registry 조회와 Tree 재귀 탐색이 폭증하는 상황을 막기 위해서다. 현재 Tree 생성 조건은 부모 노드의 `Depth`가 `MaxDepth` 이상이면 하위 탐색을 중단한다.
 
 ```cpp
 if (!ParentNode.IsValid() || ParentNode->Depth >= AnalysisOptions.MaxDepth)
@@ -708,6 +716,8 @@ if (!ParentNode.IsValid() || ParentNode->Depth >= AnalysisOptions.MaxDepth)
 ```
 
 따라서 `MaxDepth = 0`은 선택한 root Asset만 표시하고 자식 관계는 탐색하지 않는 값으로 해석한다.
+
+`MaxAllowedRelationDepth = 10`은 현재 UI 입력 방어선이다. 실제 프로젝트 규모와 필터 정책이 확장되면 별도 설정값 또는 고급 옵션으로 분리할 수 있다.
 
 ---
 

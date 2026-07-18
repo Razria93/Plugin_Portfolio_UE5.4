@@ -957,12 +957,11 @@ Total execution time: 4.70 seconds
 UBT 출력 기준:
 
 ```text
-[3/7] Compile [x64] Module.AssetReferenceInspector.cpp
-[4/7] Compile [x64] SAssetReferenceInspectorWidget.cpp
-[5/7] Link [x64] UnrealEditor-AssetReferenceInspector-0003.lib
-[6/7] Link [x64] UnrealEditor-AssetReferenceInspector-0003.dll
-[7/7] WriteMetadata Portfolio_PlugInEditor.target
-Total execution time: 6.33 seconds
+[3/6] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[4/6] Link [x64] UnrealEditor-AssetReferenceInspector-0004.lib
+[5/6] Link [x64] UnrealEditor-AssetReferenceInspector-0004.dll
+[6/6] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 7.31 seconds
 ```
 
 #### 확인 범위
@@ -970,6 +969,7 @@ Total execution time: 6.33 seconds
 - Analysis Options 영역이 `Mode`, `Filters`, `Content Scope` 섹션으로 구분된 상태에서 빌드 확인
 - `Filters` 섹션이 `SGridPanel` 기반 label / input 2열 구조로 표시되는 상태에서 빌드 확인
 - Max Depth 입력 UI가 `AnalysisOptions.MaxDepth`에 연결된 상태에서 빌드 확인
+- Max Depth 입력값이 0~10 범위로 clamp되는 코드 경로에서 빌드 확인
 - Mode 버튼의 선택 상태가 child `STextBlock` font binding으로 표시되는 상태에서 빌드 확인
 - Slate 위젯 트리 갱신과 attribute 호출 메커니즘 문서 보강 상태에서 빌드 확인
 
@@ -979,6 +979,7 @@ Total execution time: 6.33 seconds
 - Max Depth `0` 입력 시 root Asset만 표시되는 것 확인
 - Max Depth `1` 입력 시 root의 1-depth 관계까지만 표시되는 것 확인
 - Max Depth `2` 입력 시 `BP_Dummy [Blueprint] -> M_Dummy [Material] -> T_Dummy_Color [Texture2D]`까지 표시되는 것 확인
+- Max Depth에 `10`보다 큰 값을 입력하고 commit하면 `10`으로 보정되어 적용되는 것 확인
 - Referencers 모드 선택 시 `Referencers` 버튼 텍스트가 bold 처리되고, referencer 관계가 표시되는 것 확인
 
 #### Screenshots
