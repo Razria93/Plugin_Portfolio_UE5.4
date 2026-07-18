@@ -24,6 +24,8 @@ Private/
   AssetReferenceInspectorCommands.h
   AssetReferenceInspectorCommands.cpp
   AssetReferenceInspectorModule.cpp
+  Analysis/AssetReferenceFilter.h
+  Analysis/AssetReferenceFilter.cpp
   UI/SAssetReferenceInspectorWidget.h
   UI/SAssetReferenceInspectorWidget.cpp
 ```
@@ -152,11 +154,6 @@ private Analysis
 - CreateRelationNode
 - GetEmptyRelationMessage
 
-private Filter
-- ShouldPassRelationFilters
-- DoesPathPassFilter
-- DoesAssetClassPassFilter
-
 private Asset data
 - TryGetPrimaryAssetDataForPackage
 
@@ -185,9 +182,16 @@ private Tree view state
 - Tree item 더블 클릭처럼 `STreeView` 상호작용에서 직접 호출되는 함수는 `Tree callbacks`에 둔다.
 - Slate text binding 함수는 `UI text`에 둔다.
 - Asset Registry 관계 조회, 노드 생성, empty relation 메시지 결정은 `Analysis`에 둔다.
-- Path / Class 조건을 종합하거나 개별 필터를 판정하는 함수는 `Filter`에 둔다.
 - PackageName을 `FAssetData`로 해석하는 공통 helper는 `Asset data`에 둔다.
 - `STreeView` 갱신, expand, row 생성, children 제공은 `Tree view`에 둔다.
 - Content Browser 선택 동기화처럼 에디터 UI 외부 시스템과 연결되는 helper는 `Content Browser`에 둔다.
 - 분석 입력과 옵션은 `Analysis state`, Tree가 참조하는 데이터와 Slate 위젯 포인터는 `Tree view state`에 둔다.
-- 필터 종류가 늘어나면 `Filter` 내부를 더 세분화하지 않고, 우선 `ShouldPassRelationFilters`에서 조합 순서만 명확히 유지한다.
+
+`FAssetReferenceFilter`는 relation filter predicate를 담당한다. `SAssetReferenceInspectorWidget`은 Tree 생성 중 `FAssetReferenceFilter::ShouldPassRelationFilters`만 호출하고, Path / Class / Engine Content / Plugin Content 판정 세부는 `Private/Analysis`에 둔다.
+
+기준:
+
+- 사용자가 입력한 filter option은 위젯의 `AnalysisOptions`에 저장한다.
+- filter option을 실제 PackageName 통과 여부로 해석하는 로직은 `FAssetReferenceFilter`에 둔다.
+- UI helper가 아닌 filter predicate는 위젯 헤더에 노출하지 않는다.
+- 필터 종류가 늘어나면 우선 `FAssetReferenceFilter::ShouldPassRelationFilters`에서 조합 순서를 명확히 유지한다.

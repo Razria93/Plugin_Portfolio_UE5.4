@@ -508,6 +508,12 @@ Phase 5는 2주차 목표의 후반부에 해당하며, 분석 결과를 실제 
 
 - 필터 조건을 Analyzer 내부에서 독립 함수 또는 구조로 분리한다.
 
+완료 기준:
+
+- Path Filter, Asset Class Filter, Engine Content, Plugin Content 판정 로직을 UI 위젯에서 분리한다.
+- `SAssetReferenceInspectorWidget`은 filter predicate 세부 구현을 직접 갖지 않고 Analysis 계층의 filter API를 호출한다.
+- 기존 Path / Class / Engine / Plugin Content 동작이 유지된다.
+
 커밋 예시:
 
 ```text

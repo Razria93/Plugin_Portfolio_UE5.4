@@ -278,15 +278,16 @@ ClassPath.Contains(ClassFilter, ESearchCase::IgnoreCase)
 
 따라서 `Material`, `Texture2D`, `Blueprint`처럼 Class 이름 일부를 입력해도 대소문자와 관계없이 매칭된다.
 
-Path Filter와 Class Filter는 `ShouldPassRelationFilters`에서 함께 적용한다.
+Path Filter, Class Filter, Engine Content 옵션, Plugin Content 옵션은 `FAssetReferenceFilter::ShouldPassRelationFilters`에서 함께 적용한다.
 
 ```text
-ShouldPassRelationFilters
+FAssetReferenceFilter::ShouldPassRelationFilters
+-> DoesContentSourcePassFilter
 -> DoesPathPassFilter
 -> DoesAssetClassPassFilter
 ```
 
-두 필터 중 하나라도 통과하지 못하면 해당 Package는 Tree에 추가하지 않는다.
+필터 조건 중 하나라도 통과하지 못하면 해당 Package는 Tree에 추가하지 않는다. `SAssetReferenceInspectorWidget`은 Tree 생성 중 filter API만 호출하고, 세부 predicate는 `Private/Analysis/AssetReferenceFilter`가 담당한다.
 
 ### 현재 필터 정책
 
