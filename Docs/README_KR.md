@@ -80,7 +80,7 @@
 Demo Host에서 구현한 플러그인을 실제 Portfolio 프로젝트에 적용하고 시연하기 위한 흐름을 정리하는 문서다.
 
 - `05_Demo/Portfolio_Demo_KR.md`
-  - Portfolio 적용 준비, Demo Host 시연 순서, 실제 Portfolio 프로젝트 시연 후보, 촬영 체크리스트를 정리한다.
+  - Portfolio 적용 준비, Demo Host 시연 순서, 실제 Portfolio 프로젝트 적용 결과, 촬영 체크리스트를 정리한다.
 
 ## LocalNotes
 

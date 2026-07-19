@@ -53,10 +53,9 @@
 - `Unused Candidate`는 사용되지 않는 Asset의 후보 표시이며 삭제 가능 판정이 아니다.
 - Asset Size는 에디터 프로젝트의 디스크 파일 크기 기준 추정값이다.
 - Plugin Content 옵션은 content-mounted plugin dependency fixture가 없으면 positive case가 제한적이다.
-- 실제 Portfolio 프로젝트 적용 결과는 `Docs/05_Demo/Portfolio_Demo_KR.md`에서 Phase 7-4로 별도 기록한다.
+- 실제 Portfolio 프로젝트 적용 결과와 CSV 샘플은 `Docs/05_Demo/Portfolio_Demo_KR.md`에서 별도 기록한다.
 
 ## 다음 단계
 
-- 기존 Portfolio 프로젝트에 `Plugins/AssetReferenceInspector`를 적용한다.
-- 실제 Portfolio Asset 기준 Dependencies / Referencers / Filter / CSV Export 결과를 수집한다.
-- Demo Host 검증 결과와 실제 프로젝트 적용 결과를 구분해서 시연 문서에 정리한다.
+- Demo Host 검증 결과와 실제 Portfolio 프로젝트 적용 결과는 문서상에서 구분해 유지한다.
+- 실제 Portfolio 프로젝트 적용 결과는 [Portfolio Demo](../05_Demo/Portfolio_Demo_KR.md)를 기준으로 확인한다.

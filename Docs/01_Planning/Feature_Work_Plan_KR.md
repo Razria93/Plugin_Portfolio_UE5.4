@@ -718,6 +718,23 @@ AssetName,PackageName,Class,Path,Depth,SizeBytes,Mode,ParentPackage,IsCircular,I
 
 - 기존 Portfolio 프로젝트에 플러그인을 복사 적용하고 실제 Asset 분석 시나리오를 정리한다.
 
+완료 기준:
+
+- 실제 Portfolio 프로젝트에서 플러그인 탭이 열리는 흐름을 기록한다.
+- 실사용 Asset 기준 Dependencies / Referencers 분석 결과를 기록한다.
+- Filter, Unused Candidate, CSV Export 시연 결과를 대표 스크린샷으로 정리한다.
+- Demo Host 검증과 실제 Portfolio 적용 결과를 문서상에서 구분한다.
+- 별도 빌드 로그나 CSV 원본 파일이 없으면 성공으로 단정하지 않고 제한 사항에 남긴다.
+
+상태:
+
+- 완료.
+- 실제 Portfolio 프로젝트에서 `BP_CPlayer` Dependencies, `T_UE_Logo_M` Referencers, Content Browser Sync, Blueprint Class Filter, Unused Candidate, CSV Export notification을 스크린샷으로 기록했다.
+- 대표 스크린샷은 `Docs/03_Verification/Screenshots/portfolio_demo_verification/`에 정리했다.
+- Portfolio 프로젝트에서 export된 CSV 샘플은 `Docs/03_Verification/Exports/portfolio_demo_verification/`에 정리했다.
+- `Docs/05_Demo/Portfolio_Demo_KR.md`를 실제 적용 결과 포함 문서로 갱신했다.
+- 별도 `PortfolioEditor` command line 빌드 로그는 이번 문서에 포함하지 않았다.
+
 ## 커밋 운영 기준
 
 - `feat`: 사용자 기능 추가
