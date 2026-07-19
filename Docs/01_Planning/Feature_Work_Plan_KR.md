@@ -594,12 +594,28 @@ Phase 6부터는 3주차 목표에 해당한다. 참조 관계 조회 도구를 
 
 목적:
 
-- Referencer 수가 0인 `/Game` Asset을 검토 후보로 표시한다.
+- 선택 Asset 관계 Tree가 아니라 `/Game` 전체 Asset을 대상으로 참조자가 없는 검토 후보를 스캔해 표시한다.
 
 주의:
 
 - 삭제 가능 판정이 아니다.
 - UI와 문서에서 `Unused Candidate` 표현을 사용한다.
+- Soft Reference, Asset Manager, 동적 로딩은 이번 판정에서 확인하지 않는다.
+
+완료 기준:
+
+- `Scan Unused Candidates` 버튼을 통해 `/Game` 전체 Asset 후보 스캔을 실행한다.
+- Referencer 수가 0인 Project Content Asset을 `Unused Candidates` Tree 아래에 표시한다.
+- 후보 row는 `DisplayName [ClassName] (Size) [Unused Candidate]` 형식으로 표시한다.
+- Path Filter와 Class Filter가 후보 스캔에도 적용된다.
+- 후보가 없으면 `No unused candidates found` placeholder를 표시한다.
+
+진행 기록:
+
+- `feature/ari-unused-candidate-indicator` 브랜치에서 전체 `/Game` Asset 스캔 기반으로 구현했다.
+- 선택 Asset의 Dependencies / Referencers child node에는 Unused Candidate 판정을 붙이지 않도록 범위를 분리했다.
+- 검증용 `Content/ARI_Demo/Unused/T_Unused_Color.uasset` fixture를 추가했다.
+- 전체 후보, Path Filter, Class Filter, 후보 없음 placeholder 검증 스크린샷을 추가했다.
 
 ### 6-4. Analyzer 메타데이터 정리
 

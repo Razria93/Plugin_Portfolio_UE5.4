@@ -592,12 +592,12 @@ TSharedRef<ITableRow> OnGenerateTreeRow(
 	const TSharedRef<STableViewBase>& OwnerTable) const;
 ```
 
-현재는 `GetTreeNodeDisplayText`에서 `FAssetReferenceTreeNode`의 표시 문자열을 만든 뒤, 그 값을 `STextBlock`으로 표시하는 `STableRow`를 반환한다. `ClassName`이 있으면 `DisplayName [ClassName]` 형식으로 표시하고, `SizeBytes`가 0보다 크면 `(Size)` suffix를 붙인다. `bIsCircular`가 true이면 뒤에 `[Circular]`을 붙여 현재 DFS 경로에서 다시 등장한 순환 후보 노드임을 보여준다.
+현재는 `GetTreeNodeDisplayText`에서 `FAssetReferenceTreeNode`의 표시 문자열을 만든 뒤, 그 값을 `STextBlock`으로 표시하는 `STableRow`를 반환한다. `ClassName`이 있으면 `DisplayName [ClassName]` 형식으로 표시하고, `SizeBytes`가 0보다 크면 `(Size)` suffix를 붙인다. `bIsCircular`가 true이면 뒤에 `[Circular]`을 붙여 현재 DFS 경로에서 다시 등장한 순환 후보 노드임을 보여준다. `bIsUnusedCandidate`가 true이면 `[Unused Candidate]` suffix를 붙인다.
 
 표시 순서는 다음과 같다.
 
 ```text
-DisplayName [ClassName] (Size) [Circular]
+DisplayName [ClassName] (Size) [Circular] [Unused Candidate]
 ```
 
 Class 정보를 찾을 수 없는 Package, placeholder, 파일 경로를 찾을 수 없는 Package는 확인 가능한 suffix만 표시한다.
@@ -618,6 +618,28 @@ return SNew(STableRow<TSharedPtr<FAssetReferenceTreeNode>>, OwnerTable)
 -> Row 내부에 STextBlock 배치
 -> TextBlock의 Text 값으로 GetTreeNodeDisplayText 결과 표시
 ```
+
+## Scan Unused Candidates 버튼
+
+`Scan Unused Candidates`는 선택 Asset 관계 분석 버튼이 아니라 `/Game` 전체 Asset 후보 스캔을 실행하는 버튼이다.
+
+```cpp
+SNew(SButton)
+	.Text(FText::FromString(TEXT("Scan Unused Candidates")))
+	.OnClicked(this, &SAssetReferenceInspectorWidget::OnScanUnusedCandidatesClicked)
+```
+
+버튼 클릭 흐름은 다음과 같다.
+
+```text
+OnScanUnusedCandidatesClicked
+-> BuildUnusedCandidateTree
+-> RefreshTree
+-> STreeView가 TreeItemsSource를 다시 읽음
+-> OnGenerateTreeRow / OnGetTreeChildren으로 후보 목록 표시
+```
+
+결과 Tree는 `Unused Candidates` root node 아래에 후보 node를 배치한다. 후보가 없으면 `No unused candidates found` placeholder node를 표시한다.
 
 `STableRow`는 `SListView`, `STreeView` 같은 테이블 계열 위젯에서 아이템 하나를 표현하는 화면 줄이다. 여기서 테이블 계열은 위계가 있다는 뜻이 아니라, 여러 데이터 아이템을 row 또는 tile 형태로 반복 표시하는 위젯 계열을 뜻한다.
 

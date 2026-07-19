@@ -1106,3 +1106,69 @@ Total execution time: 7.17 seconds
 #### 미확인
 
 - Cooked size, runtime memory size, dependency inclusive size는 이번 범위에서 검증하지 않음
+
+### AssetReferenceInspector Unused Candidate Indicator
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+UBT 출력 기준:
+
+```text
+[3/7] Compile [x64] Module.AssetReferenceInspector.cpp
+[4/7] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[5/7] Link [x64] UnrealEditor-AssetReferenceInspector-0002.lib
+[6/7] Link [x64] UnrealEditor-AssetReferenceInspector-0002.dll
+[7/7] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 5.53 seconds
+```
+
+#### 확인 범위
+
+- `Scan Unused Candidates` 버튼이 `/Game` 전체 Asset 후보 스캔을 실행하는 상태에서 빌드 확인
+- `FAssetReferenceTreeNode::bIsUnusedCandidate`가 Tree row 표시 문자열에 반영되는 상태에서 빌드 확인
+- `SearchAllAssets(true)`와 `WaitForCompletion()`으로 registry discovery 완료를 대기한 뒤 Unused Candidate 스캔을 수행하는 상태에서 빌드 확인
+- `GetReferencers(PackageName)` 결과가 0개인 Project Content Asset을 후보로 수집하는 경로에서 빌드 확인
+- 선택 Asset 관계 Tree의 child node에는 Unused Candidate 판정을 붙이지 않는 구조에서 빌드 확인
+- Path Filter / Class Filter가 Unused Candidate 스캔에도 적용되는 상태에서 빌드 확인
+
+#### 에디터 UI 확인
+
+- Path Filter `/Game/` 상태에서 `Scan Unused Candidates` 클릭 시 `Unused Candidates` root 아래 후보 목록 표시 확인
+- `T_Unused_Color [Texture2D] (10.13 KB) [Unused Candidate]` 표시 확인
+- Path Filter `/Game/ARI_Demo/Unused/` 적용 시 `T_Unused_Color`만 남는 것 확인
+- Class Filter `Texture2D` 적용 시 Texture 후보만 남는 것 확인
+- Path Filter `/Game/NoMatch/` 적용 시 `No unused candidates found` placeholder 표시 확인
+- 후보 row 더블 클릭 시 Content Browser Sync 동작 확인
+- 참조자가 있는 Asset은 후보 목록에 표시되지 않는 것 확인
+- `/Script`, `/Engine` Package가 후보 목록에 표시되지 않는 것 확인
+
+#### Screenshots
+
+![Unused Candidates All Project Content](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_all_project_content.png)
+
+![Unused Candidates Path Filter](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_path_filter.png)
+
+![Unused Candidates Class Filter](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_class_filter.png)
+
+![Unused Candidates No Match](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_no_match.png)
+
+#### 미확인
+
+- Soft Reference, Asset Manager, 동적 로딩 기반 사용 여부는 이번 범위에서 검증하지 않음
+- 실제 삭제 가능 여부는 이번 범위에서 판단하지 않음

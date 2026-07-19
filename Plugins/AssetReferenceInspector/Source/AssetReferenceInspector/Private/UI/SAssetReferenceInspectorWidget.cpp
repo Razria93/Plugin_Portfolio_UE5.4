@@ -78,6 +78,13 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 										.Text(FText::FromString(TEXT("Analyze")))
 										.OnClicked(this, &SAssetReferenceInspectorWidget::OnAnalyzeClicked)
 								]
+
+								+ SUniformGridPanel::Slot(2, 0)
+								[
+									SNew(SButton)
+										.Text(FText::FromString(TEXT("Scan Unused Candidates")))
+										.OnClicked(this, &SAssetReferenceInspectorWidget::OnScanUnusedCandidatesClicked)
+								]
 						]
 
 					+ SVerticalBox::Slot()
@@ -318,6 +325,14 @@ FReply SAssetReferenceInspectorWidget::OnAnalyzeClicked()
 	return FReply::Handled();
 }
 
+FReply SAssetReferenceInspectorWidget::OnScanUnusedCandidatesClicked()
+{
+	BuildUnusedCandidateTree();
+	RefreshTree();
+
+	return FReply::Handled();
+}
+
 FReply SAssetReferenceInspectorWidget::OnDependenciesModeClicked()
 {
 	AnalysisOptions.Mode = EAssetReferenceMode::Dependencies;
@@ -533,6 +548,54 @@ void SAssetReferenceInspectorWidget::GetRelatedPackageNames(FName PackageName, T
 	AssetRegistryModule.Get().GetDependencies(PackageName, OutPackageNames);
 }
 
+void SAssetReferenceInspectorWidget::BuildUnusedCandidateTree()
+{
+	TreeRootItems.Reset();
+
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+	AssetRegistryModule.Get().SearchAllAssets(true);
+	AssetRegistryModule.Get().WaitForCompletion();
+
+	TArray<FAssetData> ProjectAssets;
+	AssetRegistryModule.Get().GetAssetsByPath(FName(TEXT("/Game")), ProjectAssets, true);
+
+	TSharedPtr<FAssetReferenceTreeNode> RootNode = MakeShared<FAssetReferenceTreeNode>(TEXT("Unused Candidates"));
+
+	for (const FAssetData& AssetData : ProjectAssets)
+	{
+		if (!AssetData.IsValid())
+		{
+			continue;
+		}
+
+		if (!FAssetReferenceFilter::ShouldPassRelationFilters(AnalysisOptions, AssetData.PackageName))
+		{
+			continue;
+		}
+
+		if (!IsUnusedCandidateAsset(AssetData.PackageName, AssetData))
+		{
+			continue;
+		}
+
+		RootNode->Children.Add(CreateUnusedCandidateNode(AssetData));
+	}
+
+	RootNode->Children.Sort([](const TSharedPtr<FAssetReferenceTreeNode>& Left, const TSharedPtr<FAssetReferenceTreeNode>& Right)
+	{
+		const FString LeftName = Left.IsValid() ? Left->DisplayName : FString();
+		const FString RightName = Right.IsValid() ? Right->DisplayName : FString();
+		return LeftName < RightName;
+	});
+
+	if (RootNode->Children.Num() == 0)
+	{
+		RootNode->Children.Add(MakeShared<FAssetReferenceTreeNode>(TEXT("No unused candidates found"), NAME_None, 1));
+	}
+
+	TreeRootItems.Add(RootNode);
+}
+
 void SAssetReferenceInspectorWidget::RefreshTree()
 {
 	if (!TreeView.IsValid())
@@ -574,7 +637,25 @@ TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateRelati
 		ClassName = AssetData.AssetClassPath.GetAssetName().ToString();
 	}
 
-	return MakeShared<FAssetReferenceTreeNode>(DisplayName, PackageName, Depth, bIsCircular, ClassName, GetPackageDiskSizeBytes(PackageName));
+	return MakeShared<FAssetReferenceTreeNode>(
+		DisplayName,
+		PackageName,
+		Depth,
+		bIsCircular,
+		ClassName,
+		GetPackageDiskSizeBytes(PackageName));
+}
+
+TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateUnusedCandidateNode(const FAssetData& AssetData) const
+{
+	return MakeShared<FAssetReferenceTreeNode>(
+		AssetData.AssetName.ToString(),
+		AssetData.PackageName,
+		1,
+		false,
+		AssetData.AssetClassPath.GetAssetName().ToString(),
+		GetPackageDiskSizeBytes(AssetData.PackageName),
+		true);
 }
 
 FString SAssetReferenceInspectorWidget::GetEmptyRelationMessage() const
@@ -598,6 +679,39 @@ bool SAssetReferenceInspectorWidget::TryGetPrimaryAssetDataForPackage(FName Pack
 
 	OutAssetData = AssetsInPackage[0];
 	return true;
+}
+
+bool SAssetReferenceInspectorWidget::IsUnusedCandidateAsset(FName PackageName, const FAssetData& AssetData) const
+{
+	if (PackageName.IsNone() || !AssetData.IsValid())
+	{
+		return false;
+	}
+
+	if (!PackageName.ToString().StartsWith(TEXT("/Game/")))
+	{
+		return false;
+	}
+
+	if (IsExcludedUnusedCandidateClass(AssetData))
+	{
+		return false;
+	}
+
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+
+	TArray<FName> ReferencerPackageNames;
+	AssetRegistryModule.Get().GetReferencers(PackageName, ReferencerPackageNames);
+
+	return ReferencerPackageNames.Num() == 0;
+}
+
+bool SAssetReferenceInspectorWidget::IsExcludedUnusedCandidateClass(const FAssetData& AssetData) const
+{
+	const FString ClassName = AssetData.AssetClassPath.GetAssetName().ToString();
+
+	return ClassName.Equals(TEXT("World"), ESearchCase::IgnoreCase)
+		|| ClassName.Equals(TEXT("ObjectRedirector"), ESearchCase::IgnoreCase);
 }
 
 bool SAssetReferenceInspectorWidget::TryGetPackageFilename(FName PackageName, FString& OutPackageFilename) const
@@ -696,6 +810,11 @@ FString SAssetReferenceInspectorWidget::GetTreeNodeDisplayText(TSharedPtr<FAsset
 	if (Item->bIsCircular)
 	{
 		DisplayText = FString::Printf(TEXT("%s [Circular]"), *DisplayText);
+	}
+
+	if (Item->bIsUnusedCandidate)
+	{
+		DisplayText = FString::Printf(TEXT("%s [Unused Candidate]"), *DisplayText);
 	}
 
 	return DisplayText;

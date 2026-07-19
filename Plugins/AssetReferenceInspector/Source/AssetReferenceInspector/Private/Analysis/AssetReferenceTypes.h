@@ -21,13 +21,14 @@ struct FAssetReferenceAnalysisOptions
 
 struct FAssetReferenceTreeNode
 {
-	explicit FAssetReferenceTreeNode(FString InDisplayName, FName InPackageName = NAME_None, int32 InDepth = 0, bool bInIsCircular = false, FString InClassName = FString(), int64 InSizeBytes = 0)
+	explicit FAssetReferenceTreeNode(FString InDisplayName, FName InPackageName = NAME_None, int32 InDepth = 0, bool bInIsCircular = false, FString InClassName = FString(), int64 InSizeBytes = 0, bool bInIsUnusedCandidate = false)
 		: DisplayName(MoveTemp(InDisplayName))
 		, PackageName(InPackageName)
 		, Depth(InDepth)
 		, bIsCircular(bInIsCircular)
 		, ClassName(MoveTemp(InClassName))
 		, SizeBytes(InSizeBytes)
+		, bIsUnusedCandidate(bInIsUnusedCandidate)
 	{
 	}
 
@@ -37,5 +38,6 @@ struct FAssetReferenceTreeNode
 	bool bIsCircular = false;
 	FString ClassName;
 	int64 SizeBytes = 0;
+	bool bIsUnusedCandidate = false;
 	TArray<TSharedPtr<FAssetReferenceTreeNode>> Children;
 };
