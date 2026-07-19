@@ -2,9 +2,11 @@
 
 #include "Analysis/AssetReferenceFilter.h"
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "Export/AssetReferenceCsvExporter.h"
 #include "Modules/ModuleManager.h"
 
 #include "ContentBrowserModule.h"
+#include "Framework/Notifications/NotificationManager.h"
 #include "HAL/FileManager.h"
 #include "IContentBrowserSingleton.h"
 #include "Misc/DefaultValueHelper.h"
@@ -19,6 +21,7 @@
 #include "Widgets/Layout/SGridPanel.h"
 #include "Widgets/Layout/SSeparator.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
+#include "Widgets/Notifications/SNotificationList.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Text/STextBlock.h"
 
@@ -85,6 +88,13 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 										.Text(FText::FromString(TEXT("Scan Unused Candidates")))
 										.OnClicked(this, &SAssetReferenceInspectorWidget::OnScanUnusedCandidatesClicked)
 								]
+
+								+ SUniformGridPanel::Slot(3, 0)
+								[
+									SNew(SButton)
+										.Text(FText::FromString(TEXT("Export CSV")))
+										.OnClicked(this, &SAssetReferenceInspectorWidget::OnExportCsvClicked)
+								]
 						]
 
 					+ SVerticalBox::Slot()
@@ -145,7 +155,7 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 																]
 														]
 
-														+ SUniformGridPanel::Slot(1, 0)
+													+ SUniformGridPanel::Slot(1, 0)
 														[
 															SNew(SButton)
 																.OnClicked(this, &SAssetReferenceInspectorWidget::OnReferencersModeClicked)
@@ -159,7 +169,7 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 										]
 								]
 
-								+ SVerticalBox::Slot()
+							+ SVerticalBox::Slot()
 								.AutoHeight()
 								.Padding(0.0f, 0.0f, 0.0f, 8.0f)
 								[
@@ -230,7 +240,7 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 										]
 								]
 
-								+ SVerticalBox::Slot()
+							+ SVerticalBox::Slot()
 								.AutoHeight()
 								.Padding(0.0f)
 								[
@@ -265,7 +275,7 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 																]
 														]
 
-														+ SUniformGridPanel::Slot(1, 0)
+													+ SUniformGridPanel::Slot(1, 0)
 														[
 															SNew(SCheckBox)
 																.IsChecked(this, &SAssetReferenceInspectorWidget::GetIncludePluginContentCheckState)
@@ -280,7 +290,7 @@ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
 								]
 						]
 
-						+ SVerticalBox::Slot()
+					+ SVerticalBox::Slot()
 						.FillHeight(1.0f)
 						[
 							SNew(SBorder)
@@ -329,6 +339,27 @@ FReply SAssetReferenceInspectorWidget::OnScanUnusedCandidatesClicked()
 {
 	BuildUnusedCandidateTree();
 	RefreshTree();
+
+	return FReply::Handled();
+}
+
+FReply SAssetReferenceInspectorWidget::OnExportCsvClicked()
+{
+	FString ExportFilename;
+	FString ErrorMessage;
+	const bool bExported = FAssetReferenceCsvExporter::ExportToTimestampedCsv(TreeRootItems, CurrentTreeMode, ExportFilename, ErrorMessage);
+
+	FNotificationInfo NotificationInfo(FText::FromString(bExported
+		? FString::Printf(TEXT("CSV exported: %s"), *ExportFilename)
+		: ErrorMessage));
+	NotificationInfo.ExpireDuration = bExported ? 5.0f : 8.0f;
+
+	if (TSharedPtr<SNotificationItem> Notification = FSlateNotificationManager::Get().AddNotification(NotificationInfo))
+	{
+		Notification->SetCompletionState(bExported
+			? SNotificationItem::CS_Success
+			: SNotificationItem::CS_Fail);
+	}
 
 	return FReply::Handled();
 }
@@ -472,6 +503,7 @@ ECheckBoxState SAssetReferenceInspectorWidget::GetIncludePluginContentCheckState
 void SAssetReferenceInspectorWidget::BuildRelationTree()
 {
 	TreeRootItems.Reset();
+	CurrentTreeMode = AnalysisOptions.Mode;
 
 	if (!SelectedAssetData.IsValid())
 	{
@@ -551,6 +583,7 @@ void SAssetReferenceInspectorWidget::GetRelatedPackageNames(FName PackageName, T
 void SAssetReferenceInspectorWidget::BuildUnusedCandidateTree()
 {
 	TreeRootItems.Reset();
+	CurrentTreeMode = AnalysisOptions.Mode;
 
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 	AssetRegistryModule.Get().SearchAllAssets(true);
@@ -582,11 +615,11 @@ void SAssetReferenceInspectorWidget::BuildUnusedCandidateTree()
 	}
 
 	RootNode->Children.Sort([](const TSharedPtr<FAssetReferenceTreeNode>& Left, const TSharedPtr<FAssetReferenceTreeNode>& Right)
-	{
-		const FString LeftName = Left.IsValid() ? Left->DisplayName : FString();
-		const FString RightName = Right.IsValid() ? Right->DisplayName : FString();
-		return LeftName < RightName;
-	});
+		{
+			const FString LeftName = Left.IsValid() ? Left->DisplayName : FString();
+			const FString RightName = Right.IsValid() ? Right->DisplayName : FString();
+			return LeftName < RightName;
+		});
 
 	if (RootNode->Children.Num() == 0)
 	{

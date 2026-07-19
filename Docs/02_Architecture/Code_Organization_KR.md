@@ -26,6 +26,8 @@ Private/
   AssetReferenceInspectorModule.cpp
   Analysis/AssetReferenceFilter.h
   Analysis/AssetReferenceFilter.cpp
+  Export/AssetReferenceCsvExporter.h
+  Export/AssetReferenceCsvExporter.cpp
   UI/SAssetReferenceInspectorWidget.h
   UI/SAssetReferenceInspectorWidget.cpp
 ```
@@ -40,6 +42,8 @@ Private/
 예를 들어 `FAssetReferenceInspectorCommands`는 메뉴 등록을 위한 내부 타입이다. 외부 모듈이 사용할 API가 아니며 Slate / Commands 관련 타입을 포함하므로 `Private`에 둔다.
 
 `SAssetReferenceInspectorWidget`도 플러그인 내부 탭 UI 구현체이므로 `Private/UI`에 둔다. 외부 모듈이 직접 include할 Public API가 아니라 `AssetReferenceInspector` 탭 내부에서만 사용한다.
+
+`FAssetReferenceCsvExporter`는 현재 Tree 결과를 파일로 저장하는 내부 export helper이므로 `Private/Export`에 둔다. UI 위젯은 export 버튼과 사용자 알림을 담당하고, CSV row 생성과 파일 저장 정책은 exporter가 담당한다.
 
 ## Include 순서
 
@@ -133,6 +137,8 @@ private Commands
 private Button callbacks
 - OnPickSelectedAssetClicked
 - OnAnalyzeClicked
+- OnScanUnusedCandidatesClicked
+- OnExportCsvClicked
 
 private Filter callbacks
 - OnPathFilterTextCommitted

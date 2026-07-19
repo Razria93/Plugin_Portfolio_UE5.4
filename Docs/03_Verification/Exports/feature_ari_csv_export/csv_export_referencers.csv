@@ -1,0 +1,4 @@
+AssetName,PackageName,Class,Path,Depth,SizeBytes,Mode,ParentPackage,IsCircular,IsUnusedCandidate
+T_Dummy_Color,/Game/ARI_Demo/T_Dummy_Color,Texture2D,/Game/ARI_Demo,0,10261,Referencers,,false,false
+M_Dummy,/Game/ARI_Demo/M_Dummy,Material,/Game/ARI_Demo,1,11493,Referencers,/Game/ARI_Demo/T_Dummy_Color,false,false
+BP_Dummy,/Game/ARI_Demo/BP_Dummy,Blueprint,/Game/ARI_Demo,2,29035,Referencers,/Game/ARI_Demo/M_Dummy,false,false

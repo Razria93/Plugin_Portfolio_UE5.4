@@ -1215,3 +1215,76 @@ Total execution time: 34.58 seconds
 
 - CSV 파일 저장 기능은 Phase 7-1에서 검증
 - 에디터 UI 회귀 확인은 별도 수동 확인 필요
+
+### AssetReferenceInspector CSV Export
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+UBT 출력 기준:
+
+```text
+[1/8] Link [x64] UnrealEditor-Portfolio_PlugIn-0001.lib
+[2/8] Link [x64] UnrealEditor-Portfolio_PlugIn-0001.dll
+[3/8] Compile [x64] AssetReferenceCsvExporter.cpp
+[4/8] Compile [x64] Module.AssetReferenceInspector.cpp
+[5/8] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[6/8] Link [x64] UnrealEditor-AssetReferenceInspector-0001.lib
+[7/8] Link [x64] UnrealEditor-AssetReferenceInspector-0001.dll
+[8/8] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 6.67 seconds
+```
+
+#### 확인 범위
+
+- `FAssetReferenceCsvExporter` 추가 상태에서 빌드 확인
+- `Export CSV` 버튼 callback 연결 상태에서 빌드 확인
+- `TreeRootItems`를 CSV row로 변환하는 경로에서 빌드 확인
+- `PackageName == NAME_None` row를 제외하고 자식 node는 계속 순회하는 구조에서 빌드 확인
+- `Saved/AssetReferenceInspector/` timestamp CSV 저장 경로 구성 상태에서 빌드 확인
+- 같은 초 안에서 export 파일명이 충돌하면 counter suffix를 붙이는 no-overwrite 파일명 생성 경로에서 빌드 확인
+- CSV `Mode` column이 현재 Tree를 생성한 분석 mode를 사용하도록 구성된 상태에서 빌드 확인
+- 에디터에서 `Export CSV` 버튼 표시 확인
+- Dependencies 결과에서 CSV Export 성공 notification 표시 확인
+- Referencers 결과에서 CSV Export 성공 notification 표시 확인
+- Unused Candidate 결과에서 CSV Export 성공 notification 표시 확인
+- export 가능한 Asset row가 없는 결과에서 `No exportable Asset rows found.` 오류 notification 표시 확인
+- Dependencies / Referencers / Unused Candidate CSV 파일 생성과 row 내용 확인
+- placeholder / grouping node가 CSV row에서 제외되는 것 확인
+
+#### Screenshots
+
+![CSV Export Button Available](Screenshots/feature_ari_csv_export/csv_export_button_available.png)
+
+![CSV Export Dependencies Success](Screenshots/feature_ari_csv_export/csv_export_dependencies_success.png)
+
+![CSV Export Referencers Success](Screenshots/feature_ari_csv_export/csv_export_referencers_success.png)
+
+![CSV Export No Exportable Rows](Screenshots/feature_ari_csv_export/csv_export_no_exportable_rows.png)
+
+![CSV Export Unused Candidates Success](Screenshots/feature_ari_csv_export/csv_export_unused_candidates_success.png)
+
+#### Exported CSV Samples
+
+- [Dependencies CSV](Exports/feature_ari_csv_export/csv_export_dependencies.csv)
+- [Referencers CSV](Exports/feature_ari_csv_export/csv_export_referencers.csv)
+- [Unused Candidates CSV](Exports/feature_ari_csv_export/csv_export_unused_candidates.csv)
+
+#### 미확인
+
+- CSV 파일을 Excel 같은 외부 spreadsheet 도구에서 여는 검증은 수행하지 않음

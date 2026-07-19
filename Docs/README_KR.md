@@ -36,6 +36,8 @@
   - Slate 위젯과 주요 API를 생성 문법, 표시, 입력, 컨테이너, 테이블, 에디터 도킹, 이벤트 기준으로 정리한다.
 - `02_Architecture/Asset_Registry_Analysis_Flow_KR.md`
   - Asset Registry 기반 Dependencies 조회와 Tree View 표시 흐름을 정리한다.
+- `02_Architecture/CSV_Export_Format_KR.md`
+  - CSV Export row / field 구분자, escaping, 컬럼 매핑, 저장 위치를 정리한다.
 
 ## 03_Verification
 
@@ -47,6 +49,8 @@
   - UE 5.4 빌드와 에디터 UI 확인 결과를 기록한다.
 - `03_Verification/Screenshots/`
   - PR 또는 검증 로그에 사용할 최종 검증 스크린샷을 보관한다.
+- `03_Verification/Exports/`
+  - CSV Export처럼 파일 생성 기능을 검증하기 위한 최종 export 샘플을 보관한다.
 
 ## 04_Governance
 
