@@ -22,6 +22,7 @@ private:
 	// Button callbacks
 	FReply OnPickSelectedAssetClicked();
 	FReply OnAnalyzeClicked();
+	FReply OnScanUnusedCandidatesClicked();
 	FReply OnDependenciesModeClicked();
 	FReply OnReferencersModeClicked();
 
@@ -50,12 +51,16 @@ private:
 	// Analysis
 	void BuildRelationTree();
 	void BuildRelationChildren(TSharedPtr<FAssetReferenceTreeNode> ParentNode, TArray<FName>& CurrentPath) const;
+	void BuildUnusedCandidateTree();
 	void GetRelatedPackageNames(FName PackageName, TArray<FName>& OutPackageNames) const;
 	TSharedPtr<FAssetReferenceTreeNode> CreateRelationNode(FName PackageName, int32 Depth, bool bIsCircular = false) const;
+	TSharedPtr<FAssetReferenceTreeNode> CreateUnusedCandidateNode(const FAssetData& AssetData) const;
 	FString GetEmptyRelationMessage() const;
 
 	// Asset data
 	bool TryGetPrimaryAssetDataForPackage(FName PackageName, FAssetData& OutAssetData) const;
+	bool IsUnusedCandidateAsset(FName PackageName, const FAssetData& AssetData) const;
+	bool IsExcludedUnusedCandidateClass(const FAssetData& AssetData) const;
 	bool TryGetPackageFilename(FName PackageName, FString& OutPackageFilename) const;
 	int64 GetPackageDiskSizeBytes(FName PackageName) const;
 	int64 GetExistingFileSizeBytes(const FString& Filename) const;

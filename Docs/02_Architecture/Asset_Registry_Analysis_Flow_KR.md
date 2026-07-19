@@ -4,7 +4,7 @@
 
 ## 현재 범위
 
-현재 구현 범위는 Dependencies / Referencers 모드 전환, Max Depth 기반 재귀 Tree 생성, Path / Class / Content Scope 필터, 순환 후보 노드 표시, Asset 디스크 크기 표시다.
+현재 구현 범위는 Dependencies / Referencers 모드 전환, Max Depth 기반 재귀 Tree 생성, Path / Class / Content Scope 필터, 순환 후보 노드 표시, Asset 디스크 크기 표시, Unused Candidate 전체 스캔이다.
 
 ```text
 선택 Asset
@@ -184,10 +184,37 @@ PackageName
 Tree row 표시 순서는 다음과 같다.
 
 ```text
-DisplayName [ClassName] (Size) [Circular]
+DisplayName [ClassName] (Size) [Circular] [Unused Candidate]
 ```
 
-`ClassName`, `Size`, `[Circular]`은 조건부 suffix다. 예를 들어 AssetData와 파일 크기를 찾을 수 있는 순환 후보 노드는 `BP_CycleA [Blueprint] (12.34 KB) [Circular]`처럼 표시된다.
+`ClassName`, `Size`, `[Circular]`, `[Unused Candidate]`는 조건부 suffix다. 예를 들어 AssetData와 파일 크기를 찾을 수 있는 순환 후보 노드는 `BP_CycleA [Blueprint] (12.34 KB) [Circular]`처럼 표시된다. Unused Candidate 전체 스캔 결과의 후보 노드는 `T_Unused_Color [Texture2D] (10.13 KB) [Unused Candidate]`처럼 표시된다.
+
+## Unused Candidate 전체 스캔
+
+Phase 6-3 이후에는 선택 Asset 관계 Tree와 별도로 `/Game` 전체 Asset을 대상으로 Unused Candidate 후보를 스캔한다.
+
+Dependencies / Referencers Tree는 선택 Asset 기준 관계 분석이다. Dependencies child node는 부모 Asset에게 이미 참조받고 있고, Referencers child node는 선택 Asset을 참조하는 Asset이다. 따라서 관계 Tree의 child node에 Unused Candidate를 섞으면 의미가 흐려진다. Unused Candidate는 별도 스캔 버튼으로 전체 Project Content를 조회해 표시한다.
+
+```text
+Scan Unused Candidates
+-> AssetRegistry.GetAssetsByPath("/Game", recursive=true)
+-> Path Filter / Class Filter 적용
+-> Map, Redirector, 외부 Content 제외
+-> GetReferencers(PackageName)
+-> Referencer 수 0이면 후보 node 추가
+```
+
+후보 결과는 `Unused Candidates` root node 아래에 표시한다. 후보가 없으면 `No unused candidates found` placeholder를 추가한다.
+
+판정 기준:
+
+- `/Game` 아래 Project Content Asset만 검사한다.
+- `GetReferencers(PackageName)` 결과가 0개이면 후보로 본다.
+- `World`, `ObjectRedirector`는 제외한다.
+- `/Script`, `/Engine`, Plugin Content, placeholder node는 후보로 표시하지 않는다.
+- Path Filter와 Class Filter를 통과한 Asset만 검사한다.
+
+이 기능은 삭제 가능 판정이 아니다. Soft Reference, Asset Manager, 동적 로딩, 코드 기반 경로 로딩은 Asset Registry의 referencer 목록만으로 완전히 확인할 수 없다. 따라서 UI와 문서에서는 `Unused Asset`이 아니라 `Unused Candidate`로만 표현한다.
 
 ## Max Depth 재귀 생성
 
@@ -453,4 +480,4 @@ Options
 = Mode, Max Depth, 필터 조건
 ```
 
-Analyzer 클래스 분리, Unused Candidate 표시, CSV Export는 후속 작업에서 확장한다. Path / Class / Engine / Plugin Content 필터 UI, 순환 후보 row 표시, Asset 디스크 크기 표시는 현재 `SAssetReferenceInspectorWidget`에서 직접 관리한다.
+Analyzer 클래스 분리와 CSV Export는 후속 작업에서 확장한다. Path / Class / Engine / Plugin Content 필터 UI, 순환 후보 row 표시, Asset 디스크 크기 표시, Unused Candidate 전체 스캔은 현재 `SAssetReferenceInspectorWidget`에서 직접 관리한다.
