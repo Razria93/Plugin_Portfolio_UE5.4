@@ -150,16 +150,25 @@ private UI text
 private Analysis
 - BuildRelationTree
 - BuildRelationChildren
+- BuildUnusedCandidateTree
 - GetRelatedPackageNames
 - CreateRelationNode
+- CreateUnusedCandidateNode
 - GetEmptyRelationMessage
 
 private Asset data
 - TryGetPrimaryAssetDataForPackage
+- IsUnusedCandidateAsset
+- IsExcludedUnusedCandidateClass
+- TryGetPackageFilename
+- GetPackageDiskSizeBytes
+- GetExistingFileSizeBytes
 
 private Tree view
 - RefreshTree
 - ExpandTreeItems
+- FormatSizeBytes
+- GetTreeNodeDisplayText
 - OnGenerateTreeRow
 - OnGetTreeChildren
 

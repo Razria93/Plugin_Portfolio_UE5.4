@@ -1172,3 +1172,46 @@ Total execution time: 5.53 seconds
 
 - Soft Reference, Asset Manager, 동적 로딩 기반 사용 여부는 이번 범위에서 검증하지 않음
 - 실제 삭제 가능 여부는 이번 범위에서 판단하지 않음
+
+### AssetReferenceInspector Analysis Metadata
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+UBT 출력 기준:
+
+```text
+[7/11] Compile [x64] Module.AssetReferenceInspector.cpp
+[8/11] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[9/11] Link [x64] UnrealEditor-AssetReferenceInspector.lib
+[10/11] Link [x64] UnrealEditor-AssetReferenceInspector.dll
+[11/11] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 34.58 seconds
+```
+
+#### 확인 범위
+
+- `FAssetReferenceTreeNode::ParentPackageName` 추가 상태에서 빌드 확인
+- relation child node가 부모 node의 PackageName을 metadata로 저장하는 상태에서 빌드 확인
+- root node, placeholder node, Unused Candidate 후보 node의 parent metadata 정책을 구분한 상태에서 빌드 확인
+- 기존 Tree row suffix 표시 순서가 유지되는 상태에서 빌드 확인
+
+#### 미확인
+
+- CSV 파일 저장 기능은 Phase 7-1에서 검증
+- 에디터 UI 회귀 확인은 별도 수동 확인 필요

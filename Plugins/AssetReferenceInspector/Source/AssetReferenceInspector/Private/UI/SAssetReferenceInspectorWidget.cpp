@@ -515,7 +515,7 @@ void SAssetReferenceInspectorWidget::BuildRelationChildren(TSharedPtr<FAssetRefe
 		}
 
 		const bool bIsCircular = CurrentPath.Contains(RelatedPackageName);
-		TSharedPtr<FAssetReferenceTreeNode> ChildNode = CreateRelationNode(RelatedPackageName, ParentNode->Depth + 1, bIsCircular);
+		TSharedPtr<FAssetReferenceTreeNode> ChildNode = CreateRelationNode(RelatedPackageName, ParentNode->Depth + 1, ParentNode->PackageName, bIsCircular);
 		ParentNode->Children.Add(ChildNode);
 		bAddedChild = true;
 
@@ -625,7 +625,7 @@ void SAssetReferenceInspectorWidget::ExpandTreeItems(const TArray<TSharedPtr<FAs
 	}
 }
 
-TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateRelationNode(FName PackageName, int32 Depth, bool bIsCircular) const
+TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateRelationNode(FName PackageName, int32 Depth, FName ParentPackageName, bool bIsCircular) const
 {
 	FString DisplayName = PackageName.ToString();
 	FString ClassName;
@@ -643,7 +643,9 @@ TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateRelati
 		Depth,
 		bIsCircular,
 		ClassName,
-		GetPackageDiskSizeBytes(PackageName));
+		GetPackageDiskSizeBytes(PackageName),
+		false,
+		ParentPackageName);
 }
 
 TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateUnusedCandidateNode(const FAssetData& AssetData) const

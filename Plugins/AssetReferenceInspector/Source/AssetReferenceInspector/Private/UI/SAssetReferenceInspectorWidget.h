@@ -53,7 +53,7 @@ private:
 	void BuildRelationChildren(TSharedPtr<FAssetReferenceTreeNode> ParentNode, TArray<FName>& CurrentPath) const;
 	void BuildUnusedCandidateTree();
 	void GetRelatedPackageNames(FName PackageName, TArray<FName>& OutPackageNames) const;
-	TSharedPtr<FAssetReferenceTreeNode> CreateRelationNode(FName PackageName, int32 Depth, bool bIsCircular = false) const;
+	TSharedPtr<FAssetReferenceTreeNode> CreateRelationNode(FName PackageName, int32 Depth, FName ParentPackageName = NAME_None, bool bIsCircular = false) const;
 	TSharedPtr<FAssetReferenceTreeNode> CreateUnusedCandidateNode(const FAssetData& AssetData) const;
 	FString GetEmptyRelationMessage() const;
 
