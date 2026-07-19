@@ -623,6 +623,21 @@ Phase 6부터는 3주차 목표에 해당한다. 참조 관계 조회 도구를 
 
 - 순환 참조, 크기, Unused Candidate 같은 결과 메타데이터를 일관된 구조로 정리한다.
 
+완료 기준:
+
+- `FAssetReferenceTreeNode`가 CSV Export에 필요한 주요 metadata를 보유한다.
+- relation child node는 부모 Asset의 PackageName을 `ParentPackageName`으로 저장한다.
+- root node, placeholder node, Unused Candidate 후보 node의 parent metadata 정책을 구분한다.
+- Tree row 표시 문자열의 suffix 순서를 유지한다.
+- CSV Export 후보 컬럼과 node metadata의 대응 관계를 문서화한다.
+
+진행 기록:
+
+- `refactor/ari-analysis-metadata` 브랜치에서 `FAssetReferenceTreeNode::ParentPackageName`을 추가했다.
+- relation child node 생성 시 부모 node의 PackageName을 저장하도록 정리했다.
+- placeholder / grouping node는 `PackageName == NAME_None` 기준으로 후속 export에서 제외 가능한 정책으로 정리했다.
+- Unused Candidate 후보 node는 선택 Asset relation child가 아니므로 `ParentPackageName`을 비워 두는 정책으로 정리했다.
+
 ## Phase 7: Export / 문서 / 시연
 
 Phase 7은 Portfolio-ready 상태를 만들기 위한 마감 단계다. 기능 결과를 저장하고, 사용법과 시연 흐름을 정리한다.

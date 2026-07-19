@@ -108,10 +108,12 @@ struct FAssetReferenceTreeNode
 {
 	FString DisplayName;
 	FName PackageName;
+	FName ParentPackageName;
 	int32 Depth;
 	bool bIsCircular;
 	FString ClassName;
 	int64 SizeBytes;
+	bool bIsUnusedCandidate;
 	TArray<TSharedPtr<FAssetReferenceTreeNode>> Children;
 };
 ```
@@ -151,6 +153,7 @@ Depth 2 = Depth 1 노드의 관련 Package
 ```text
 DisplayName = 선택 Asset 이름
 PackageName = 선택 Asset PackageName
+ParentPackageName = NAME_None
 ClassName = 선택 Asset Class 이름
 SizeBytes = 선택 Asset package 파일 크기 합산값
 ```
@@ -160,11 +163,31 @@ SizeBytes = 선택 Asset package 파일 크기 합산값
 ```text
 DisplayName = 관련 AssetName 또는 PackageName
 PackageName = 관련 PackageName
+ParentPackageName = 부모 Tree node의 PackageName
 ClassName = 관련 Asset Class 이름. AssetData를 찾을 수 없으면 비어 있음
 SizeBytes = 관련 Asset package 파일 크기 합산값. 파일 경로를 찾을 수 없으면 0
 ```
 
 조회 결과가 없으면 현재 모드에 따라 `No dependencies found` 또는 `No referencers found` 노드를 자식으로 추가한다.
+
+placeholder node와 grouping node는 실제 Asset Package가 아니므로 `PackageName`을 `NAME_None`으로 둔다. CSV Export 같은 후속 저장 기능은 `PackageName == NAME_None`인 row를 export 대상에서 제외할 수 있다.
+
+Unused Candidate 전체 스캔의 후보 node는 특정 선택 Asset의 관계 child가 아니므로 `ParentPackageName`을 `NAME_None`으로 둔다. relation tree의 child node만 `ParentPackageName`을 가진다.
+
+CSV Export 후보 컬럼과 현재 node metadata의 대응은 다음과 같다.
+
+```text
+AssetName = DisplayName
+PackageName = PackageName
+Class = ClassName
+Path = PackageName의 path 문자열
+Depth = Depth
+SizeBytes = SizeBytes
+Mode = 현재 AnalysisOptions.Mode
+ParentPackage = ParentPackageName
+IsCircular = bIsCircular
+IsUnusedCandidate = bIsUnusedCandidate
+```
 
 ## Asset 디스크 크기 표시
 
