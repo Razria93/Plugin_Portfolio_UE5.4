@@ -697,6 +697,20 @@ AssetName,PackageName,Class,Path,Depth,SizeBytes,Mode,ParentPackage,IsCircular,I
 목적:
 
 - 빌드 결과, 에디터 실행 결과, 기능별 확인 결과를 `Docs/03_Verification`에 기록한다.
+- Demo Host 기준 최종 검증 요약을 작성해 Portfolio 적용 전 상태를 한눈에 확인할 수 있게 한다.
+
+완료 기준:
+
+- `Docs/03_Verification/Build_Verification_Log_KR.md`가 feature별 원본 검증 로그 역할을 유지한다.
+- `Docs/03_Verification/Final_Verification_Summary_KR.md`가 대표 검증 결과, 스크린샷, CSV 샘플, 남은 제한을 요약한다.
+- `Docs/03_Verification/README_KR.md`와 `Docs/README_KR.md`가 최종 검증 요약 문서를 가리킨다.
+- 실제 Portfolio 프로젝트 적용 검증은 Phase 7-4로 분리한다.
+
+상태:
+
+- 완료.
+- `feature/ari-portfolio-demo-verification` 브랜치에서 Demo Host 기준 최종 검증 요약 문서를 추가했다.
+- `Docs/03_Verification/README_KR.md`, `Docs/README_KR.md`, 루트 `README.md`가 최종 검증 요약 문서를 가리키도록 갱신했다.
 
 ### 7-4. Portfolio 적용 시연 문서
 

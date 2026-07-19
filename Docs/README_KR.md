@@ -45,6 +45,8 @@
 
 - `03_Verification/README_KR.md`
   - 검증 기록 폴더의 역할과 문서 목록을 정리한다.
+- `03_Verification/Final_Verification_Summary_KR.md`
+  - Demo Host 기준 최종 기능 검증 결과, 대표 스크린샷, 남은 제한을 요약한다.
 - `03_Verification/Build_Verification_Log_KR.md`
   - UE 5.4 빌드와 에디터 UI 확인 결과를 기록한다.
 - `03_Verification/Screenshots/`
