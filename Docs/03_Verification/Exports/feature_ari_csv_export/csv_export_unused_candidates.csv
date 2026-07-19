@@ -1,0 +1,3 @@
+AssetName,PackageName,Class,Path,Depth,SizeBytes,Mode,ParentPackage,IsCircular,IsUnusedCandidate
+BP_Dummy,/Game/ARI_Demo/BP_Dummy,Blueprint,/Game/ARI_Demo,1,29035,UnusedCandidates,,false,true
+T_Unused_Color,/Game/ARI_Demo/Unused/T_Unused_Color,Texture2D,/Game/ARI_Demo/Unused,1,10375,UnusedCandidates,,false,true

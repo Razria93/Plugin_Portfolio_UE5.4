@@ -189,6 +189,25 @@ IsCircular = bIsCircular
 IsUnusedCandidate = bIsUnusedCandidate
 ```
 
+## CSV Export
+
+Phase 7-1 이후에는 현재 Tree 결과를 CSV 파일로 저장한다.
+
+```text
+Export CSV
+-> TreeRootItems 재귀 순회
+-> PackageName == NAME_None row 제외
+-> node metadata를 CSV column으로 변환
+-> Saved/AssetReferenceInspector/AssetReferenceReport_YYYYMMDD_HHMMSS.csv 저장
+-> 성공 / 실패 알림 표시
+```
+
+CSV Export는 화면에 표시된 현재 Tree 결과를 기준으로 동작한다. 따라서 `Analyze` 이후에는 Dependencies / Referencers 결과가 저장되고, `Scan Unused Candidates` 이후에는 Unused Candidate 결과가 저장된다.
+
+placeholder node와 grouping node는 실제 Asset Package가 아니므로 CSV row에서 제외한다. 단, grouping node의 자식은 계속 순회한다. 이 정책 때문에 `Unused Candidates` root node는 제외되지만 그 아래 후보 Asset row는 저장된다.
+
+`Mode` 컬럼은 Dependencies / Referencers 관계 Tree에서는 현재 분석 모드를 사용한다. Unused Candidate 후보 node는 관계 분석 결과가 아니므로 `UnusedCandidates`로 저장한다.
+
 ## Asset 디스크 크기 표시
 
 Phase 6-2 이후에는 PackageName 기준으로 local package filename을 찾아 Asset 디스크 크기를 표시한다. 크기는 runtime memory size나 cooked size가 아니라 editor project의 파일 크기 기준 추정값이다.
@@ -520,4 +539,4 @@ Options
 = Mode, Max Depth, 필터 조건
 ```
 
-Analyzer 클래스 분리와 CSV Export는 후속 작업에서 확장한다. Path / Class / Engine / Plugin Content 필터 UI, 순환 후보 row 표시, Asset 디스크 크기 표시, Unused Candidate 전체 스캔은 현재 `SAssetReferenceInspectorWidget`에서 직접 관리한다.
+Analyzer 클래스 분리는 후속 작업에서 확장한다. CSV 파일 저장은 `FAssetReferenceCsvExporter`가 담당한다. Path / Class / Engine / Plugin Content 필터 UI, 순환 후보 row 표시, Asset 디스크 크기 표시, Unused Candidate 전체 스캔 실행은 현재 `SAssetReferenceInspectorWidget`에서 직접 관리한다.

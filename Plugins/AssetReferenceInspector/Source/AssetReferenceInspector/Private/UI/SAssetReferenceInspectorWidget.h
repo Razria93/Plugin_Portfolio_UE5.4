@@ -23,6 +23,7 @@ private:
 	FReply OnPickSelectedAssetClicked();
 	FReply OnAnalyzeClicked();
 	FReply OnScanUnusedCandidatesClicked();
+	FReply OnExportCsvClicked();
 	FReply OnDependenciesModeClicked();
 	FReply OnReferencersModeClicked();
 
