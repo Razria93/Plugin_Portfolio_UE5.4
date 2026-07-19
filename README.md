@@ -94,9 +94,9 @@ Unused Candidate 후보는 `Scan Unused Candidate`로 별도 스캔한다.
 
 - [Build Verification Log](Docs/03_Verification/Build_Verification_Log_KR.md)
 - [Dependencies Depth 1](Docs/03_Verification/Screenshots/feature_ari_dependencies_depth1/bp_dummy_dependencies.png)
-- [Referencers Mode](Docs/03_Verification/Screenshots/feature_ari_referencers_mode/referencers_t_dummy_color_to_bp_dummy.png)
+- [Referencers Mode](Docs/03_Verification/Screenshots/feature_ari_referencers_mode/referencers_t_dummy_color.png)
 - [Content Browser Sync](Docs/03_Verification/Screenshots/feature_ari_content_browser_sync/sync_m_dummy_from_dependencies.png)
-- [CSV Export](Docs/03_Verification/Screenshots/feature_ari_csv_export/csv_export_notification.png)
+- [CSV Export](Docs/03_Verification/Screenshots/feature_ari_csv_export/csv_export_dependencies_success.png)
 - [Unused Candidate](Docs/03_Verification/Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_all_project_content.png)
 
 ## Portfolio 적용 흐름
