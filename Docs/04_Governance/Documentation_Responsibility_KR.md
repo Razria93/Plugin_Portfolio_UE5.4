@@ -5,7 +5,7 @@
 ## 기본 원칙
 
 - `Docs`는 커밋에 포함해 장기 유지할 계획, 설계, 검증 문서를 보관한다.
-- `LocalNotes`는 커밋하지 않는 작업 초안과 GitHub 게시 준비본, 게시 후 로컬 mirror를 관리한다.
+- `LocalNotes`는 커밋하지 않는 작업 초안과 GitHub에 올릴 게시 전 본문 후보 또는 게시 후 로컬 사본을 관리한다.
 - GitHub Issue는 작업 범위, 설계, 검증 항목을 추적하는 단위다.
 - PR 본문은 브랜치에서 변경한 내용과 검증 결과를 요약한다.
 
@@ -70,7 +70,7 @@ Docs/
 
 ## LocalNotes 책임
 
-`LocalNotes`는 ignored 작업장이다. 커밋하지 않는다.
+`LocalNotes`는 Git 추적 대상이 아닌 로컬 자료 영역이다. 커밋하지 않는다.
 
 포함 대상:
 
@@ -81,7 +81,7 @@ Docs/
 - 개인 학습 메모
 - 공개 문서로 승격할지 아직 결정하지 않은 정리
 
-GitHub 게시 관련 문서는 `LocalNotes/github` 아래에서 관리한다. GitHub Issue / PR / 댓글에 실제로 게시된 본문이 공개 기준이며, `LocalNotes/github/public`은 그 본문을 준비하거나 재현하기 위한 로컬 mirror다.
+GitHub 게시 관련 문서는 `LocalNotes/github` 아래에서 관리한다. GitHub Issue / PR / 댓글에 실제로 게시된 본문이 공개 기준이며, `LocalNotes/github/public`은 게시 전 본문 후보 또는 게시 후 로컬 사본이다.
 
 ```text
 LocalNotes/github/
@@ -109,12 +109,12 @@ LocalNotes/github/
 ```
 
 - `draft`: 작성 중인 가안이다.
-- `public`: GitHub에 게시할 본문 후보이거나, 게시 후 원격 본문을 로컬에서 재현하는 mirror다.
+- `public`: GitHub 게시 전 본문 후보 또는 게시 후 로컬 사본이다.
 - `snapshots`: GitHub API 조회 결과, 댓글 백업, 비교용 JSON이다.
 
 `public`을 수정했다고 원격 GitHub 본문을 자동으로 수정하지 않는다. 원격 수정은 `Docs/04_Governance/Documentation_Authoring_Workflow_KR.md`의 승인 절차를 거친 뒤에만 수행한다.
 
-과거 GitHub 공개 기록은 원칙적으로 반복 수정하지 않는다. 다만 이미 편집 이력이 누적되어 있고 현재 문서 체계와 충돌하거나, 스크린샷 섹션/설명/링크 부족으로 공개 본문 이해를 방해하는 경우에는 최신 public body 기준으로 1회 정규화할 수 있다. 이때도 수정 대상 목록, public 본문, validator 결과, 실행할 `gh` 명령을 먼저 제시하고 사용자 승인을 받은 뒤 원격에 반영한다.
+과거 GitHub 공개 기록은 원칙적으로 반복 수정하지 않는다. 다만 이미 편집 이력이 누적되어 있고 현재 문서 체계와 충돌하거나, 스크린샷 섹션/설명/링크 부족으로 공개 본문 이해를 방해하는 경우에는 최신 게시 본문 기준으로 1회 정규화할 수 있다. 이때도 수정 대상 목록, public 본문, 검증 스크립트 결과, 실행할 `gh` 명령을 먼저 제시하고 사용자 승인을 받은 뒤 원격에 반영한다.
 
 ## 문서 네이밍 규칙
 

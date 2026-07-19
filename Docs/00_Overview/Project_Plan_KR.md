@@ -198,7 +198,7 @@ struct FAssetReferenceNode
 ## 제한 사항
 
 - Asset Registry 기반 분석은 코드에서 동적으로 로딩하는 Asset을 모두 보장하지 않는다.
-- Soft reference, 문자열 기반 경로, Asset Manager 규칙은 별도 정책 없이는 누락될 수 있다.
+- Soft Reference, 문자열 기반 경로, Asset Manager 규칙은 별도 정책 없이는 누락될 수 있다.
 - Unused Candidate는 삭제 가능 판정이 아니라 검토 후보 표시다.
 - Asset Size는 런타임 메모리 사용량이 아니라 디스크 파일 기준 추정값이다.
 - Node Graph UI는 MVP 이후 Future Work로 둔다.

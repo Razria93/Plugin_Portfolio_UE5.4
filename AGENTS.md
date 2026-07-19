@@ -8,7 +8,7 @@
 - Host 모듈: `Source/Portfolio_PlugIn/`
 - 플러그인 구현: `Plugins/AssetReferenceInspector/`
 - 프로젝트 문서: `Docs/`
-- 로컬 초안과 GitHub 게시용 본문은 ignored 작업장인 `LocalNotes/`에서 관리한다.
+- 로컬 초안과 GitHub 게시용 본문은 Git 추적 대상이 아닌 `LocalNotes/`에서 관리한다.
 
 Engine 설치 경로의 `Engine/Plugins`에는 작업하지 않는다. 최종 배포 단위는 `Plugins/AssetReferenceInspector` 폴더다.
 
@@ -78,7 +78,7 @@ C++ 변경이 있으면 작업 종료 전 `Docs/02_Architecture/Code_Organizatio
 
 GitHub public 본문은 draft가 아니라 `LocalNotes/github/public` 파일을 기준으로 준비한다. GitHub 원격 게시 또는 수정 전에는 `Docs/04_Governance/GitHub_Public_Body_Validation_Rules_KR.md` 기준을 수동으로 확인한다.
 
-로컬 작업장에 validator가 있으면 다음 검증도 함께 실행한다. `LocalNotes/`는 ignored 영역이므로 clean checkout에서는 이 명령이 없을 수 있다.
+로컬 환경에 검증 스크립트가 있으면 다음 검증도 함께 실행한다. `LocalNotes/`는 Git 추적 대상이 아니므로 clean checkout에서는 이 명령이 없을 수 있다.
 
 ```powershell
 if (Test-Path LocalNotes/tools/validate_github_public_docs.ps1) {
@@ -86,9 +86,9 @@ if (Test-Path LocalNotes/tools/validate_github_public_docs.ps1) {
 }
 ```
 
-자동 validator 통과는 충분조건이 아니다. PR body, Issue body, Plan 댓글, PR 댓글은 섹션 순서와 금지 요소를 수동으로도 확인한다.
+자동 검증 스크립트 통과는 충분조건이 아니다. PR 본문, Issue 본문, Plan 댓글, PR 댓글은 섹션 순서와 금지 요소를 수동으로도 확인한다.
 
-원격 반영 전에는 대상 Issue / PR / 댓글, source public 파일, 실행할 `gh` 명령, 예상 변경 요약을 사용자에게 제시한다. 사용자가 승인하기 전에는 `gh` 명령을 실행하지 않는다.
+원격 반영 전에는 대상 Issue / PR / 댓글, 사용할 public 파일, 실행할 `gh` 명령, 예상 변경 요약을 사용자에게 제시한다. 사용자가 승인하기 전에는 `gh` 명령을 실행하지 않는다.
 
 Windows Codex 환경에서 `gh auth status`가 `token in keyring is invalid` 등으로 실패하면 인증 만료로 단정하지 않는다. 같은 `gh` 명령을 PowerShell + `require_escalated`로 재시도한다. 이 경로에서 성공하면 Codex 샌드박스의 Windows Credential Manager/keyring 접근 제한으로 판단한다. 세부 기준은 `Docs/04_Governance/GitHub_CLI_Execution_Workflow_KR.md`를 따른다.
 

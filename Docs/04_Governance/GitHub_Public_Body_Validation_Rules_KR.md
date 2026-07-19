@@ -1,6 +1,6 @@
 # GitHub Public Body Validation Rules
 
-이 문서는 `LocalNotes/github/public`에 보관하는 GitHub 게시 후보 또는 게시 후 mirror 본문을 검사하는 기준을 정의한다.
+이 문서는 `LocalNotes/github/public`에 보관하는 GitHub 게시 전 본문 후보 또는 게시 후 로컬 사본을 검사하는 기준을 정의한다.
 
 목표는 PR body, Issue body, Issue 댓글, PR 댓글이 매번 같은 구조와 문체로 작성되도록 하는 것이다. 자동 validator는 기계적으로 확인 가능한 섹션 순서, 금지 문구, 스크린샷 구조를 검사하고, 의미 판단과 예외 판단은 수동 검토로 보완한다.
 
@@ -23,7 +23,7 @@
 - `LocalNotes/notes/**`
 - `Docs/**/*.md`
 
-`draft`는 작성 중인 초안이므로 `Metadata`, 작업 메모, 공개 기록 확인 항목을 포함할 수 있다. `public`은 GitHub에 실제 게시할 본문 후보이거나 게시 후 원격 본문 mirror이므로 로컬 전용 항목을 포함하지 않는다.
+`draft`는 작성 중인 초안이므로 `Metadata`, 작업 메모, 공개 기록 확인 항목을 포함할 수 있다. `public`은 GitHub 게시 전 본문 후보 또는 게시 후 로컬 사본이므로 로컬 전용 항목을 포함하지 않는다.
 
 `public` 파일을 수정해도 GitHub 원격 본문은 자동으로 바뀌지 않는다. 원격 생성/수정은 `Docs/04_Governance/Documentation_Authoring_Workflow_KR.md`의 승인 절차를 따른다.
 
@@ -268,7 +268,7 @@ PR body와 Verification Issue는 `Screenshots` 섹션을 항상 둔다.
 
 draft 작성, public 변환, 원격 게시 승인, `gh` 실행 순서는 `Docs/04_Governance/Documentation_Authoring_Workflow_KR.md`를 따른다.
 
-로컬 작업장에 `LocalNotes/tools/validate_github_public_docs.ps1`가 있으면 다음 항목을 자동 검사한다. `LocalNotes/`는 ignored 영역이므로 clean checkout 기준 필수 도구로 간주하지 않는다.
+로컬 환경에 `LocalNotes/tools/validate_github_public_docs.ps1`가 있으면 다음 항목을 자동 검사한다. `LocalNotes/`는 Git 추적 대상이 아니므로 clean checkout 기준 필수 도구로 간주하지 않는다.
 
 - PR body 섹션 순서와 `Screenshots` 구조
 - Architecture Issue H1 제목, 섹션 순서, 공통 금지 문구
@@ -285,7 +285,7 @@ validator에서 warning으로 출력되는 항목은 예외 가능성이 있는 
 수동 검토 결과는 작업 보고 또는 PR `Verification` 섹션에 다음처럼 기록한다.
 
 ```markdown
-- PR body public 본문 섹션 순서 확인
+- PR public 본문 섹션 순서 확인
 - Architecture Issue public 본문 섹션 순서 확인
 - Verification Issue public 본문 및 Screenshots 구조 확인
 - Plan Comment public 본문 섹션 순서 확인
