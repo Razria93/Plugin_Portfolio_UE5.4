@@ -197,6 +197,8 @@ Dependencies / Referencers Tree는 선택 Asset 기준 관계 분석이다. Depe
 
 ```text
 Scan Unused Candidates
+-> AssetRegistry.SearchAllAssets(true)
+-> AssetRegistry.WaitForCompletion()
 -> AssetRegistry.GetAssetsByPath("/Game", recursive=true)
 -> Path Filter / Class Filter 적용
 -> Map, Redirector, 외부 Content 제외
@@ -206,6 +208,21 @@ Scan Unused Candidates
 
 후보 결과는 `Unused Candidates` root node 아래에 표시한다. 후보가 없으면 `No unused candidates found` placeholder를 추가한다.
 
+### Registry 완료 대기
+
+Unused Candidate 스캔은 `/Game` 전체 Asset 목록과 각 Asset의 referencer 정보를 기준으로 후보를 찾는다. 이 데이터는 Asset Registry snapshot에 의존한다.
+
+에디터 시작 직후처럼 Asset Registry discovery가 아직 진행 중이면 `/Game` Asset 목록이나 referencer 정보가 불완전할 수 있다. 이 상태에서 `GetReferencers()` 결과가 0개로 나오면 실제로는 참조 중인 Asset도 `[Unused Candidate]`로 잘못 표시될 수 있다.
+
+이를 줄이기 위해 전체 후보 스캔 전에 Asset Registry 검색 완료를 명시적으로 대기한다.
+
+```cpp
+AssetRegistryModule.Get().SearchAllAssets(true);
+AssetRegistryModule.Get().WaitForCompletion();
+```
+
+`SearchAllAssets(true)`는 Asset Registry에 전체 Asset 검색을 동기 방식으로 요청한다. `WaitForCompletion()`은 진행 중인 registry discovery / search 작업이 끝날 때까지 대기한다. 이후 `GetAssetsByPath()`와 `GetReferencers()`는 완료된 registry snapshot을 기준으로 동작한다.
+
 판정 기준:
 
 - `/Game` 아래 Project Content Asset만 검사한다.
@@ -214,7 +231,7 @@ Scan Unused Candidates
 - `/Script`, `/Engine`, Plugin Content, placeholder node는 후보로 표시하지 않는다.
 - Path Filter와 Class Filter를 통과한 Asset만 검사한다.
 
-이 기능은 삭제 가능 판정이 아니다. Soft Reference, Asset Manager, 동적 로딩, 코드 기반 경로 로딩은 Asset Registry의 referencer 목록만으로 완전히 확인할 수 없다. 따라서 UI와 문서에서는 `Unused Asset`이 아니라 `Unused Candidate`로만 표현한다.
+이 대기는 Asset Registry 데이터가 준비되지 않은 상태를 방어하기 위한 것이다. 이 기능은 삭제 가능 판정이 아니다. Soft Reference, Asset Manager, 동적 로딩, 코드 기반 경로 로딩은 Asset Registry의 referencer 목록만으로 완전히 확인할 수 없다. 따라서 UI와 문서에서는 `Unused Asset`이 아니라 `Unused Candidate`로만 표현한다.
 
 ## Max Depth 재귀 생성
 

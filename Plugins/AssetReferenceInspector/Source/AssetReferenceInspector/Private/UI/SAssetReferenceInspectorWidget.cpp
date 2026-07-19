@@ -553,6 +553,8 @@ void SAssetReferenceInspectorWidget::BuildUnusedCandidateTree()
 	TreeRootItems.Reset();
 
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+	AssetRegistryModule.Get().SearchAllAssets(true);
+	AssetRegistryModule.Get().WaitForCompletion();
 
 	TArray<FAssetData> ProjectAssets;
 	AssetRegistryModule.Get().GetAssetsByPath(FName(TEXT("/Game")), ProjectAssets, true);

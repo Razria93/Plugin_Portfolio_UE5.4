@@ -1142,6 +1142,7 @@ Total execution time: 5.53 seconds
 
 - `Scan Unused Candidates` 버튼이 `/Game` 전체 Asset 후보 스캔을 실행하는 상태에서 빌드 확인
 - `FAssetReferenceTreeNode::bIsUnusedCandidate`가 Tree row 표시 문자열에 반영되는 상태에서 빌드 확인
+- `SearchAllAssets(true)`와 `WaitForCompletion()`으로 registry discovery 완료를 대기한 뒤 Unused Candidate 스캔을 수행하는 상태에서 빌드 확인
 - `GetReferencers(PackageName)` 결과가 0개인 Project Content Asset을 후보로 수집하는 경로에서 빌드 확인
 - 선택 Asset 관계 Tree의 child node에는 Unused Candidate 판정을 붙이지 않는 구조에서 빌드 확인
 - Path Filter / Class Filter가 Unused Candidate 스캔에도 적용되는 상태에서 빌드 확인
