@@ -4,7 +4,7 @@
 
 ## 현재 범위
 
-현재 구현 범위는 Dependencies / Referencers 모드 전환, Max Depth 기반 재귀 Tree 생성, Path / Class / Content Scope 필터, 순환 후보 노드 표시다.
+현재 구현 범위는 Dependencies / Referencers 모드 전환, Max Depth 기반 재귀 Tree 생성, Path / Class / Content Scope 필터, 순환 후보 노드 표시, Asset 디스크 크기 표시다.
 
 ```text
 선택 Asset
@@ -15,7 +15,6 @@
 아직 포함하지 않는 범위:
 
 - CSV Export
-- Asset Size 표시
 - Unused Candidate 표시
 
 ## 입력 Asset
@@ -112,6 +111,7 @@ struct FAssetReferenceTreeNode
 	int32 Depth;
 	bool bIsCircular;
 	FString ClassName;
+	int64 SizeBytes;
 	TArray<TSharedPtr<FAssetReferenceTreeNode>> Children;
 };
 ```
@@ -152,6 +152,7 @@ Depth 2 = Depth 1 노드의 관련 Package
 DisplayName = 선택 Asset 이름
 PackageName = 선택 Asset PackageName
 ClassName = 선택 Asset Class 이름
+SizeBytes = 선택 Asset package 파일 크기 합산값
 ```
 
 자식 노드:
@@ -160,9 +161,33 @@ ClassName = 선택 Asset Class 이름
 DisplayName = 관련 AssetName 또는 PackageName
 PackageName = 관련 PackageName
 ClassName = 관련 Asset Class 이름. AssetData를 찾을 수 없으면 비어 있음
+SizeBytes = 관련 Asset package 파일 크기 합산값. 파일 경로를 찾을 수 없으면 0
 ```
 
 조회 결과가 없으면 현재 모드에 따라 `No dependencies found` 또는 `No referencers found` 노드를 자식으로 추가한다.
+
+## Asset 디스크 크기 표시
+
+Phase 6-2 이후에는 PackageName 기준으로 local package filename을 찾아 Asset 디스크 크기를 표시한다. 크기는 runtime memory size나 cooked size가 아니라 editor project의 파일 크기 기준 추정값이다.
+
+```text
+PackageName
+-> TryConvertLongPackageNameToFilename
+-> .uasset 또는 .umap file size
+-> 같은 base의 .uexp, .ubulk가 있으면 합산
+```
+
+1차 기준은 `.uasset`이다. Asset package 파일을 찾지 못하면 `.umap`도 확인한다. 이후 같은 base filename의 `.uexp`, `.ubulk`가 존재하면 파일 크기를 합산한다.
+
+파일 크기를 찾을 수 없는 경우 `SizeBytes`는 0으로 둔다. 따라서 `/Script` Package, placeholder node, 아직 디스크에 저장되지 않은 Package는 Tree row에 size suffix를 표시하지 않는다.
+
+Tree row 표시 순서는 다음과 같다.
+
+```text
+DisplayName [ClassName] (Size) [Circular]
+```
+
+`ClassName`, `Size`, `[Circular]`은 조건부 suffix다. 예를 들어 AssetData와 파일 크기를 찾을 수 있는 순환 후보 노드는 `BP_CycleA [Blueprint] (12.34 KB) [Circular]`처럼 표시된다.
 
 ## Max Depth 재귀 생성
 
@@ -428,4 +453,4 @@ Options
 = Mode, Max Depth, 필터 조건
 ```
 
-Analyzer 클래스 분리, Asset Size 표시, Unused Candidate 표시, CSV Export는 후속 작업에서 확장한다. Path / Class / Engine / Plugin Content 필터 UI와 순환 후보 row 표시는 현재 `SAssetReferenceInspectorWidget`에서 직접 관리한다.
+Analyzer 클래스 분리, Unused Candidate 표시, CSV Export는 후속 작업에서 확장한다. Path / Class / Engine / Plugin Content 필터 UI, 순환 후보 row 표시, Asset 디스크 크기 표시는 현재 `SAssetReferenceInspectorWidget`에서 직접 관리한다.

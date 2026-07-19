@@ -1048,3 +1048,61 @@ Total execution time: 6.98 seconds
 #### 미확인
 
 - 없음
+
+### AssetReferenceInspector Asset Size Display
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild
+```
+
+#### 결과
+
+성공.
+
+UBT 출력 기준:
+
+```text
+[1/5] Compile [x64] Module.AssetReferenceInspector.cpp
+[2/5] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[3/5] Link [x64] UnrealEditor-AssetReferenceInspector.lib
+[4/5] Link [x64] UnrealEditor-AssetReferenceInspector.dll
+[5/5] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 7.17 seconds
+```
+
+#### 확인 범위
+
+- `FAssetReferenceTreeNode::SizeBytes`를 추가한 상태에서 빌드 확인
+- PackageName을 local package filename으로 변환해 `.uasset` 또는 `.umap` 크기를 조회하는 코드 경로에서 빌드 확인
+- 같은 base의 `.uexp`, `.ubulk`가 있으면 크기를 합산하는 코드 경로에서 빌드 확인
+- Tree row 표시 문자열이 `DisplayName [ClassName] (Size) [Circular]` 순서로 구성되는 상태에서 빌드 확인
+- 관련 Feature Work Plan / Architecture / Slate UI 문서가 현재 구현 상태를 설명하도록 갱신
+
+#### 에디터 UI 확인
+
+- `BP_Dummy [Blueprint] (28.35 KB) -> M_Dummy [Material] (11.22 KB) -> T_Dummy_Color [Texture2D] (10.02 KB)` 표시 확인
+- Path Filter를 비운 상태에서 `/Script/NavigationSystem`과 `No dependencies found` row에는 size suffix가 표시되지 않는 것 확인
+- `BP_CycleA [Blueprint] (31.12 KB) -> BP_CycleB [Blueprint] (31.12 KB) -> BP_CycleA [Blueprint] (31.12 KB) [Circular]` 표시 확인
+- 순환 후보 row에서 size suffix와 `[Circular]` suffix가 함께 표시되고, 마지막 순환 후보 노드 아래로 다시 확장되지 않는 것 확인
+
+#### Screenshots
+
+![Asset Size Dependency Tree](Screenshots/feature_ari_asset_size_display/asset_size_dependency_tree.png)
+
+![Asset Size Script Node No Size](Screenshots/feature_ari_asset_size_display/asset_size_script_node_no_size.png)
+
+![Asset Size Circular Node](Screenshots/feature_ari_asset_size_display/asset_size_circular_node.png)
+
+#### 미확인
+
+- Cooked size, runtime memory size, dependency inclusive size는 이번 범위에서 검증하지 않음

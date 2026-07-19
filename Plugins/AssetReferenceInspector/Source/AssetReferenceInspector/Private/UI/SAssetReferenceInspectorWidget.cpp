@@ -5,8 +5,11 @@
 #include "Modules/ModuleManager.h"
 
 #include "ContentBrowserModule.h"
+#include "HAL/FileManager.h"
 #include "IContentBrowserSingleton.h"
 #include "Misc/DefaultValueHelper.h"
+#include "Misc/PackageName.h"
+#include "Misc/Paths.h"
 #include "Styling/AppStyle.h"
 
 #include "Widgets/Input/SButton.h"
@@ -466,7 +469,8 @@ void SAssetReferenceInspectorWidget::BuildRelationTree()
 		SelectedAssetData.PackageName,
 		0,
 		false,
-		SelectedAssetData.AssetClassPath.GetAssetName().ToString());
+		SelectedAssetData.AssetClassPath.GetAssetName().ToString(),
+		GetPackageDiskSizeBytes(SelectedAssetData.PackageName));
 
 	TArray<FName> CurrentPath;
 	CurrentPath.Add(SelectedAssetData.PackageName);
@@ -570,7 +574,7 @@ TSharedPtr<FAssetReferenceTreeNode> SAssetReferenceInspectorWidget::CreateRelati
 		ClassName = AssetData.AssetClassPath.GetAssetName().ToString();
 	}
 
-	return MakeShared<FAssetReferenceTreeNode>(DisplayName, PackageName, Depth, bIsCircular, ClassName);
+	return MakeShared<FAssetReferenceTreeNode>(DisplayName, PackageName, Depth, bIsCircular, ClassName, GetPackageDiskSizeBytes(PackageName));
 }
 
 FString SAssetReferenceInspectorWidget::GetEmptyRelationMessage() const
@@ -596,6 +600,80 @@ bool SAssetReferenceInspectorWidget::TryGetPrimaryAssetDataForPackage(FName Pack
 	return true;
 }
 
+bool SAssetReferenceInspectorWidget::TryGetPackageFilename(FName PackageName, FString& OutPackageFilename) const
+{
+	if (PackageName.IsNone())
+	{
+		return false;
+	}
+
+	const FString PackageNameString = PackageName.ToString();
+
+	if (FPackageName::TryConvertLongPackageNameToFilename(PackageNameString, OutPackageFilename, FPackageName::GetAssetPackageExtension())
+		&& GetExistingFileSizeBytes(OutPackageFilename) >= 0)
+	{
+		return true;
+	}
+
+	return FPackageName::TryConvertLongPackageNameToFilename(PackageNameString, OutPackageFilename, FPackageName::GetMapPackageExtension())
+		&& GetExistingFileSizeBytes(OutPackageFilename) >= 0;
+}
+
+int64 SAssetReferenceInspectorWidget::GetPackageDiskSizeBytes(FName PackageName) const
+{
+	FString PackageFilename;
+	if (!TryGetPackageFilename(PackageName, PackageFilename))
+	{
+		return 0;
+	}
+
+	int64 TotalSizeBytes = 0;
+
+	const int64 PackageFileSize = GetExistingFileSizeBytes(PackageFilename);
+	if (PackageFileSize > 0)
+	{
+		TotalSizeBytes += PackageFileSize;
+	}
+
+	const FString ExportFilename = FPaths::ChangeExtension(PackageFilename, TEXT("uexp"));
+	const int64 ExportFileSize = GetExistingFileSizeBytes(ExportFilename);
+	if (ExportFileSize > 0)
+	{
+		TotalSizeBytes += ExportFileSize;
+	}
+
+	const FString BulkDataFilename = FPaths::ChangeExtension(PackageFilename, TEXT("ubulk"));
+	const int64 BulkDataFileSize = GetExistingFileSizeBytes(BulkDataFilename);
+	if (BulkDataFileSize > 0)
+	{
+		TotalSizeBytes += BulkDataFileSize;
+	}
+
+	return TotalSizeBytes;
+}
+
+int64 SAssetReferenceInspectorWidget::GetExistingFileSizeBytes(const FString& Filename) const
+{
+	return Filename.IsEmpty()
+		? -1
+		: IFileManager::Get().FileSize(*Filename);
+}
+
+FString SAssetReferenceInspectorWidget::FormatSizeBytes(int64 SizeBytes) const
+{
+	if (SizeBytes >= 1024 * 1024)
+	{
+		return FString::Printf(TEXT("%.2f MB"), static_cast<double>(SizeBytes) / static_cast<double>(1024 * 1024));
+	}
+
+	if (SizeBytes >= 1024)
+	{
+		return FString::Printf(TEXT("%.2f KB"), static_cast<double>(SizeBytes) / static_cast<double>(1024));
+	}
+
+	return FString::Printf(TEXT("%lld B"), SizeBytes);
+}
+
 FString SAssetReferenceInspectorWidget::GetTreeNodeDisplayText(TSharedPtr<FAssetReferenceTreeNode> Item) const
 {
 	if (!Item.IsValid())
@@ -608,6 +686,11 @@ FString SAssetReferenceInspectorWidget::GetTreeNodeDisplayText(TSharedPtr<FAsset
 	if (!Item->ClassName.IsEmpty())
 	{
 		DisplayText = FString::Printf(TEXT("%s [%s]"), *DisplayText, *Item->ClassName);
+	}
+
+	if (Item->SizeBytes > 0)
+	{
+		DisplayText = FString::Printf(TEXT("%s (%s)"), *DisplayText, *FormatSizeBytes(Item->SizeBytes));
 	}
 
 	if (Item->bIsCircular)
