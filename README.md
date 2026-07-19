@@ -13,7 +13,7 @@ Unreal Engine 5.4용 Editor Plugin `AssetReferenceInspector`를 개발하고 검
 - 개발 기간: 2026.07.13 ~ 2026.07.19
 - 개발 상태: 개인 개발
 - 주요 기술: C++, Unreal Editor Module, Asset Registry, Slate UI, Content Browser API
-- 현재 단계: Demo Host 기능 구현 및 검증 완료, Portfolio 프로젝트 적용 예정
+- 현재 단계: Demo Host 기능 구현 및 검증 완료, Portfolio 프로젝트 적용 시연 기록 완료
 
 ## 현재 상태
 
@@ -40,6 +40,7 @@ Unreal Engine 5.4용 Editor Plugin `AssetReferenceInspector`를 개발하고 검
 - [프로젝트 계획](Docs/00_Overview/Project_Plan_KR.md)
 - [MVP 범위](Docs/00_Overview/MVP_Scope_KR.md)
 - [Feature 작업 계획](Docs/01_Planning/Feature_Work_Plan_KR.md)
+- [최종 검증 요약](Docs/03_Verification/Final_Verification_Summary_KR.md)
 - [검증 로그](Docs/03_Verification/Build_Verification_Log_KR.md)
 - [플러그인 README](Plugins/AssetReferenceInspector/README.md)
 - [포트폴리오 시연 계획](Docs/05_Demo/Portfolio_Demo_KR.md)
@@ -92,6 +93,7 @@ Unused Candidate 후보는 `Scan Unused Candidate`로 별도 스캔한다.
 
 ## 검증 자료
 
+- [Final Verification Summary](Docs/03_Verification/Final_Verification_Summary_KR.md)
 - [Build Verification Log](Docs/03_Verification/Build_Verification_Log_KR.md)
 - [Dependencies Depth 1](Docs/03_Verification/Screenshots/feature_ari_dependencies_depth1/bp_dummy_dependencies.png)
 - [Referencers Mode](Docs/03_Verification/Screenshots/feature_ari_referencers_mode/referencers_t_dummy_color.png)
@@ -104,3 +106,5 @@ Unused Candidate 후보는 `Scan Unused Candidate`로 별도 스캔한다.
 최종 시연 단계에서는 `Plugins/AssetReferenceInspector` 폴더를 기존 Portfolio 프로젝트의 `Plugins` 폴더로 복사해 적용한다.
 
 적용 후 Character, Weapon, Material, Texture 등 실사용 Asset의 Dependencies / Referencers 관계를 분석하고, Tree View와 CSV 결과를 시연 자료로 정리한다.
+
+실제 Portfolio 프로젝트 적용 결과는 [포트폴리오 시연 문서](Docs/05_Demo/Portfolio_Demo_KR.md)에 정리한다.

@@ -1288,3 +1288,64 @@ Total execution time: 6.67 seconds
 #### 미확인
 
 - CSV 파일을 Excel 같은 외부 spreadsheet 도구에서 여는 검증은 수행하지 않음
+
+## 2026-07-20
+
+### Portfolio Demo Documentation Final Build
+
+#### 대상
+
+- 프로젝트: `Portfolio_PlugIn`
+- 타깃: `Portfolio_PlugInEditor`
+- 플랫폼: `Win64`
+- 구성: `Development`
+- Engine: Unreal Engine 5.4
+
+#### 명령
+
+Visual Studio 빌드 로그 기준:
+
+```text
+Running UnrealBuildTool: dotnet "..\..\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" Portfolio_PlugInEditor Win64 Development -Project="C:\UE5_Portfolio\Portfolio_UE5.4_verGit\Portfolio_PlugIn\Portfolio_PlugIn.uproject" -WaitMutex -FromMsBuild -architecture=x64
+```
+
+#### 결과
+
+성공.
+
+UBT 출력 기준:
+
+```text
+[1/6] Link [x64] UnrealEditor-Portfolio_PlugIn-0002.lib
+[2/6] Link [x64] UnrealEditor-Portfolio_PlugIn-0002.dll
+[3/6] Compile [x64] Module.AssetReferenceInspector.cpp
+[4/6] Link [x64] UnrealEditor-AssetReferenceInspector-0002.lib
+[5/6] Link [x64] UnrealEditor-AssetReferenceInspector-0002.dll
+[6/6] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 10.81 seconds
+```
+
+Visual Studio 출력 기준:
+
+```text
+========== 빌드: 1개 성공, 0개 실패, 11개 최신 상태, 0개 건너뜀 ==========
+========== 빌드이(가) 오전 12:37에 완료되었으며, 14.438 초이(가) 걸림 ==========
+```
+
+#### 확인 범위
+
+- Portfolio 적용 시연 문서 정리 중 Demo Host `Portfolio_PlugInEditor` 최종 빌드 성공 확인
+- `Module.AssetReferenceInspector.cpp` compile, link, target metadata write 완료 확인
+- 실제 Portfolio 프로젝트 화면에서 플러그인 UI와 분석 결과를 수동 확인
+
+#### Screenshots
+
+Portfolio 프로젝트 적용 시연 스크린샷은 `Screenshots/portfolio_demo_verification/`에 정리했다.
+
+#### Exported CSV Samples
+
+- [Portfolio BP_CPlayer Dependencies CSV](Exports/portfolio_demo_verification/portfolio_bp_cplayer_dependencies.csv)
+
+#### 미확인
+
+- 실제 Portfolio 프로젝트의 별도 command line Editor Target 빌드 로그는 이번 기록에 포함하지 않음

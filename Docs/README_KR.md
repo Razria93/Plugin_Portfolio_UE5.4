@@ -45,6 +45,8 @@
 
 - `03_Verification/README_KR.md`
   - 검증 기록 폴더의 역할과 문서 목록을 정리한다.
+- `03_Verification/Final_Verification_Summary_KR.md`
+  - Demo Host 기준 최종 기능 검증 결과, 대표 스크린샷, 남은 제한을 요약한다.
 - `03_Verification/Build_Verification_Log_KR.md`
   - UE 5.4 빌드와 에디터 UI 확인 결과를 기록한다.
 - `03_Verification/Screenshots/`
@@ -78,7 +80,7 @@
 Demo Host에서 구현한 플러그인을 실제 Portfolio 프로젝트에 적용하고 시연하기 위한 흐름을 정리하는 문서다.
 
 - `05_Demo/Portfolio_Demo_KR.md`
-  - Portfolio 적용 준비, Demo Host 시연 순서, 실제 Portfolio 프로젝트 시연 후보, 촬영 체크리스트를 정리한다.
+  - Portfolio 적용 준비, Demo Host 시연 순서, 실제 Portfolio 프로젝트 적용 결과, 촬영 체크리스트를 정리한다.
 
 ## LocalNotes
 

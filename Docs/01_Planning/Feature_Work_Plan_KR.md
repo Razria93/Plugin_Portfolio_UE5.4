@@ -697,12 +697,43 @@ AssetName,PackageName,Class,Path,Depth,SizeBytes,Mode,ParentPackage,IsCircular,I
 목적:
 
 - 빌드 결과, 에디터 실행 결과, 기능별 확인 결과를 `Docs/03_Verification`에 기록한다.
+- Demo Host 기준 최종 검증 요약을 작성해 Portfolio 적용 전 상태를 한눈에 확인할 수 있게 한다.
+
+완료 기준:
+
+- `Docs/03_Verification/Build_Verification_Log_KR.md`가 feature별 원본 검증 로그 역할을 유지한다.
+- `Docs/03_Verification/Final_Verification_Summary_KR.md`가 대표 검증 결과, 스크린샷, CSV 샘플, 남은 제한을 요약한다.
+- `Docs/03_Verification/README_KR.md`와 `Docs/README_KR.md`가 최종 검증 요약 문서를 가리킨다.
+- 실제 Portfolio 프로젝트 적용 검증은 Phase 7-4로 분리한다.
+
+상태:
+
+- 완료.
+- `feature/ari-portfolio-demo-verification` 브랜치에서 Demo Host 기준 최종 검증 요약 문서를 추가했다.
+- `Docs/03_Verification/README_KR.md`, `Docs/README_KR.md`, 루트 `README.md`가 최종 검증 요약 문서를 가리키도록 갱신했다.
 
 ### 7-4. Portfolio 적용 시연 문서
 
 목적:
 
 - 기존 Portfolio 프로젝트에 플러그인을 복사 적용하고 실제 Asset 분석 시나리오를 정리한다.
+
+완료 기준:
+
+- 실제 Portfolio 프로젝트에서 플러그인 탭이 열리는 흐름을 기록한다.
+- 실사용 Asset 기준 Dependencies / Referencers 분석 결과를 기록한다.
+- Filter, Unused Candidate, CSV Export 시연 결과를 대표 스크린샷으로 정리한다.
+- Demo Host 검증과 실제 Portfolio 적용 결과를 문서상에서 구분한다.
+- 별도 빌드 로그나 CSV 원본 파일이 없으면 성공으로 단정하지 않고 제한 사항에 남긴다.
+
+상태:
+
+- 완료.
+- 실제 Portfolio 프로젝트에서 `BP_CPlayer` Dependencies, `T_UE_Logo_M` Referencers, Content Browser Sync, Blueprint Class Filter, Unused Candidate, CSV Export notification을 스크린샷으로 기록했다.
+- 대표 스크린샷은 `Docs/03_Verification/Screenshots/portfolio_demo_verification/`에 정리했다.
+- Portfolio 프로젝트에서 export된 CSV 샘플은 `Docs/03_Verification/Exports/portfolio_demo_verification/`에 정리했다.
+- `Docs/05_Demo/Portfolio_Demo_KR.md`를 실제 적용 결과 포함 문서로 갱신했다.
+- 별도 `PortfolioEditor` command line 빌드 로그는 이번 문서에 포함하지 않았다.
 
 ## 커밋 운영 기준
 

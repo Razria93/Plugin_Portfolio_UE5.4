@@ -16,12 +16,16 @@
 
 ## 문서 구성
 
+- `Final_Verification_Summary_KR.md`
+  - Demo Host 기준 최종 기능 검증 결과, 대표 스크린샷, 남은 제한을 요약한다.
 - `Build_Verification_Log_KR.md`
   - 빌드, 에디터 실행, feature별 수동 검증 결과를 기록한다.
 - `Screenshots/`
   - PR 또는 검증 로그에 사용할 최종 검증 스크린샷을 보관한다.
+  - `portfolio_demo_verification/`에는 실제 Portfolio 프로젝트 적용 시연 스크린샷을 보관한다.
 - `Exports/`
   - CSV Export처럼 파일 생성 기능을 검증하기 위한 최종 export 샘플을 보관한다.
+  - `portfolio_demo_verification/`에는 실제 Portfolio 프로젝트 적용 시연에서 생성한 CSV 샘플을 보관한다.
 
 ## 관련 운영 기준
 
