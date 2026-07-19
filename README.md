@@ -44,6 +44,7 @@ Unreal Engine 5.4용 Editor Plugin `AssetReferenceInspector`를 개발하고 검
 - [검증 로그](Docs/03_Verification/Build_Verification_Log_KR.md)
 - [플러그인 README](Plugins/AssetReferenceInspector/README.md)
 - [포트폴리오 시연 계획](Docs/05_Demo/Portfolio_Demo_KR.md)
+- [포트폴리오 제출 요약](Docs/05_Demo/Portfolio_Submission_Summary_KR.md)
 
 ## 저장소 구조
 
