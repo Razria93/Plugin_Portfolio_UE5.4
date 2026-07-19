@@ -668,11 +668,29 @@ AssetName,PackageName,Class,Path,Depth,SizeBytes,Mode,ParentPackage,IsCircular,I
 - `TreeRootItems`를 재귀 순회해 export 가능한 Asset node만 CSV row로 변환한다.
 - CSV 문자열 escape와 timestamp 기반 저장 경로를 구현했다.
 
-### 7-2. 플러그인 README
+### 7-2. README / 시연 문서 정리
 
 목적:
 
 - `Plugins/AssetReferenceInspector`만 복사해도 사용법을 이해할 수 있게 한다.
+- Demo Host 루트 README에서 현재 구현 상태와 사용 흐름을 파악할 수 있게 한다.
+- 실제 Portfolio 적용 전 시연 계획과 촬영 체크리스트를 정리한다.
+
+완료 기준:
+
+- 루트 `README.md`가 현재 구현된 기능과 사용 방법을 설명한다.
+- `Plugins/AssetReferenceInspector/README.md`가 플러그인 단위 설치 / 사용 / 제한 사항을 설명한다.
+- `Docs/05_Demo/Portfolio_Demo_KR.md`가 Demo Host 시연 순서와 Portfolio 적용 시연 후보를 정리한다.
+- `Docs/README_KR.md` 문서 인덱스가 `05_Demo` 문서를 가리킨다.
+- 실제 Portfolio 프로젝트 적용 검증은 후속 Phase로 남긴다.
+
+상태:
+
+- 완료.
+- `feature/ari-readme-demo-docs` 브랜치에서 루트 README를 현재 구현 상태 기준으로 갱신했다.
+- 플러그인 단위 README를 추가해 사용 방법, 복사 적용 흐름, 제한 사항을 정리했다.
+- `Docs/05_Demo/Portfolio_Demo_KR.md`를 추가해 Demo Host 시연 순서, Portfolio 프로젝트 시연 후보, 촬영 체크리스트를 정리했다.
+- 실제 Portfolio 프로젝트 복사 적용과 실사용 Asset 분석 결과 검증은 Phase 7-4로 남긴다.
 
 ### 7-3. 검증 기록
 

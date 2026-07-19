@@ -67,27 +67,29 @@
 - `04_Governance/GitHub_CLI_Execution_Workflow_KR.md`
   - GitHub CLI 실행 경로, keyring 오류 진단, `require_escalated` 재시도 기준을 정리한다.
 - `04_Governance/GitHub_Public_Body_Validation_Rules_KR.md`
-  - GitHub PR body, Issue body, 댓글 public 본문의 섹션 순서, 스크린샷 구조, 금지 요소 검사 기준을 정리한다.
+  - GitHub PR 본문, Issue 본문, 댓글 public 본문의 섹션 순서, 스크린샷 구조, 금지 요소 검사 기준을 정리한다.
 - `04_Governance/Screenshot_Workflow_KR.md`
   - 검증 스크린샷 보관, 승격, 파일명, GitHub 이미지 링크 기준을 정리한다.
 - `04_Governance/Codex_Init_Prompt_KR.md`
   - 새 Codex 세션에서 사용할 초기 작업 지침을 정리한다.
 
+## 05_Demo
+
+Demo Host에서 구현한 플러그인을 실제 Portfolio 프로젝트에 적용하고 시연하기 위한 흐름을 정리하는 문서다.
+
+- `05_Demo/Portfolio_Demo_KR.md`
+  - Portfolio 적용 준비, Demo Host 시연 순서, 실제 Portfolio 프로젝트 시연 후보, 촬영 체크리스트를 정리한다.
+
 ## LocalNotes
 
-`LocalNotes/`는 ignored 작업장이다. mini plan, GitHub 게시용 draft/public 본문, 학습 메모처럼 공개 문서로 커밋하지 않을 자료를 둔다.
+`LocalNotes/`는 버전 관리 대상이 아닌 로컬 자료 영역이다. mini plan, GitHub 게시용 초안/게시 본문, 학습 메모처럼 공개 문서로 커밋하지 않을 자료를 둔다.
 
 - `LocalNotes/mini-plans/`
   - feature 시작 전 mini plan을 둔다.
 - `LocalNotes/github/`
-  - GitHub Architecture / Verification Issue, PR, PR 댓글, 상위 Plan Issue 댓글의 draft와 public 제출용 본문을 둔다.
+  - GitHub Architecture / Verification Issue, PR, PR 댓글, 상위 Plan Issue 댓글의 draft와 public 본문을 둔다.
   - `gh` CLI 업로드에는 `LocalNotes/github/public` 파일만 사용한다.
 - `LocalNotes/screenshots/`
   - Docs로 승격하기 전 임시 스크린샷을 둔다.
 - `LocalNotes/templates/`
-  - LocalNotes 문서 작성을 위한 로컬 템플릿을 둔다.
-
-## 향후 추가 예정
-
-- `05_Demo/Portfolio_Demo_KR.md`
-  - 포트폴리오 프로젝트 적용 시연 시나리오와 촬영 체크리스트를 정리한다.
+  - LocalNotes 문서 작성에 사용하는 템플릿을 둔다.

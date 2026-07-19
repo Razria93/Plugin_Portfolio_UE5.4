@@ -12,7 +12,7 @@
 - Git Bash 우회, 재로그인, 토큰 주입 같은 대응의 사용 여부
 - GitHub 원격 변경 명령 실행 전 승인 기준과의 연결
 
-GitHub public 본문 작성, draft/public 변환, validator 검수, 원격 반영 대상 보고 절차는 `Docs/04_Governance/Documentation_Authoring_Workflow_KR.md`를 따른다.
+GitHub 게시 본문 작성, draft/public 변환, 검증 스크립트 검수, 원격 반영 대상 보고 절차는 `Docs/04_Governance/Documentation_Authoring_Workflow_KR.md`를 따른다.
 
 ## 기본 원칙
 
