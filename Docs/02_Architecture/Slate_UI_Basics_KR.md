@@ -558,11 +558,12 @@ struct FAssetReferenceTreeNode
 	int32 Depth;
 	bool bIsCircular;
 	FString ClassName;
+	int64 SizeBytes;
 	TArray<TSharedPtr<FAssetReferenceTreeNode>> Children;
 };
 ```
 
-`DisplayName`은 row에 표시할 이름이고, `PackageName`은 Asset Registry 조회 기준이 되는 Package 이름이다. `ClassName`은 AssetData를 찾을 수 있는 Asset row에 함께 표시할 Class 이름이다. `Children`은 노드를 펼쳤을 때 보여줄 자식 노드 목록이다.
+`DisplayName`은 row에 표시할 이름이고, `PackageName`은 Asset Registry 조회 기준이 되는 Package 이름이다. `ClassName`은 AssetData를 찾을 수 있는 Asset row에 함께 표시할 Class 이름이다. `SizeBytes`는 PackageName 기준으로 찾은 `.uasset`, `.uexp`, `.ubulk` 파일 크기 합산값이다. `Children`은 노드를 펼쳤을 때 보여줄 자식 노드 목록이다.
 
 Tree View 연결의 핵심은 세 가지다.
 
@@ -591,7 +592,15 @@ TSharedRef<ITableRow> OnGenerateTreeRow(
 	const TSharedRef<STableViewBase>& OwnerTable) const;
 ```
 
-현재는 `GetTreeNodeDisplayText`에서 `FAssetReferenceTreeNode`의 표시 문자열을 만든 뒤, 그 값을 `STextBlock`으로 표시하는 `STableRow`를 반환한다. `ClassName`이 있으면 `DisplayName [ClassName]` 형식으로 표시하고, Class 정보를 찾을 수 없는 Package나 placeholder는 `DisplayName`만 표시한다. `bIsCircular`가 true이면 뒤에 `[Circular]`을 붙여 현재 DFS 경로에서 다시 등장한 순환 후보 노드임을 보여준다.
+현재는 `GetTreeNodeDisplayText`에서 `FAssetReferenceTreeNode`의 표시 문자열을 만든 뒤, 그 값을 `STextBlock`으로 표시하는 `STableRow`를 반환한다. `ClassName`이 있으면 `DisplayName [ClassName]` 형식으로 표시하고, `SizeBytes`가 0보다 크면 `(Size)` suffix를 붙인다. `bIsCircular`가 true이면 뒤에 `[Circular]`을 붙여 현재 DFS 경로에서 다시 등장한 순환 후보 노드임을 보여준다.
+
+표시 순서는 다음과 같다.
+
+```text
+DisplayName [ClassName] (Size) [Circular]
+```
+
+Class 정보를 찾을 수 없는 Package, placeholder, 파일 경로를 찾을 수 없는 Package는 확인 가능한 suffix만 표시한다.
 
 ```cpp
 return SNew(STableRow<TSharedPtr<FAssetReferenceTreeNode>>, OwnerTable)

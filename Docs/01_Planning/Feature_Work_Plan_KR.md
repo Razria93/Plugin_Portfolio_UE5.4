@@ -578,6 +578,18 @@ Phase 6부터는 3주차 목표에 해당한다. 참조 관계 조회 도구를 
 - 1차: `.uasset`
 - 가능하면 합산: `.uexp`, `.ubulk`
 
+완료 기준:
+
+- Tree row에 Asset 디스크 크기 suffix를 표시한다.
+- 파일 경로를 찾을 수 없는 Package, `/Script` Package, placeholder 노드는 크기 표시를 생략한다.
+- 순환 후보 노드에서도 크기 suffix와 `[Circular]` suffix가 함께 표시된다.
+
+진행 기록:
+
+- `feature/ari-asset-size-display` 브랜치에서 `FAssetReferenceTreeNode::SizeBytes`를 추가했다.
+- PackageName을 local package filename으로 변환해 `.uasset`, `.uexp`, `.ubulk` 크기를 합산하는 경로를 추가했다.
+- Tree row 표시 문자열을 `DisplayName [ClassName] (Size) [Circular]` 순서로 정리했다.
+
 ### 6-3. Unused Candidate 표시
 
 목적:

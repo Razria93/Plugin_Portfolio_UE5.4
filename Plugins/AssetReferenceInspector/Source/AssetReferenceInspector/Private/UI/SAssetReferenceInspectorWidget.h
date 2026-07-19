@@ -56,10 +56,14 @@ private:
 
 	// Asset data
 	bool TryGetPrimaryAssetDataForPackage(FName PackageName, FAssetData& OutAssetData) const;
+	bool TryGetPackageFilename(FName PackageName, FString& OutPackageFilename) const;
+	int64 GetPackageDiskSizeBytes(FName PackageName) const;
+	int64 GetExistingFileSizeBytes(const FString& Filename) const;
 
 	// Tree view
 	void RefreshTree();
 	void ExpandTreeItems(const TArray<TSharedPtr<FAssetReferenceTreeNode>>& Items);
+	FString FormatSizeBytes(int64 SizeBytes) const;
 	FString GetTreeNodeDisplayText(TSharedPtr<FAssetReferenceTreeNode> Item) const;
 	TSharedRef<ITableRow> OnGenerateTreeRow(TSharedPtr<FAssetReferenceTreeNode> Item, const TSharedRef<STableViewBase>& OwnerTable) const;
 	void OnGetTreeChildren(TSharedPtr<FAssetReferenceTreeNode> Item, TArray<TSharedPtr<FAssetReferenceTreeNode>>& OutChildren) const;
