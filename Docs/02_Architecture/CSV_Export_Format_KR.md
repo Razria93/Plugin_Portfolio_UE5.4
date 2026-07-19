@@ -80,13 +80,15 @@ Class = Node.ClassName
 Path = PackageName의 folder path
 Depth = Node.Depth
 SizeBytes = Node.SizeBytes
-Mode = Dependencies / Referencers / UnusedCandidates
+Mode = CurrentTreeMode 또는 UnusedCandidates
 ParentPackage = Node.ParentPackageName
 IsCircular = true / false
 IsUnusedCandidate = true / false
 ```
 
 숫자와 boolean field는 현재 고정 형식 문자열이므로 별도 escape를 적용하지 않는다.
+
+`CurrentTreeMode`는 현재 Tree를 생성한 분석 mode를 저장한 값이다. 사용자가 `Analyze` 후 다른 mode 버튼만 클릭해도 기존 Tree 결과는 다시 만들어지지 않으므로, CSV Export는 live UI 선택값인 `AnalysisOptions.Mode`가 아니라 Tree 생성 시점의 mode를 사용한다.
 
 ## Export 대상
 
@@ -107,6 +109,7 @@ CSV 파일은 프로젝트 `Saved` 아래에 저장한다.
 
 ```text
 Saved/AssetReferenceInspector/AssetReferenceReport_YYYYMMDD_HHMMSS.csv
+Saved/AssetReferenceInspector/AssetReferenceReport_YYYYMMDD_HHMMSS_001.csv
 ```
 
 저장 문자열은 UTF-8 without BOM으로 기록한다.
@@ -120,7 +123,8 @@ FPaths::ProjectSavedDir()
 -> Saved/ 경로 확보
 -> AssetReferenceInspector 하위 폴더 경로 조합
 -> IFileManager::MakeDirectory(..., true)
--> timestamp 기반 파일명 생성
+-> timestamp 기반 기본 파일명 생성
+-> 같은 이름이 이미 있으면 counter suffix를 붙인 파일명 선택
 -> FFileHelper::SaveStringToFile(...)
 ```
 
@@ -159,11 +163,10 @@ if (!IFileManager::Get().MakeDirectory(*ExportDirectory, true))
 ## 파일명 생성
 
 ```cpp
-const FString Timestamp = FDateTime::Now().ToString(TEXT("%Y%m%d_%H%M%S"));
-OutFilename = ExportDirectory / FString::Printf(TEXT("AssetReferenceReport_%s.csv"), *Timestamp);
+OutFilename = BuildUniqueExportFilename(ExportDirectory);
 ```
 
-`FDateTime::Now()`로 현재 시간을 가져오고, `YYYYMMDD_HHMMSS` 형식의 문자열로 변환한다.
+`BuildUniqueExportFilename`은 `FDateTime::Now()`로 현재 시간을 가져오고, `YYYYMMDD_HHMMSS` 형식의 기본 파일명을 만든다.
 
 예:
 
@@ -171,13 +174,21 @@ OutFilename = ExportDirectory / FString::Printf(TEXT("AssetReferenceReport_%s.cs
 20260719_213045
 ```
 
-최종 파일명은 다음 형식이다.
+기본 파일명은 다음 형식이다.
 
 ```text
 AssetReferenceReport_20260719_213045.csv
 ```
 
-같은 폴더에 여러 번 export해도 파일명이 초 단위 timestamp를 포함하므로 기존 파일을 덮어쓸 가능성을 줄인다.
+같은 초 안에서 여러 번 export하면 기본 파일명이 충돌할 수 있다. 이 경우 기존 파일을 덮어쓰지 않고 `_001`, `_002` 같은 counter suffix를 붙인 파일명을 사용한다.
+
+```text
+AssetReferenceReport_20260719_213045.csv
+AssetReferenceReport_20260719_213045_001.csv
+AssetReferenceReport_20260719_213045_002.csv
+```
+
+counter suffix도 모두 사용된 극단적인 경우에는 tick 값을 붙여 마지막 fallback 파일명을 만든다. 핵심 정책은 `SaveStringToFile`을 호출하기 전에 존재하지 않는 파일명을 선택해 기존 CSV를 덮어쓰지 않는 것이다.
 
 ## 파일 저장
 

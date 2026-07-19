@@ -26,8 +26,7 @@ bool FAssetReferenceCsvExporter::ExportToTimestampedCsv(const TArray<TSharedPtr<
 		return false;
 	}
 
-	const FString Timestamp = FDateTime::Now().ToString(TEXT("%Y%m%d_%H%M%S"));
-	OutFilename = ExportDirectory / FString::Printf(TEXT("AssetReferenceReport_%s.csv"), *Timestamp);
+	OutFilename = BuildUniqueExportFilename(ExportDirectory);
 
 	const FString CsvContent = FString::Join(Rows, TEXT("\n"));
 	if (!FFileHelper::SaveStringToFile(CsvContent, *OutFilename, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
@@ -74,6 +73,29 @@ FString FAssetReferenceCsvExporter::BuildCsvRow(const FAssetReferenceTreeNode& N
 	Fields.Add(Node.bIsUnusedCandidate ? TEXT("true") : TEXT("false"));
 
 	return FString::Join(Fields, TEXT(","));
+}
+
+FString FAssetReferenceCsvExporter::BuildUniqueExportFilename(const FString& ExportDirectory)
+{
+	const FString Timestamp = FDateTime::Now().ToString(TEXT("%Y%m%d_%H%M%S"));
+	const FString BaseFilename = ExportDirectory / FString::Printf(TEXT("AssetReferenceReport_%s"), *Timestamp);
+	const FString DefaultFilename = BaseFilename + TEXT(".csv");
+
+	if (!IFileManager::Get().FileExists(*DefaultFilename))
+	{
+		return DefaultFilename;
+	}
+
+	for (int32 SuffixIndex = 1; SuffixIndex <= 999; ++SuffixIndex)
+	{
+		const FString CandidateFilename = FString::Printf(TEXT("%s_%03d.csv"), *BaseFilename, SuffixIndex);
+		if (!IFileManager::Get().FileExists(*CandidateFilename))
+		{
+			return CandidateFilename;
+		}
+	}
+
+	return ExportDirectory / FString::Printf(TEXT("AssetReferenceReport_%s_%lld.csv"), *Timestamp, FDateTime::Now().GetTicks());
 }
 
 FString FAssetReferenceCsvExporter::EscapeCsvField(const FString& Value)

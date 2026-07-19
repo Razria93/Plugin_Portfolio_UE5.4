@@ -80,6 +80,7 @@ private:
 private:
 	// Analysis state
 	FAssetReferenceAnalysisOptions AnalysisOptions;
+	EAssetReferenceMode CurrentTreeMode = EAssetReferenceMode::Dependencies;
 	FAssetData SelectedAssetData;
 
 	// Tree view state

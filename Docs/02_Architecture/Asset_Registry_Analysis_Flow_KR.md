@@ -183,7 +183,7 @@ Class = ClassName
 Path = PackageName의 path 문자열
 Depth = Depth
 SizeBytes = SizeBytes
-Mode = 현재 AnalysisOptions.Mode
+Mode = CurrentTreeMode 또는 UnusedCandidates
 ParentPackage = ParentPackageName
 IsCircular = bIsCircular
 IsUnusedCandidate = bIsUnusedCandidate
@@ -204,9 +204,11 @@ Export CSV
 
 CSV Export는 화면에 표시된 현재 Tree 결과를 기준으로 동작한다. 따라서 `Analyze` 이후에는 Dependencies / Referencers 결과가 저장되고, `Scan Unused Candidates` 이후에는 Unused Candidate 결과가 저장된다.
 
+`AnalysisOptions.Mode`는 다음 분석에 사용할 UI 선택값이고, `CurrentTreeMode`는 현재 Tree를 생성한 분석 mode다. 사용자가 `Analyze` 후 다른 mode 버튼만 클릭하면 `TreeRootItems`는 이전 분석 결과를 유지한다. 이 상태에서 export할 때 CSV `Mode` column이 잘못 기록되지 않도록, CSV Export는 `CurrentTreeMode`를 사용한다.
+
 placeholder node와 grouping node는 실제 Asset Package가 아니므로 CSV row에서 제외한다. 단, grouping node의 자식은 계속 순회한다. 이 정책 때문에 `Unused Candidates` root node는 제외되지만 그 아래 후보 Asset row는 저장된다.
 
-`Mode` 컬럼은 Dependencies / Referencers 관계 Tree에서는 현재 분석 모드를 사용한다. Unused Candidate 후보 node는 관계 분석 결과가 아니므로 `UnusedCandidates`로 저장한다.
+`Mode` 컬럼은 Dependencies / Referencers 관계 Tree에서는 현재 Tree를 생성한 분석 모드를 사용한다. Unused Candidate 후보 node는 관계 분석 결과가 아니므로 `UnusedCandidates`로 저장한다.
 
 ## Asset 디스크 크기 표시
 

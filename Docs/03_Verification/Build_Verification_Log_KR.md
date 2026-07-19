@@ -1239,13 +1239,15 @@ Total execution time: 34.58 seconds
 UBT 출력 기준:
 
 ```text
-[1/6] Compile [x64] AssetReferenceCsvExporter.cpp
-[2/6] Compile [x64] Module.AssetReferenceInspector.cpp
-[3/6] Compile [x64] SAssetReferenceInspectorWidget.cpp
-[4/6] Link [x64] UnrealEditor-AssetReferenceInspector.lib
-[5/6] Link [x64] UnrealEditor-AssetReferenceInspector.dll
-[6/6] WriteMetadata Portfolio_PlugInEditor.target
-Total execution time: 6.76 seconds
+[1/8] Link [x64] UnrealEditor-Portfolio_PlugIn-0001.lib
+[2/8] Link [x64] UnrealEditor-Portfolio_PlugIn-0001.dll
+[3/8] Compile [x64] AssetReferenceCsvExporter.cpp
+[4/8] Compile [x64] Module.AssetReferenceInspector.cpp
+[5/8] Compile [x64] SAssetReferenceInspectorWidget.cpp
+[6/8] Link [x64] UnrealEditor-AssetReferenceInspector-0001.lib
+[7/8] Link [x64] UnrealEditor-AssetReferenceInspector-0001.dll
+[8/8] WriteMetadata Portfolio_PlugInEditor.target
+Total execution time: 6.67 seconds
 ```
 
 #### 확인 범위
@@ -1255,6 +1257,8 @@ Total execution time: 6.76 seconds
 - `TreeRootItems`를 CSV row로 변환하는 경로에서 빌드 확인
 - `PackageName == NAME_None` row를 제외하고 자식 node는 계속 순회하는 구조에서 빌드 확인
 - `Saved/AssetReferenceInspector/` timestamp CSV 저장 경로 구성 상태에서 빌드 확인
+- 같은 초 안에서 export 파일명이 충돌하면 counter suffix를 붙이는 no-overwrite 파일명 생성 경로에서 빌드 확인
+- CSV `Mode` column이 현재 Tree를 생성한 분석 mode를 사용하도록 구성된 상태에서 빌드 확인
 - 에디터에서 `Export CSV` 버튼 표시 확인
 - Dependencies 결과에서 CSV Export 성공 notification 표시 확인
 - Referencers 결과에서 CSV Export 성공 notification 표시 확인

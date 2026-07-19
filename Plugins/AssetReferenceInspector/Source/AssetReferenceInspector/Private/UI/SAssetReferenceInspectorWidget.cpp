@@ -347,7 +347,7 @@ FReply SAssetReferenceInspectorWidget::OnExportCsvClicked()
 {
 	FString ExportFilename;
 	FString ErrorMessage;
-	const bool bExported = FAssetReferenceCsvExporter::ExportToTimestampedCsv(TreeRootItems, AnalysisOptions.Mode, ExportFilename, ErrorMessage);
+	const bool bExported = FAssetReferenceCsvExporter::ExportToTimestampedCsv(TreeRootItems, CurrentTreeMode, ExportFilename, ErrorMessage);
 
 	FNotificationInfo NotificationInfo(FText::FromString(bExported
 		? FString::Printf(TEXT("CSV exported: %s"), *ExportFilename)
@@ -503,6 +503,7 @@ ECheckBoxState SAssetReferenceInspectorWidget::GetIncludePluginContentCheckState
 void SAssetReferenceInspectorWidget::BuildRelationTree()
 {
 	TreeRootItems.Reset();
+	CurrentTreeMode = AnalysisOptions.Mode;
 
 	if (!SelectedAssetData.IsValid())
 	{
@@ -582,6 +583,7 @@ void SAssetReferenceInspectorWidget::GetRelatedPackageNames(FName PackageName, T
 void SAssetReferenceInspectorWidget::BuildUnusedCandidateTree()
 {
 	TreeRootItems.Reset();
+	CurrentTreeMode = AnalysisOptions.Mode;
 
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 	AssetRegistryModule.Get().SearchAllAssets(true);
