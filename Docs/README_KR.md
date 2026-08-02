@@ -64,6 +64,8 @@
   - 저장소에서 플러그인을 개발할 때 지켜야 할 기본 작업 규칙을 정리한다.
 - `04_Governance/Feature_Workflow_KR.md`
   - feature 시작, mini plan 작성, 브랜치 판단, 검증, 문서화, 커밋 판단 기준을 정리한다.
+- `04_Governance/Feature_Branch_Document_Flow_KR.md`
+  - feature branch 시작부터 PR 마감까지 참고 문서와 산출 문서가 어떻게 이어지는지 정리한다.
 - `04_Governance/Documentation_Responsibility_KR.md`
   - `Docs`, `LocalNotes`, GitHub Issue, PR 본문의 책임 경계와 문서 네이밍 규칙을 정리한다.
 - `04_Governance/Documentation_Authoring_Workflow_KR.md`
