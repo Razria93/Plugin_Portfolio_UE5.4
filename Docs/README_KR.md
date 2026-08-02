@@ -38,6 +38,8 @@
   - Asset Registry 기반 Dependencies 조회와 Tree View 표시 흐름을 정리한다.
 - `02_Architecture/CSV_Export_Format_KR.md`
   - CSV Export row / field 구분자, escaping, 컬럼 매핑, 저장 위치를 정리한다.
+- `02_Architecture/Debug_Overlay_Snapshot_HUD_Flow_KR.md`
+  - Debug Overlay Snapshot Store와 HUD 표시 흐름, World별 Event Ring 구조를 정리한다.
 
 ## 03_Verification
 
