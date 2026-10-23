@@ -1,0 +1,24 @@
+[2026.10.21-02.42.47:613][ 13]LogPython: ARIQA|Ready|FixtureSelected=A
+[2026.10.21-02.42.59:377][ 59]LogTemp: Display: ARIQA|Pick|Package=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.43.43:780][383]LogTemp: Display: ARIQA|FilterCommit|Type=1|Input=/Game/ARI_QA/BranchB/|Before=/Game/|After=/Game/ARI_QA/BranchB/|Ignored=0|Legacy=1
+[2026.10.21-02.43.43:781][383]LogTemp: Display: ARIQA|FilterCommit|Type=3|Input=/Game/ARI_QA/BranchB/|Before=/Game/ARI_QA/BranchB/|After=|Ignored=0|Legacy=1
+[2026.10.21-02.43.48:240][918]LogTemp: Display: ARIQA|AnalyzeClick|Path=|UI=Dependencies|Depth=3
+[2026.10.21-02.43.48:240][918]LogTemp: Display: ARIQA|BuildTree|Analysis=1|Package=/Game/ARI_QA/Root/DA_QA_A|Mode=Dependencies|Path=
+[2026.10.21-02.43.48:240][918]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Game/ARI_QA/BranchB/DA_QA_B|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.43.48:240][918]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/BranchB/DA_QA_B|Child=/Script/Portfolio_PlugIn|Depth=2|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchB/DA_QA_B
+[2026.10.21-02.43.48:240][918]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/BranchB/DA_QA_B|Child=/Game/ARI_QA/Shared/DA_QA_D|Depth=2|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchB/DA_QA_B
+[2026.10.21-02.43.48:240][918]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/Shared/DA_QA_D|Child=/Script/Portfolio_PlugIn|Depth=3|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchB/DA_QA_B;/Game/ARI_QA/Shared/DA_QA_D
+[2026.10.21-02.43.48:241][918]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Script/Portfolio_PlugIn|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.43.48:241][918]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Game/ARI_QA/BranchC/DA_QA_C|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.43.48:241][918]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/BranchC/DA_QA_C|Child=/Script/Portfolio_PlugIn|Depth=2|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchC/DA_QA_C
+[2026.10.21-02.43.48:241][918]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/BranchC/DA_QA_C|Child=/Game/ARI_QA/Shared/DA_QA_D|Depth=2|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchC/DA_QA_C
+[2026.10.21-02.43.48:241][918]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/Shared/DA_QA_D|Child=/Script/Portfolio_PlugIn|Depth=3|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchC/DA_QA_C;/Game/ARI_QA/Shared/DA_QA_D
+[2026.10.21-02.43.54:558][676]LogTemp: Display: ARIQA|Export|Analysis=1|UI=Dependencies|Tree=Dependencies|ExportMode=Dependencies|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_114354.csv
+[2026.10.21-02.44.18:193][450]LogTemp: Display: ARIQA|Pick|Package=/Game/ARI_QA/BranchB/DA_QA_B
+[2026.10.21-02.44.44:048][551]LogTemp: Display: ARIQA|FilterCommit|Type=2|Input=/Game/ARI_QA/|Before=|After=/Game/ARI_QA/|Ignored=0|Legacy=1
+[2026.10.21-02.44.44:064][553]LogTemp: Display: ARIQA|AnalyzeClick|Path=/Game/ARI_QA/|UI=Dependencies|Depth=3
+[2026.10.21-02.44.44:064][553]LogTemp: Display: ARIQA|BuildTree|Analysis=2|Package=/Game/ARI_QA/BranchB/DA_QA_B|Mode=Dependencies|Path=/Game/ARI_QA/
+[2026.10.21-02.44.44:064][553]LogTemp: Display: ARIQA|Visit|Analysis=2|Parent=/Game/ARI_QA/BranchB/DA_QA_B|Child=/Game/ARI_QA/Shared/DA_QA_D|Depth=1|Circular=0|Path=/Game/ARI_QA/BranchB/DA_QA_B
+[2026.10.21-02.44.49:373][190]LogTemp: Display: ARIQA|Export|Analysis=2|UI=Dependencies|Tree=Dependencies|ExportMode=Dependencies|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_114449.csv
+[2026.10.21-02.44.53:557][638]LogTemp: Display: ARIQA|ModeClick|Analysis=2|UI=Referencers|Tree=Dependencies
+[2026.10.21-02.44.58:464][226]LogTemp: Display: ARIQA|Export|Analysis=2|UI=Referencers|Tree=Dependencies|ExportMode=Referencers|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_114458.csv

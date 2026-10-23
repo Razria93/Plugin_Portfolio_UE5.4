@@ -1,0 +1,124 @@
+--- original/Plugins\AssetReferenceInspector\Source\AssetReferenceInspector\Private\UI\SAssetReferenceInspectorWidget.cpp
++++ qa/Plugins\AssetReferenceInspector\Source\AssetReferenceInspector\Private\UI\SAssetReferenceInspectorWidget.cpp
+@@ -10,6 +10,8 @@
+ #include "HAL/FileManager.h"
+ #include "IContentBrowserSingleton.h"
+ #include "Misc/DefaultValueHelper.h"
++#include "Misc/CommandLine.h"
++#include "Misc/Parse.h"
+ #include "Misc/PackageName.h"
+ #include "Misc/Paths.h"
+ #include "Styling/AppStyle.h"
+@@ -28,6 +30,10 @@
+ namespace
+ {
+ 	constexpr int32 MaxAllowedRelationDepth = 10;
++ int32 QAAnalysisId = 0;
++ const TCHAR* QAMode(EAssetReferenceMode Mode) { return Mode == EAssetReferenceMode::Referencers ? TEXT("Referencers") : TEXT("Dependencies"); }
++ bool QALegacy(const TCHAR* Flag) { return FParse::Param(FCommandLine::Get(), Flag); }
++
+ }
+ 
+ void SAssetReferenceInspectorWidget::Construct(const FArguments& InArgs)
+@@ -323,12 +329,14 @@
+ 	ContentBrowserModule.Get().GetSelectedAssets(SelectedAssets);
+ 
+ 	SelectedAssetData = SelectedAssets.Num() > 0 ? SelectedAssets[0] : FAssetData();
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|Pick|Package=%s"), *SelectedAssetData.PackageName.ToString());
+ 
+ 	return FReply::Handled();
+ }
+ 
+ FReply SAssetReferenceInspectorWidget::OnAnalyzeClicked()
+ {
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|AnalyzeClick|Path=%s|UI=%s|Depth=%d"), *AnalysisOptions.PathFilter, QAMode(AnalysisOptions.Mode), AnalysisOptions.MaxDepth);
+ 	BuildRelationTree();
+ 	RefreshTree();
+ 
+@@ -347,7 +355,9 @@
+ {
+ 	FString ExportFilename;
+ 	FString ErrorMessage;
+-	const bool bExported = FAssetReferenceCsvExporter::ExportToTimestampedCsv(TreeRootItems, CurrentTreeMode, ExportFilename, ErrorMessage);
++	const EAssetReferenceMode ExportMode = QALegacy(TEXT("ARIQALegacyCsv")) ? AnalysisOptions.Mode : CurrentTreeMode;
++ const bool bExported = FAssetReferenceCsvExporter::ExportToTimestampedCsv(TreeRootItems, ExportMode, ExportFilename, ErrorMessage);
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|Export|Analysis=%d|UI=%s|Tree=%s|ExportMode=%s|Success=%d|File=%s"), QAAnalysisId, QAMode(AnalysisOptions.Mode), QAMode(CurrentTreeMode), QAMode(ExportMode), bExported, *ExportFilename);
+ 
+ 	FNotificationInfo NotificationInfo(FText::FromString(bExported
+ 		? FString::Printf(TEXT("CSV exported: %s"), *ExportFilename)
+@@ -367,13 +377,15 @@
+ FReply SAssetReferenceInspectorWidget::OnDependenciesModeClicked()
+ {
+ 	AnalysisOptions.Mode = EAssetReferenceMode::Dependencies;
+-	return FReply::Handled();
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|ModeClick|Analysis=%d|UI=%s|Tree=%s"), QAAnalysisId, QAMode(AnalysisOptions.Mode), QAMode(CurrentTreeMode));
++ return FReply::Handled();
+ }
+ 
+ FReply SAssetReferenceInspectorWidget::OnReferencersModeClicked()
+ {
+ 	AnalysisOptions.Mode = EAssetReferenceMode::Referencers;
+-	return FReply::Handled();
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|ModeClick|Analysis=%d|UI=%s|Tree=%s"), QAAnalysisId, QAMode(AnalysisOptions.Mode), QAMode(CurrentTreeMode));
++ return FReply::Handled();
+ }
+ 
+ void SAssetReferenceInspectorWidget::OnMaxDepthTextCommitted(const FText& InText, ETextCommit::Type CommitType)
+@@ -392,12 +404,17 @@
+ 
+ void SAssetReferenceInspectorWidget::OnPathFilterTextCommitted(const FText& InText, ETextCommit::Type CommitType)
+ {
+-	if (CommitType == ETextCommit::OnCleared)
+-	{
+-		return;
+-	}
+-
+-	AnalysisOptions.PathFilter = InText.ToString().TrimStartAndEnd();
++ const FString Before = AnalysisOptions.PathFilter;
++ const bool bLegacy = QALegacy(TEXT("ARIQALegacyFilter"));
++ if (bLegacy)
++ {
++  AnalysisOptions.PathFilter = (CommitType == ETextCommit::OnCleared ? FString() : InText.ToString()).TrimStartAndEnd();
++ }
++ else if (CommitType != ETextCommit::OnCleared)
++ {
++  AnalysisOptions.PathFilter = InText.ToString().TrimStartAndEnd();
++ }
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|FilterCommit|Type=%d|Input=%s|Before=%s|After=%s|Ignored=%d|Legacy=%d"), int32(CommitType), *InText.ToString(), *Before, *AnalysisOptions.PathFilter, !bLegacy && CommitType == ETextCommit::OnCleared, bLegacy);
+ }
+ 
+ void SAssetReferenceInspectorWidget::OnClassFilterTextCommitted(const FText& InText, ETextCommit::Type CommitType)
+@@ -502,6 +519,8 @@
+ 
+ void SAssetReferenceInspectorWidget::BuildRelationTree()
+ {
++ ++QAAnalysisId;
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|BuildTree|Analysis=%d|Package=%s|Mode=%s|Path=%s"), QAAnalysisId, *SelectedAssetData.PackageName.ToString(), QAMode(AnalysisOptions.Mode), *AnalysisOptions.PathFilter);
+ 	TreeRootItems.Reset();
+ 	CurrentTreeMode = AnalysisOptions.Mode;
+ 
+@@ -547,6 +566,9 @@
+ 		}
+ 
+ 		const bool bIsCircular = CurrentPath.Contains(RelatedPackageName);
++ TArray<FString> QAPath;
++ for (const FName& P : CurrentPath) { QAPath.Add(P.ToString()); }
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|Visit|Analysis=%d|Parent=%s|Child=%s|Depth=%d|Circular=%d|Path=%s"), QAAnalysisId, *ParentNode->PackageName.ToString(), *RelatedPackageName.ToString(), ParentNode->Depth + 1, bIsCircular, *FString::Join(QAPath, TEXT(";")));
+ 		TSharedPtr<FAssetReferenceTreeNode> ChildNode = CreateRelationNode(RelatedPackageName, ParentNode->Depth + 1, ParentNode->PackageName, bIsCircular);
+ 		ParentNode->Children.Add(ChildNode);
+ 		bAddedChild = true;
+--- original/Plugins\AssetReferenceInspector\Source\AssetReferenceInspector\Private\AssetReferenceInspectorModule.cpp
++++ qa/Plugins\AssetReferenceInspector\Source\AssetReferenceInspector\Private\AssetReferenceInspectorModule.cpp
+@@ -8,10 +8,12 @@
+ #include "Modules/ModuleManager.h"
+ 
+ #include "ToolMenus.h"
++#include "HAL/IConsoleManager.h"
+ 
+ #include "Widgets/Docking/SDockTab.h"
+ 
+ static const FName AssetReferenceInspectorTabName(TEXT("AssetReferenceInspector"));
++static FAutoConsoleCommand QAOpen(TEXT("ARIQA.Open"), TEXT("Open QA plugin tab"), FConsoleCommandDelegate::CreateLambda([](){ FGlobalTabmanager::Get()->TryInvokeTab(AssetReferenceInspectorTabName); }));
+ 
+ void FAssetReferenceInspectorModule::StartupModule()
+ {

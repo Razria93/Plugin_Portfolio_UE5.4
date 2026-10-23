@@ -1,0 +1,77 @@
+[2026.10.21-02.33.10:287][ 14]LogPython: ARIQA|Ready|FixtureSelected=A
+[2026.10.21-02.35.21:767][  0]LogTemp: Display: ARIQA|Pick|Package=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.36.04:028][ 63]LogTemp: Display: ARIQA|FilterCommit|Type=1|Input=/Game/ARI_QA/|Before=/Game/|After=/Game/ARI_QA/|Ignored=0|Legacy=0
+[2026.10.21-02.36.04:028][ 63]LogTemp: Display: ARIQA|FilterCommit|Type=3|Input=/Game/ARI_QA/|Before=/Game/ARI_QA/|After=/Game/ARI_QA/|Ignored=1|Legacy=0
+[2026.10.21-02.36.15:985][496]LogTemp: Display: ARIQA|AnalyzeClick|Path=/Game/ARI_QA/|UI=Dependencies|Depth=3
+[2026.10.21-02.36.15:985][496]LogTemp: Display: ARIQA|BuildTree|Analysis=1|Package=/Game/ARI_QA/Root/DA_QA_A|Mode=Dependencies|Path=/Game/ARI_QA/
+[2026.10.21-02.36.15:985][496]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Game/ARI_QA/BranchC/DA_QA_C|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.36.15:985][496]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/BranchC/DA_QA_C|Child=/Game/ARI_QA/Shared/DA_QA_D|Depth=2|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchC/DA_QA_C
+[2026.10.21-02.36.15:985][496]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Game/ARI_QA/BranchB/DA_QA_B|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.36.15:986][496]LogTemp: Display: ARIQA|Visit|Analysis=1|Parent=/Game/ARI_QA/BranchB/DA_QA_B|Child=/Game/ARI_QA/Shared/DA_QA_D|Depth=2|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchB/DA_QA_B
+[2026.10.21-02.36.20:020][980]LogTemp: Display: ARIQA|Export|Analysis=1|UI=Dependencies|Tree=Dependencies|ExportMode=Dependencies|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_113620.csv
+[2026.10.21-02.36.43:909][781]LogTemp: Display: ARIQA|Pick|Package=/Game/ARI_QA/Cycle/DA_QA_E
+[2026.10.21-02.36.47:543][217]LogTemp: Display: ARIQA|AnalyzeClick|Path=/Game/ARI_QA/|UI=Dependencies|Depth=3
+[2026.10.21-02.36.47:543][217]LogTemp: Display: ARIQA|BuildTree|Analysis=2|Package=/Game/ARI_QA/Cycle/DA_QA_E|Mode=Dependencies|Path=/Game/ARI_QA/
+[2026.10.21-02.36.47:543][217]LogTemp: Display: ARIQA|Visit|Analysis=2|Parent=/Game/ARI_QA/Cycle/DA_QA_E|Child=/Game/ARI_QA/Cycle/DA_QA_F|Depth=1|Circular=0|Path=/Game/ARI_QA/Cycle/DA_QA_E
+[2026.10.21-02.36.47:544][217]LogTemp: Display: ARIQA|Visit|Analysis=2|Parent=/Game/ARI_QA/Cycle/DA_QA_F|Child=/Game/ARI_QA/Cycle/DA_QA_E|Depth=2|Circular=1|Path=/Game/ARI_QA/Cycle/DA_QA_E;/Game/ARI_QA/Cycle/DA_QA_F
+[2026.10.21-02.36.51:518][694]LogTemp: Display: ARIQA|Export|Analysis=2|UI=Dependencies|Tree=Dependencies|ExportMode=Dependencies|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_113651.csv
+[2026.10.21-02.37.25:907][760]LogTemp: Display: ARIQA|Pick|Package=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.38.00:123][866]LogTemp: Display: ARIQA|AnalyzeClick|Path=/Game/ARI_QA/|UI=Dependencies|Depth=3
+[2026.10.21-02.38.00:123][866]LogTemp: Display: ARIQA|BuildTree|Analysis=3|Package=/Game/ARI_QA/Root/DA_QA_A|Mode=Dependencies|Path=/Game/ARI_QA/
+[2026.10.21-02.38.00:123][866]LogTemp: Display: ARIQA|Visit|Analysis=3|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Game/ARI_QA/BranchC/DA_QA_C|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.38.00:123][866]LogTemp: Display: ARIQA|Visit|Analysis=3|Parent=/Game/ARI_QA/BranchC/DA_QA_C|Child=/Game/ARI_QA/Shared/DA_QA_D|Depth=2|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchC/DA_QA_C
+[2026.10.21-02.38.00:123][866]LogTemp: Display: ARIQA|Visit|Analysis=3|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Game/ARI_QA/BranchB/DA_QA_B|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.38.00:124][866]LogTemp: Display: ARIQA|Visit|Analysis=3|Parent=/Game/ARI_QA/BranchB/DA_QA_B|Child=/Game/ARI_QA/Shared/DA_QA_D|Depth=2|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchB/DA_QA_B
+[2026.10.21-02.38.03:524][274]LogTemp: Display: ARIQA|Export|Analysis=3|UI=Dependencies|Tree=Dependencies|ExportMode=Dependencies|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_113803.csv
+[2026.10.21-02.38.26:008][912]LogTemp: Display: ARIQA|Pick|Package=/Game/ARI_QA/Cycle/DA_QA_E
+[2026.10.21-02.38.29:482][329]LogTemp: Display: ARIQA|AnalyzeClick|Path=/Game/ARI_QA/|UI=Dependencies|Depth=3
+[2026.10.21-02.38.29:482][329]LogTemp: Display: ARIQA|BuildTree|Analysis=4|Package=/Game/ARI_QA/Cycle/DA_QA_E|Mode=Dependencies|Path=/Game/ARI_QA/
+[2026.10.21-02.38.29:482][329]LogTemp: Display: ARIQA|Visit|Analysis=4|Parent=/Game/ARI_QA/Cycle/DA_QA_E|Child=/Game/ARI_QA/Cycle/DA_QA_F|Depth=1|Circular=0|Path=/Game/ARI_QA/Cycle/DA_QA_E
+[2026.10.21-02.38.29:483][329]LogTemp: Display: ARIQA|Visit|Analysis=4|Parent=/Game/ARI_QA/Cycle/DA_QA_F|Child=/Game/ARI_QA/Cycle/DA_QA_E|Depth=2|Circular=1|Path=/Game/ARI_QA/Cycle/DA_QA_E;/Game/ARI_QA/Cycle/DA_QA_F
+[2026.10.21-02.38.32:968][747]LogTemp: Display: ARIQA|Export|Analysis=4|UI=Dependencies|Tree=Dependencies|ExportMode=Dependencies|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_113832.csv
+[2026.10.21-02.39.08:733][980]LogTemp: Display: ARIQA|Pick|Package=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.39.23:325][729]LogTemp: Display: ARIQA|FilterCommit|Type=1|Input=/Game/ARI_QA/BranchB/|Before=/Game/ARI_QA/|After=/Game/ARI_QA/BranchB/|Ignored=0|Legacy=0
+[2026.10.21-02.39.23:326][729]LogTemp: Display: ARIQA|FilterCommit|Type=3|Input=/Game/ARI_QA/BranchB/|Before=/Game/ARI_QA/BranchB/|After=/Game/ARI_QA/BranchB/|Ignored=1|Legacy=0
+[2026.10.21-02.39.26:644][127]LogTemp: Display: ARIQA|AnalyzeClick|Path=/Game/ARI_QA/BranchB/|UI=Dependencies|Depth=3
+[2026.10.21-02.39.26:644][127]LogTemp: Display: ARIQA|BuildTree|Analysis=5|Package=/Game/ARI_QA/Root/DA_QA_A|Mode=Dependencies|Path=/Game/ARI_QA/BranchB/
+[2026.10.21-02.39.26:644][127]LogTemp: Display: ARIQA|Visit|Analysis=5|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Game/ARI_QA/BranchB/DA_QA_B|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.39.30:035][534]LogTemp: Display: ARIQA|Export|Analysis=5|UI=Dependencies|Tree=Dependencies|ExportMode=Dependencies|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_113930.csv
+[2026.10.21-02.39.43:628][106]LogTemp: Display: ARIQA|FilterCommit|Type=2|Input=/Game/ARI_QA/BranchC/|Before=/Game/ARI_QA/BranchB/|After=/Game/ARI_QA/BranchC/|Ignored=0|Legacy=0
+[2026.10.21-02.39.43:644][108]LogTemp: Display: ARIQA|AnalyzeClick|Path=/Game/ARI_QA/BranchC/|UI=Dependencies|Depth=3
+[2026.10.21-02.39.43:644][108]LogTemp: Display: ARIQA|BuildTree|Analysis=6|Package=/Game/ARI_QA/Root/DA_QA_A|Mode=Dependencies|Path=/Game/ARI_QA/BranchC/
+[2026.10.21-02.39.43:645][108]LogTemp: Display: ARIQA|Visit|Analysis=6|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Game/ARI_QA/BranchC/DA_QA_C|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.39.48:012][632]LogTemp: Display: ARIQA|Export|Analysis=6|UI=Dependencies|Tree=Dependencies|ExportMode=Dependencies|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_113948.csv
+[2026.10.21-02.40.02:408][302]LogTemp: Display: ARIQA|FilterCommit|Type=3|Input=/Game/ARI_QA/BranchB/|Before=/Game/ARI_QA/BranchC/|After=/Game/ARI_QA/BranchC/|Ignored=1|Legacy=0
+[2026.10.21-02.40.06:280][767]LogTemp: Display: ARIQA|AnalyzeClick|Path=/Game/ARI_QA/BranchC/|UI=Dependencies|Depth=3
+[2026.10.21-02.40.06:280][767]LogTemp: Display: ARIQA|BuildTree|Analysis=7|Package=/Game/ARI_QA/Root/DA_QA_A|Mode=Dependencies|Path=/Game/ARI_QA/BranchC/
+[2026.10.21-02.40.06:280][767]LogTemp: Display: ARIQA|Visit|Analysis=7|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Game/ARI_QA/BranchC/DA_QA_C|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.40.09:598][165]LogTemp: Display: ARIQA|Export|Analysis=7|UI=Dependencies|Tree=Dependencies|ExportMode=Dependencies|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_114009.csv
+[2026.10.21-02.40.24:100][850]LogTemp: Display: ARIQA|FilterCommit|Type=1|Input=|Before=/Game/ARI_QA/BranchC/|After=|Ignored=0|Legacy=0
+[2026.10.21-02.40.24:100][850]LogTemp: Display: ARIQA|FilterCommit|Type=3|Input=|Before=|After=|Ignored=1|Legacy=0
+[2026.10.21-02.40.27:417][248]LogTemp: Display: ARIQA|AnalyzeClick|Path=|UI=Dependencies|Depth=3
+[2026.10.21-02.40.27:417][248]LogTemp: Display: ARIQA|BuildTree|Analysis=8|Package=/Game/ARI_QA/Root/DA_QA_A|Mode=Dependencies|Path=
+[2026.10.21-02.40.27:417][248]LogTemp: Display: ARIQA|Visit|Analysis=8|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Script/Portfolio_PlugIn|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.40.27:417][248]LogTemp: Display: ARIQA|Visit|Analysis=8|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Game/ARI_QA/BranchC/DA_QA_C|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.40.27:417][248]LogTemp: Display: ARIQA|Visit|Analysis=8|Parent=/Game/ARI_QA/BranchC/DA_QA_C|Child=/Script/Portfolio_PlugIn|Depth=2|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchC/DA_QA_C
+[2026.10.21-02.40.27:417][248]LogTemp: Display: ARIQA|Visit|Analysis=8|Parent=/Game/ARI_QA/BranchC/DA_QA_C|Child=/Game/ARI_QA/Shared/DA_QA_D|Depth=2|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchC/DA_QA_C
+[2026.10.21-02.40.27:417][248]LogTemp: Display: ARIQA|Visit|Analysis=8|Parent=/Game/ARI_QA/Shared/DA_QA_D|Child=/Script/Portfolio_PlugIn|Depth=3|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchC/DA_QA_C;/Game/ARI_QA/Shared/DA_QA_D
+[2026.10.21-02.40.27:417][248]LogTemp: Display: ARIQA|Visit|Analysis=8|Parent=/Game/ARI_QA/Root/DA_QA_A|Child=/Game/ARI_QA/BranchB/DA_QA_B|Depth=1|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A
+[2026.10.21-02.40.27:418][248]LogTemp: Display: ARIQA|Visit|Analysis=8|Parent=/Game/ARI_QA/BranchB/DA_QA_B|Child=/Script/Portfolio_PlugIn|Depth=2|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchB/DA_QA_B
+[2026.10.21-02.40.27:418][248]LogTemp: Display: ARIQA|Visit|Analysis=8|Parent=/Game/ARI_QA/BranchB/DA_QA_B|Child=/Game/ARI_QA/Shared/DA_QA_D|Depth=2|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchB/DA_QA_B
+[2026.10.21-02.40.27:418][248]LogTemp: Display: ARIQA|Visit|Analysis=8|Parent=/Game/ARI_QA/Shared/DA_QA_D|Child=/Script/Portfolio_PlugIn|Depth=3|Circular=0|Path=/Game/ARI_QA/Root/DA_QA_A;/Game/ARI_QA/BranchB/DA_QA_B;/Game/ARI_QA/Shared/DA_QA_D
+[2026.10.21-02.40.32:169][818]LogTemp: Display: ARIQA|Export|Analysis=8|UI=Dependencies|Tree=Dependencies|ExportMode=Dependencies|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_114032.csv
+[2026.10.21-02.40.44:012][182]LogTemp: Display: ARIQA|FilterCommit|Type=1|Input=/Game/ARI_QA/|Before=|After=/Game/ARI_QA/|Ignored=0|Legacy=0
+[2026.10.21-02.40.44:012][182]LogTemp: Display: ARIQA|FilterCommit|Type=3|Input=/Game/ARI_QA/|Before=/Game/ARI_QA/|After=/Game/ARI_QA/|Ignored=1|Legacy=0
+[2026.10.21-02.41.16:154][ 34]LogTemp: Display: ARIQA|Pick|Package=/Game/ARI_QA/BranchB/DA_QA_B
+[2026.10.21-02.41.34:721][262]LogTemp: Display: ARIQA|AnalyzeClick|Path=/Game/ARI_QA/|UI=Dependencies|Depth=3
+[2026.10.21-02.41.34:721][262]LogTemp: Display: ARIQA|BuildTree|Analysis=9|Package=/Game/ARI_QA/BranchB/DA_QA_B|Mode=Dependencies|Path=/Game/ARI_QA/
+[2026.10.21-02.41.34:721][262]LogTemp: Display: ARIQA|Visit|Analysis=9|Parent=/Game/ARI_QA/BranchB/DA_QA_B|Child=/Game/ARI_QA/Shared/DA_QA_D|Depth=1|Circular=0|Path=/Game/ARI_QA/BranchB/DA_QA_B
+[2026.10.21-02.41.38:814][753]LogTemp: Display: ARIQA|Export|Analysis=9|UI=Dependencies|Tree=Dependencies|ExportMode=Dependencies|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_114138.csv
+[2026.10.21-02.41.42:560][146]LogTemp: Display: ARIQA|ModeClick|Analysis=9|UI=Referencers|Tree=Dependencies
+[2026.10.21-02.41.46:648][635]LogTemp: Display: ARIQA|Export|Analysis=9|UI=Referencers|Tree=Dependencies|ExportMode=Dependencies|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_114146.csv
+[2026.10.21-02.41.50:268][ 14]LogTemp: Display: ARIQA|AnalyzeClick|Path=/Game/ARI_QA/|UI=Referencers|Depth=3
+[2026.10.21-02.41.50:268][ 14]LogTemp: Display: ARIQA|BuildTree|Analysis=10|Package=/Game/ARI_QA/BranchB/DA_QA_B|Mode=Referencers|Path=/Game/ARI_QA/
+[2026.10.21-02.41.50:278][ 14]LogTemp: Display: ARIQA|Visit|Analysis=10|Parent=/Game/ARI_QA/BranchB/DA_QA_B|Child=/Game/ARI_QA/Root/DA_QA_A|Depth=1|Circular=0|Path=/Game/ARI_QA/BranchB/DA_QA_B
+[2026.10.21-02.41.53:770][431]LogTemp: Display: ARIQA|Export|Analysis=10|UI=Referencers|Tree=Referencers|ExportMode=Referencers|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_114153.csv
+[2026.10.21-02.41.57:722][848]LogTemp: Display: ARIQA|ModeClick|Analysis=10|UI=Dependencies|Tree=Referencers
+[2026.10.21-02.42.02:194][383]LogTemp: Display: ARIQA|Export|Analysis=10|UI=Dependencies|Tree=Referencers|ExportMode=Referencers|Success=1|File=[QA_PROJECT]/Saved/AssetReferenceInspector/AssetReferenceReport_20261021_114202.csv

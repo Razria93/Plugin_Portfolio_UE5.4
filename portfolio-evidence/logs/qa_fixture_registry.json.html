@@ -1,0 +1,67 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>qa_fixture_registry</title><link rel="stylesheet" href="https://razria93.github.io/Plugin_Portfolio_UE5.4/document.css"></head><body><header><p class="report-meta">Asset Reference Inspector · 공개 근거 자료</p><h1 class="report-title">qa_fixture_registry</h1><p class="report-intro"></p></header><nav><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/">포트폴리오 안내</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/">영상·검증 자료</a></nav><main><section><p><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/logs/qa_fixture_registry.json" download>파일 다운로드</a></p><pre>{
+  &quot;A&quot;: {
+    &quot;package&quot;: &quot;/Game/ARI_QA/Root/DA_QA_A&quot;,
+    &quot;hard_dependencies&quot;: [
+      &quot;/Script/Portfolio_PlugIn&quot;,
+      &quot;/Game/ARI_QA/BranchB/DA_QA_B&quot;,
+      &quot;/Game/ARI_QA/BranchC/DA_QA_C&quot;
+    ],
+    &quot;expected_qa_dependencies&quot;: [
+      &quot;/Game/ARI_QA/BranchB/DA_QA_B&quot;,
+      &quot;/Game/ARI_QA/BranchC/DA_QA_C&quot;
+    ],
+    &quot;passed&quot;: true
+  },
+  &quot;B&quot;: {
+    &quot;package&quot;: &quot;/Game/ARI_QA/BranchB/DA_QA_B&quot;,
+    &quot;hard_dependencies&quot;: [
+      &quot;/Script/Portfolio_PlugIn&quot;,
+      &quot;/Game/ARI_QA/Shared/DA_QA_D&quot;
+    ],
+    &quot;expected_qa_dependencies&quot;: [
+      &quot;/Game/ARI_QA/Shared/DA_QA_D&quot;
+    ],
+    &quot;passed&quot;: true
+  },
+  &quot;C&quot;: {
+    &quot;package&quot;: &quot;/Game/ARI_QA/BranchC/DA_QA_C&quot;,
+    &quot;hard_dependencies&quot;: [
+      &quot;/Script/Portfolio_PlugIn&quot;,
+      &quot;/Game/ARI_QA/Shared/DA_QA_D&quot;
+    ],
+    &quot;expected_qa_dependencies&quot;: [
+      &quot;/Game/ARI_QA/Shared/DA_QA_D&quot;
+    ],
+    &quot;passed&quot;: true
+  },
+  &quot;D&quot;: {
+    &quot;package&quot;: &quot;/Game/ARI_QA/Shared/DA_QA_D&quot;,
+    &quot;hard_dependencies&quot;: [
+      &quot;/Script/Portfolio_PlugIn&quot;
+    ],
+    &quot;expected_qa_dependencies&quot;: [],
+    &quot;passed&quot;: true
+  },
+  &quot;E&quot;: {
+    &quot;package&quot;: &quot;/Game/ARI_QA/Cycle/DA_QA_E&quot;,
+    &quot;hard_dependencies&quot;: [
+      &quot;/Script/Portfolio_PlugIn&quot;,
+      &quot;/Game/ARI_QA/Cycle/DA_QA_F&quot;
+    ],
+    &quot;expected_qa_dependencies&quot;: [
+      &quot;/Game/ARI_QA/Cycle/DA_QA_F&quot;
+    ],
+    &quot;passed&quot;: true
+  },
+  &quot;F&quot;: {
+    &quot;package&quot;: &quot;/Game/ARI_QA/Cycle/DA_QA_F&quot;,
+    &quot;hard_dependencies&quot;: [
+      &quot;/Script/Portfolio_PlugIn&quot;,
+      &quot;/Game/ARI_QA/Cycle/DA_QA_E&quot;
+    ],
+    &quot;expected_qa_dependencies&quot;: [
+      &quot;/Game/ARI_QA/Cycle/DA_QA_E&quot;
+    ],
+    &quot;passed&quot;: true
+  }
+}</pre></section></main></body></html>

@@ -1,0 +1,11 @@
+AssetName,PackageName,Class,Path,Depth,SizeBytes,Mode,ParentPackage,IsCircular,IsUnusedCandidate
+DA_QA_A,/Game/ARI_QA/Root/DA_QA_A,QAReferenceAsset,/Game/ARI_QA/Root,0,1689,Dependencies,,false,false
+DA_QA_B,/Game/ARI_QA/BranchB/DA_QA_B,QAReferenceAsset,/Game/ARI_QA/BranchB,1,1557,Dependencies,/Game/ARI_QA/Root/DA_QA_A,false,false
+/Script/Portfolio_PlugIn,/Script/Portfolio_PlugIn,,/Script,2,0,Dependencies,/Game/ARI_QA/BranchB/DA_QA_B,false,false
+DA_QA_D,/Game/ARI_QA/Shared/DA_QA_D,QAReferenceAsset,/Game/ARI_QA/Shared,2,1314,Dependencies,/Game/ARI_QA/BranchB/DA_QA_B,false,false
+/Script/Portfolio_PlugIn,/Script/Portfolio_PlugIn,,/Script,3,0,Dependencies,/Game/ARI_QA/Shared/DA_QA_D,false,false
+/Script/Portfolio_PlugIn,/Script/Portfolio_PlugIn,,/Script,1,0,Dependencies,/Game/ARI_QA/Root/DA_QA_A,false,false
+DA_QA_C,/Game/ARI_QA/BranchC/DA_QA_C,QAReferenceAsset,/Game/ARI_QA/BranchC,1,1557,Dependencies,/Game/ARI_QA/Root/DA_QA_A,false,false
+/Script/Portfolio_PlugIn,/Script/Portfolio_PlugIn,,/Script,2,0,Dependencies,/Game/ARI_QA/BranchC/DA_QA_C,false,false
+DA_QA_D,/Game/ARI_QA/Shared/DA_QA_D,QAReferenceAsset,/Game/ARI_QA/Shared,2,1314,Dependencies,/Game/ARI_QA/BranchC/DA_QA_C,false,false
+/Script/Portfolio_PlugIn,/Script/Portfolio_PlugIn,,/Script,3,0,Dependencies,/Game/ARI_QA/Shared/DA_QA_D,false,false

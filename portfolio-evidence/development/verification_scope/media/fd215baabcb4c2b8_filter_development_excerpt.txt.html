@@ -1,0 +1,57 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>fd215baabcb4c2b8_filter_development_excerpt</title><link rel="stylesheet" href="https://razria93.github.io/Plugin_Portfolio_UE5.4/document.css"></head><body><header><p class="report-meta">Asset Reference Inspector · 공개 근거 자료</p><h1 class="report-title">fd215baabcb4c2b8_filter_development_excerpt</h1><p class="report-intro"></p></header><nav><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/">포트폴리오 안내</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/">영상·검증 자료</a></nav><main><section><p><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/development/verification_scope/media/fd215baabcb4c2b8_filter_development_excerpt.txt" download>파일 다운로드</a></p><pre>개발 당시 사용자 제공 코드·로그 발췌
+출처: 개발 세션 main 17984, 18059
+슬라이드 코드는 함수 본문을 발췌하고 줄바꿈만 조정했습니다. 로그는 CommitType과 Text 필드 발췌입니다.
+
+[main 17984] user
+void SAssetReferenceInspectorWidget::OnPathFilterTextCommitted(
+	const FText&amp; InText,
+	ETextCommit::Type CommitType)
+{
+	FString NewPathFilter = CommitType == ETextCommit::OnCleared
+		? FString()
+		: InText.ToString();
+
+	AnalysisOptions.PathFilter = NewPathFilter.TrimStartAndEnd();
+}
+
+이거 근데 일단 작동은 제대로 돼. 즉 /Game/ 을 넣으면 Game 안에서만, /Script/ 넣으면 Script만 보이거든.
+그러니까 결국 Analyze 버튼을 누르는것도 포커스 아웃이니까 애널라이즈 버튼을 누르는 순간 저장이 돼서 검색이 제대로 되는거 같은데 맞아?
+
+근데 패스 필터에서 /Game/ 다쓰고 엔터를 누르면 포커스 아웃 되는게 아니라 그냥 있던 텍스트가 다 사라져. 근데 이게 설정 정보값이 저장이 되면서 사라지는 것도 아닌거 같거든?
+필터가 그냥 빈 상태에 맞는, 즉 전체 리스트가 나와서.
+결과적으로 저 OnTextCommitted의 확정은 텍스트가 있는 상태에서 포커스 아웃이 될때 적용되는거 같은데.
+
+이거에 대해서 검토하고 설명해줄래?
+
+
+
+[main 18059] user
+1.
+LogTemp: Warning: AssetReferenceInspector PathFilter CommitType=1, Text=&#x27;/Game/&#x27;
+
+LogTemp: Warning: AssetReferenceInspector PathFilter CommitType=3, Text=&#x27;/Game/&#x27;
+
+2.
+LogTemp: Warning: AssetReferenceInspector PathFilter CommitType=2, Text=&#x27;/Game/&#x27;
+
+3.
+LogTemp: Warning: AssetReferenceInspector PathFilter CommitType=1, Text=&#x27;/Script/&#x27;
+
+LogTemp: Warning: AssetReferenceInspector PathFilter CommitType=3, Text=&#x27;/Script/&#x27;
+
+4.
+LogTemp: Warning: AssetReferenceInspector PathFilter CommitType=1, Text=&#x27;&#x27;
+
+LogTemp: Warning: AssetReferenceInspector PathFilter CommitType=3, Text=&#x27;&#x27;
+
+5.
+LogTemp: Warning: AssetReferenceInspector PathFilter CommitType=2, Text=&#x27;/Ga&#x27;
+
+
+
+개발 당시 역할 기록
+사용자 작업: Enter 오류 발견과 초기 설명 재검토 요청. 조작별 로그 제공·수정 후 Escape 복원 확인.
+Codex 작업: 이벤트 로그 추가와 원인 분석. OnCleared 처리 수정.
+근거: 개발 세션 main 17984, 18011, 18038, 18059, 18232 및 당시 수정 기록.
+개발 당시 역할이며 2026.10 추가 QA 수행과 구분합니다.
+</pre></section></main></body></html>

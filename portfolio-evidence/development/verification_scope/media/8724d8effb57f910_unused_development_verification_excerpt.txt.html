@@ -1,0 +1,56 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>8724d8effb57f910_unused_development_verification_excerpt</title><link rel="stylesheet" href="https://razria93.github.io/Plugin_Portfolio_UE5.4/document.css"></head><body><header><p class="report-meta">Asset Reference Inspector · 공개 근거 자료</p><h1 class="report-title">8724d8effb57f910_unused_development_verification_excerpt</h1><p class="report-intro"></p></header><nav><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/">포트폴리오 안내</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/">영상·검증 자료</a></nav><main><section><p><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/development/verification_scope/media/8724d8effb57f910_unused_development_verification_excerpt.txt" download>파일 다운로드</a></p><pre>미사용 후보 탐색 재설계 · 개발 당시 사용자 판단과 검증 기록
+
+자료 구분: 2026.07 개발 당시 기록. 2026.10 추가 QA로 소급하지 않음.
+
+[main 25119] user
+근데 궁금한게 이미 겟 레퍼런서나 겟 디펜던시를 하게 되면 이미 참조 1 이상 아냐? 이게 의미있는거야?
+
+[main 25128] user
+근데 이게 왜 필요한건데? 결과적으로는 사용이 안되는 에셋을 탐색할려고 하는거지? 그러면 사실상 위에서 아래로 내려오는 트리에서는 의미가 없고 아래서 위로가는 트리는 의미 있을 수는 있겠다.
+
+[main 25137] user
+그러면 차라리 아에 에셋 전체 대상으로 애초에 구현하는건 어때?
+
+[main 25146] user
+응응 그러면 애초에 계획 문서부터 수정하자
+
+[main 25227] user
+Content Browser Sync 됨
+안뜸
+없음
+
+로컬노트에 넣어놨어 확인 후 리네임, 이후 승격시키고 다음 작업 제안해줘
+
+[개발 당시 작업 구분]
+사용자: 기능 목적 재검토, 전체 탐색 전환 제안, 계획 수정 요청, 화면 제공 및 후보 이동 확인.
+Codex: 계획 재작성, 전체 스캔과 후보 판정·필터·UI 구현, 빌드와 검증 기록 정리.
+
+[Build_Verification_Log_KR.md · 해당 에디터 검증 발췌]
+- Path Filter `/Game/` 상태에서 `Scan Unused Candidates` 클릭 시 `Unused Candidates` root 아래 후보 목록 표시 확인
+- `T_Unused_Color [Texture2D] (10.13 KB) [Unused Candidate]` 표시 확인
+- Path Filter `/Game/ARI_Demo/Unused/` 적용 시 `T_Unused_Color`만 남는 것 확인
+- Class Filter `Texture2D` 적용 시 Texture 후보만 남는 것 확인
+- Path Filter `/Game/NoMatch/` 적용 시 `No unused candidates found` placeholder 표시 확인
+- 후보 row 더블 클릭 시 Content Browser Sync 동작 확인
+- 참조자가 있는 Asset은 후보 목록에 표시되지 않는 것 확인
+- `/Script`, `/Engine` Package가 후보 목록에 표시되지 않는 것 확인
+
+#### Screenshots
+
+![Unused Candidates All Project Content](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_all_project_content.png)
+
+![Unused Candidates Path Filter](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_path_filter.png)
+
+![Unused Candidates Class Filter](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_class_filter.png)
+
+![Unused Candidates No Match](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_no_match.png)
+
+#### 미확인
+
+- Soft Reference, Asset Manager, 동적 로딩 기반 사용 여부는 이번 범위에서 검증하지 않음
+- 실제 삭제 가능 여부는 이번 범위에서 판단하지 않음
+
+
+[이 자료의 한계]
+초기 구현은 작업 중 초안이며 과거 전체 빌드 전후 실행 비교가 아니다. 삭제 안전성, Soft Reference·Asset Manager·동적 로딩 사용 여부와 대규모 성능은 검증되지 않았다.
+</pre></section></main></body></html>

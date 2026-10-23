@@ -1,0 +1,3 @@
+AssetName,PackageName,Class,Path,Depth,SizeBytes,Mode,ParentPackage,IsCircular,IsUnusedCandidate
+DA_QA_A,/Game/ARI_QA/Root/DA_QA_A,QAReferenceAsset,/Game/ARI_QA/Root,0,1689,Dependencies,,false,false
+DA_QA_C,/Game/ARI_QA/BranchC/DA_QA_C,QAReferenceAsset,/Game/ARI_QA/BranchC,1,1557,Dependencies,/Game/ARI_QA/Root/DA_QA_A,false,false

@@ -1,0 +1,6 @@
+{
+  "i": 17984,
+  "time": "2026-07-19T13:09:37.869Z",
+  "role": "user",
+  "text": "void SAssetReferenceInspectorWidget::OnPathFilterTextCommitted(\n\tconst FText& InText,\n\tETextCommit::Type CommitType)\n{\n\tFString NewPathFilter = CommitType == ETextCommit::OnCleared\n\t\t? FString()\n\t\t: InText.ToString();\n\n\tAnalysisOptions.PathFilter = NewPathFilter.TrimStartAndEnd();\n}\n\n이거 근데 일단 작동은 제대로 돼. 즉 /Game/ 을 넣으면 Game 안에서만, /Script/ 넣으면 Script만 보이거든.\n그러니까 결국 Analyze 버튼을 누르는것도 포커스 아웃이니까 애널라이즈 버튼을 누르는 순간 저장이 돼서 검색이 제대로 되는거 같은데 맞아?\n\n근데 패스 필터에서 /Game/ 다쓰고 엔터를 누르면 포커스 아웃 되는게 아니라 그냥 있던 텍스트가 다 사라져. 근데 이게 설정 정보값이 저장이 되면서 사라지는 것도 아닌거 같거든?\n필터가 그냥 빈 상태에 맞는, 즉 전체 리스트가 나와서.\n결과적으로 저 OnTextCommitted의 확정은 텍스트가 있는 상태에서 포커스 아웃이 될때 적용되는거 같은데.\n\n이거에 대해서 검토하고 설명해줄래?\n"
+}

@@ -1,0 +1,14 @@
+{
+  "Plugins\\AssetReferenceInspector\\Source\\AssetReferenceInspector\\AssetReferenceInspector.Build.cs": true,
+  "Plugins\\AssetReferenceInspector\\Source\\AssetReferenceInspector\\Private\\AssetReferenceInspectorCommands.cpp": true,
+  "Plugins\\AssetReferenceInspector\\Source\\AssetReferenceInspector\\Private\\AssetReferenceInspectorCommands.h": true,
+  "Plugins\\AssetReferenceInspector\\Source\\AssetReferenceInspector\\Private\\AssetReferenceInspectorModule.cpp": true,
+  "Plugins\\AssetReferenceInspector\\Source\\AssetReferenceInspector\\Public\\AssetReferenceInspectorModule.h": true,
+  "Plugins\\AssetReferenceInspector\\Source\\AssetReferenceInspector\\Private\\Analysis\\AssetReferenceFilter.cpp": true,
+  "Plugins\\AssetReferenceInspector\\Source\\AssetReferenceInspector\\Private\\Analysis\\AssetReferenceFilter.h": true,
+  "Plugins\\AssetReferenceInspector\\Source\\AssetReferenceInspector\\Private\\Analysis\\AssetReferenceTypes.h": true,
+  "Plugins\\AssetReferenceInspector\\Source\\AssetReferenceInspector\\Private\\Export\\AssetReferenceCsvExporter.cpp": true,
+  "Plugins\\AssetReferenceInspector\\Source\\AssetReferenceInspector\\Private\\Export\\AssetReferenceCsvExporter.h": true,
+  "Plugins\\AssetReferenceInspector\\Source\\AssetReferenceInspector\\Private\\UI\\SAssetReferenceInspectorWidget.cpp": true,
+  "Plugins\\AssetReferenceInspector\\Source\\AssetReferenceInspector\\Private\\UI\\SAssetReferenceInspectorWidget.h": true
+}

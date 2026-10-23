@@ -1,0 +1,67 @@
+{
+  "A": {
+    "package": "/Game/ARI_QA/Root/DA_QA_A",
+    "hard_dependencies": [
+      "/Script/Portfolio_PlugIn",
+      "/Game/ARI_QA/BranchB/DA_QA_B",
+      "/Game/ARI_QA/BranchC/DA_QA_C"
+    ],
+    "expected_qa_dependencies": [
+      "/Game/ARI_QA/BranchB/DA_QA_B",
+      "/Game/ARI_QA/BranchC/DA_QA_C"
+    ],
+    "passed": true
+  },
+  "B": {
+    "package": "/Game/ARI_QA/BranchB/DA_QA_B",
+    "hard_dependencies": [
+      "/Script/Portfolio_PlugIn",
+      "/Game/ARI_QA/Shared/DA_QA_D"
+    ],
+    "expected_qa_dependencies": [
+      "/Game/ARI_QA/Shared/DA_QA_D"
+    ],
+    "passed": true
+  },
+  "C": {
+    "package": "/Game/ARI_QA/BranchC/DA_QA_C",
+    "hard_dependencies": [
+      "/Script/Portfolio_PlugIn",
+      "/Game/ARI_QA/Shared/DA_QA_D"
+    ],
+    "expected_qa_dependencies": [
+      "/Game/ARI_QA/Shared/DA_QA_D"
+    ],
+    "passed": true
+  },
+  "D": {
+    "package": "/Game/ARI_QA/Shared/DA_QA_D",
+    "hard_dependencies": [
+      "/Script/Portfolio_PlugIn"
+    ],
+    "expected_qa_dependencies": [],
+    "passed": true
+  },
+  "E": {
+    "package": "/Game/ARI_QA/Cycle/DA_QA_E",
+    "hard_dependencies": [
+      "/Script/Portfolio_PlugIn",
+      "/Game/ARI_QA/Cycle/DA_QA_F"
+    ],
+    "expected_qa_dependencies": [
+      "/Game/ARI_QA/Cycle/DA_QA_F"
+    ],
+    "passed": true
+  },
+  "F": {
+    "package": "/Game/ARI_QA/Cycle/DA_QA_F",
+    "hard_dependencies": [
+      "/Script/Portfolio_PlugIn",
+      "/Game/ARI_QA/Cycle/DA_QA_E"
+    ],
+    "expected_qa_dependencies": [
+      "/Game/ARI_QA/Cycle/DA_QA_E"
+    ],
+    "passed": true
+  }
+}
