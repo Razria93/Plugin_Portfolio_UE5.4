@@ -4,14 +4,35 @@ Unreal Engine 5.4용 Editor Plugin `AssetReferenceInspector`를 개발하고 검
 
 `AssetReferenceInspector`는 Content Browser에서 선택한 Asset을 기준으로 Asset Registry를 조회하고, Dependencies / Referencers 관계를 Slate Tree View에 표시하는 에디터 확장 도구다. 게임 런타임 기능이 아니라 에디터에서 Asset 참조 구조를 분석하고 포트폴리오 프로젝트에 적용하는 것을 목표로 한다.
 
+## 제출 포트폴리오 · 먼저 보기
+
+UE 5.4에서 에셋 참조 관계를 조회하고 미사용 후보를 찾으며, 결과를 CSV로 저장하는 1인 개발 프로젝트입니다. 초기 계획·작업 지침부터 구현·리뷰까지 Codex를 활용했으며, 사용자의 판단·오류 발견·검증 기여와 Codex 작업을 PDF에 구분했습니다.
+
+- [포트폴리오 PDF · v75 / 15쪽](https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio/files/plugin-portfolio-v75.pdf)
+- [공개 자료 안내 · PPTX 다운로드](https://razria93.github.io/Plugin_Portfolio_UE5.4/)
+- [영상·검증 자료 · PDF 순서별 요약](https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html)
+- [개발 당시 검증 / 추가 QA / 미검증 범위](https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/development/verification_scope/index.html)
+
+PDF에서 프로젝트 소개 → 문제 해결·검증 → 프로젝트 구현·검증 순으로 읽고, 필요한 근거만 아래에서 확인할 수 있습니다. 공개 근거 페이지마다 해당 PDF 페이지로 돌아가는 링크가 있습니다.
+
+| PDF | 자료 | 확인할 내용 |
+| --- | --- | --- |
+| 5–7쪽 | [필터 입력 오류](https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case2) | Enter 후 필터가 풀리던 원인·수정과 입력 4조건 추가 QA |
+| 8–10쪽 | [미사용 후보 탐색 재설계](https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#unused) | 선택 에셋의 관계 검사에서 프로젝트 콘텐츠 탐색으로 전환한 판단·결과 |
+| 13쪽 | [공유·순환 관계 처리](https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case1) | 개발 당시 Blueprint 전후 화면과 별도 Data Asset 추가 QA |
+| 14쪽 | [CSV 저장 기능](https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#csv-export) | 실제 분석 화면과 저장한 CSV의 대응 |
+| 15쪽 | [AI 리뷰 활용](https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case3) | PR 리뷰 → 수정 커밋 → 이후 모드 전환 QA |
+
+개발 당시 기록은 2026년 7월, 별도 추가 QA는 2026년 10월 21일 자료입니다. 추가 QA를 개발 당시 사용자 기여로 소급하지 않습니다. 미사용 후보는 삭제 안전 판정이 아니며, 다른 UE 버전·대규모 성능·모든 참조 유형은 검증하지 않았습니다.
+
 ## 프로젝트 정보
 
 - 엔진: Unreal Engine 5.4
 - 유형: Editor Plugin / Demo Host Project
 - 플러그인: `AssetReferenceInspector`
 - 개발 목적: 포트폴리오 / Unreal Editor Tool 제작 학습
-- 개발 기간: 2026.07.13 ~ 2026.07.19
-- 개발 상태: 개인 개발
+- 개발 기간: 2026.07.13 ~ 2026.07.20 (포트폴리오 적용·제출 정리 포함; Demo Host 기능 개발 기록은 07.19까지)
+- 개발 형태: 1인 개발 · Codex 활용
 - 주요 기술: C++, Unreal Editor Module, Asset Registry, Slate UI, Content Browser API
 - 현재 단계: Demo Host 기능 구현 및 검증 완료, Portfolio 프로젝트 적용 시연 기록 완료
 
