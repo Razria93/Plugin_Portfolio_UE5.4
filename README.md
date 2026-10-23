@@ -8,7 +8,7 @@ Unreal Engine 5.4용 Editor Plugin `AssetReferenceInspector`를 개발하고 검
 
 UE 5.4에서 에셋 참조 관계를 조회하고 미사용 후보를 찾으며, 결과를 CSV로 저장하는 1인 개발 프로젝트입니다. 초기 계획·작업 지침부터 구현·리뷰까지 Codex를 활용했으며, 사용자의 판단·오류 발견·검증 기여와 Codex 작업을 PDF에 구분했습니다.
 
-- [포트폴리오 PDF · v75 / 15쪽](https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio/files/plugin-portfolio-v75.pdf)
+- [포트폴리오 PDF · v75 / 15쪽](https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio/files/plugin-portfolio-v75.pdf?v=20261023-nav1)
 - [공개 자료 안내 · PPTX 다운로드](https://razria93.github.io/Plugin_Portfolio_UE5.4/)
 - [영상·검증 자료 · PDF 순서별 요약](https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html)
 - [개발 당시 검증 / 추가 QA / 미검증 범위](https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/development/verification_scope/index.html)
