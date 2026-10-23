@@ -1,57 +1,57 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>미사용 후보 탐색 — 사용자 판단과 확인 기록 · Asset Reference Inspector</title><link rel="stylesheet" href="https://razria93.github.io/Plugin_Portfolio_UE5.4/document.css"></head><body><header><p class="report-meta">Asset Reference Inspector · 미사용 후보 탐색 재설계 · PDF 10쪽</p><h1 class="report-title">미사용 후보 탐색 — 사용자 판단과 확인 기록</h1><p class="report-intro">사용자가 기능 목적을 재검토하고 전체 탐색 전환과 계획 수정을 요청했습니다. 아래 표는 당시 검증 문서와 사용자 확인 기록을 구분해 요약합니다.</p></header><nav><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio/files/plugin-portfolio-v75.pdf#page=10">PDF 10쪽으로 돌아가기 ↗</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#unused">미사용 후보 탐색 재설계 자료</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html">전체 자료 목차</a></nav><main><section class="evidence-summary"><h2>이 자료에서 확인할 내용</h2><p>사용자가 기능 목적을 재검토하고 전체 탐색 전환과 계획 수정을 요청했습니다. 아래 표는 당시 검증 문서와 사용자 확인 기록을 구분해 요약합니다.</p><dl class="facts"><dt>자료 구분</dt><dd>개발 당시 사용자 대화·검증 문서 발췌 · 2026.07</dd><dt>확인 범위</dt><dd>후보는 삭제 가능 판정이 아닙니다. Soft Reference·Asset Manager·동적 로딩 사용 여부와 대규모 성능은 미검증입니다.</dd></dl></section><section><h2>당시 확인 항목과 근거</h2><table><tr><th>항목</th><th>결과</th><th>근거 유형</th></tr><tr><td>후보 조회·필터</td><td>후보 2개, 폴더·종류 조건 적용 및 결과 없음 안내</td><td>실제 화면 + 개발 검증 문서</td></tr><tr><td>원본 이동</td><td>후보 더블 클릭 시 Content Browser Sync</td><td>사용자 확인 + 개발 검증 문서</td></tr><tr><td>후보 제외</td><td>다른 에셋이 참조하는 대상은 표시하지 않음</td><td>개발 검증 문서·당시 확인 기록</td></tr></table><p class="small">대화의 짧은 응답만으로 뜻을 확대하지 않고, 같은 자료의 검증 문서에 명시된 항목을 기준으로 정리했습니다.</p></section><section><h2>원본 자료</h2><p><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/development/unused_development_verification_excerpt.txt" download>原본 파일 다운로드</a></p><details><summary>원본 전체 펼치기</summary><pre>미사용 후보 탐색 재설계 · 개발 당시 사용자 판단과 검증 기록
-
-자료 구분: 2026.07 개발 당시 기록. 2026.10 추가 QA로 소급하지 않음.
-
-[main 25119] user
-근데 궁금한게 이미 겟 레퍼런서나 겟 디펜던시를 하게 되면 이미 참조 1 이상 아냐? 이게 의미있는거야?
-
-[main 25128] user
-근데 이게 왜 필요한건데? 결과적으로는 사용이 안되는 에셋을 탐색할려고 하는거지? 그러면 사실상 위에서 아래로 내려오는 트리에서는 의미가 없고 아래서 위로가는 트리는 의미 있을 수는 있겠다.
-
-[main 25137] user
-그러면 차라리 아에 에셋 전체 대상으로 애초에 구현하는건 어때?
-
-[main 25146] user
-응응 그러면 애초에 계획 문서부터 수정하자
-
-[main 25227] user
-Content Browser Sync 됨
-안뜸
-없음
-
-로컬노트에 넣어놨어 확인 후 리네임, 이후 승격시키고 다음 작업 제안해줘
-
-[개발 당시 작업 구분]
-사용자: 기능 목적 재검토, 전체 탐색 전환 제안, 계획 수정 요청, 화면 제공 및 후보 이동 확인.
-Codex: 계획 재작성, 전체 스캔과 후보 판정·필터·UI 구현, 빌드와 검증 기록 정리.
-
-[Build_Verification_Log_KR.md · 해당 에디터 검증 발췌]
-- Path Filter `/Game/` 상태에서 `Scan Unused Candidates` 클릭 시 `Unused Candidates` root 아래 후보 목록 표시 확인
-- `T_Unused_Color [Texture2D] (10.13 KB) [Unused Candidate]` 표시 확인
-- Path Filter `/Game/ARI_Demo/Unused/` 적용 시 `T_Unused_Color`만 남는 것 확인
-- Class Filter `Texture2D` 적용 시 Texture 후보만 남는 것 확인
-- Path Filter `/Game/NoMatch/` 적용 시 `No unused candidates found` placeholder 표시 확인
-- 후보 row 더블 클릭 시 Content Browser Sync 동작 확인
-- 참조자가 있는 Asset은 후보 목록에 표시되지 않는 것 확인
-- `/Script`, `/Engine` Package가 후보 목록에 표시되지 않는 것 확인
-
-#### Screenshots
-
-![Unused Candidates All Project Content](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_all_project_content.png)
-
-![Unused Candidates Path Filter](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_path_filter.png)
-
-![Unused Candidates Class Filter](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_class_filter.png)
-
-![Unused Candidates No Match](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_no_match.png)
-
-#### 미확인
-
-- Soft Reference, Asset Manager, 동적 로딩 기반 사용 여부는 이번 범위에서 검증하지 않음
-- 실제 삭제 가능 여부는 이번 범위에서 판단하지 않음
-
-
-[이 자료의 한계]
-초기 구현은 작업 중 초안이며 과거 전체 빌드 전후 실행 비교가 아니다. 삭제 안전성, Soft Reference·Asset Manager·동적 로딩 사용 여부와 대규모 성능은 검증되지 않았다.
-</pre></details></section><section aria-label="자료 이동"><div class="return-links"><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio/files/plugin-portfolio-v75.pdf#page=10">PDF 10쪽으로 돌아가기 ↗</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#unused">미사용 후보 탐색 재설계 자료 모아보기</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html">전체 자료 목차</a></div></section></main></body></html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>미사용 후보 탐색 — 사용자 판단과 확인 기록 · Asset Reference Inspector</title><link rel="stylesheet" href="https://razria93.github.io/Plugin_Portfolio_UE5.4/document.css?v=20261023-nav1"></head><body><header><p class="report-meta">Asset Reference Inspector · 미사용 후보 탐색 재설계 · PDF 10쪽</p><h1 class="report-title">미사용 후보 탐색 — 사용자 판단과 확인 기록</h1><p class="report-intro">사용자가 기능 목적을 재검토하고 전체 탐색 전환과 계획 수정을 요청했습니다. 아래 표는 당시 검증 문서와 사용자 확인 기록을 구분해 요약합니다.</p></header><nav><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio/files/plugin-portfolio-v75.pdf?v=20261023-nav1#page=10">PDF 10쪽으로 돌아가기 ↗</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#unused">미사용 후보 탐색 재설계 자료</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html">전체 자료 목차</a></nav><main><section class="evidence-summary"><h2>근거 구분과 확인 범위</h2><dl class="facts"><dt>자료 구분</dt><dd>개발 당시 사용자 대화·검증 문서 발췌 · 2026.07</dd><dt>확인 범위</dt><dd>후보는 삭제 가능 판정이 아닙니다. Soft Reference·Asset Manager·동적 로딩 사용 여부와 대규모 성능은 미검증입니다.</dd></dl></section><section><h2>당시 확인 항목과 근거</h2><table><tr><th>항목</th><th>결과</th><th>근거 유형</th></tr><tr><td>후보 조회·필터</td><td>후보 2개, 폴더·종류 조건 적용 및 결과 없음 안내</td><td>실제 화면 + 개발 검증 문서</td></tr><tr><td>원본 이동</td><td>후보 더블 클릭 시 Content Browser Sync</td><td>사용자 확인 + 개발 검증 문서</td></tr><tr><td>후보 제외</td><td>다른 에셋이 참조하는 대상은 표시하지 않음</td><td>개발 검증 문서·당시 확인 기록</td></tr></table><p class="small">대화의 짧은 응답만으로 뜻을 확대하지 않고, 같은 자료의 검증 문서에 명시된 항목을 기준으로 정리했습니다.</p></section><section><h2>원본 자료</h2><p><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/development/unused_development_verification_excerpt.txt" download>원본 파일 다운로드</a></p><details><summary>원본 전체 펼치기</summary><pre>미사용 후보 탐색 재설계 · 개발 당시 사용자 판단과 검증 기록
+
+자료 구분: 2026.07 개발 당시 기록. 2026.10 추가 QA로 소급하지 않음.
+
+[main 25119] user
+근데 궁금한게 이미 겟 레퍼런서나 겟 디펜던시를 하게 되면 이미 참조 1 이상 아냐? 이게 의미있는거야?
+
+[main 25128] user
+근데 이게 왜 필요한건데? 결과적으로는 사용이 안되는 에셋을 탐색할려고 하는거지? 그러면 사실상 위에서 아래로 내려오는 트리에서는 의미가 없고 아래서 위로가는 트리는 의미 있을 수는 있겠다.
+
+[main 25137] user
+그러면 차라리 아에 에셋 전체 대상으로 애초에 구현하는건 어때?
+
+[main 25146] user
+응응 그러면 애초에 계획 문서부터 수정하자
+
+[main 25227] user
+Content Browser Sync 됨
+안뜸
+없음
+
+로컬노트에 넣어놨어 확인 후 리네임, 이후 승격시키고 다음 작업 제안해줘
+
+[개발 당시 작업 구분]
+사용자: 기능 목적 재검토, 전체 탐색 전환 제안, 계획 수정 요청, 화면 제공 및 후보 이동 확인.
+Codex: 계획 재작성, 전체 스캔과 후보 판정·필터·UI 구현, 빌드와 검증 기록 정리.
+
+[Build_Verification_Log_KR.md · 해당 에디터 검증 발췌]
+- Path Filter `/Game/` 상태에서 `Scan Unused Candidates` 클릭 시 `Unused Candidates` root 아래 후보 목록 표시 확인
+- `T_Unused_Color [Texture2D] (10.13 KB) [Unused Candidate]` 표시 확인
+- Path Filter `/Game/ARI_Demo/Unused/` 적용 시 `T_Unused_Color`만 남는 것 확인
+- Class Filter `Texture2D` 적용 시 Texture 후보만 남는 것 확인
+- Path Filter `/Game/NoMatch/` 적용 시 `No unused candidates found` placeholder 표시 확인
+- 후보 row 더블 클릭 시 Content Browser Sync 동작 확인
+- 참조자가 있는 Asset은 후보 목록에 표시되지 않는 것 확인
+- `/Script`, `/Engine` Package가 후보 목록에 표시되지 않는 것 확인
+
+#### Screenshots
+
+![Unused Candidates All Project Content](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_all_project_content.png)
+
+![Unused Candidates Path Filter](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_path_filter.png)
+
+![Unused Candidates Class Filter](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_class_filter.png)
+
+![Unused Candidates No Match](Screenshots/feature_ari_unused_candidate_indicator/unused_candidates_no_match.png)
+
+#### 미확인
+
+- Soft Reference, Asset Manager, 동적 로딩 기반 사용 여부는 이번 범위에서 검증하지 않음
+- 실제 삭제 가능 여부는 이번 범위에서 판단하지 않음
+
+
+[이 자료의 한계]
+초기 구현은 작업 중 초안이며 과거 전체 빌드 전후 실행 비교가 아니다. 삭제 안전성, Soft Reference·Asset Manager·동적 로딩 사용 여부와 대규모 성능은 검증되지 않았다.
+</pre></details></section><section aria-label="자료 이동"><div class="return-links"><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio/files/plugin-portfolio-v75.pdf?v=20261023-nav1#page=10">PDF 10쪽으로 돌아가기 ↗</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#unused">미사용 후보 탐색 재설계 자료 모아보기</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html">전체 자료 목차</a></div></section></main></body></html>
