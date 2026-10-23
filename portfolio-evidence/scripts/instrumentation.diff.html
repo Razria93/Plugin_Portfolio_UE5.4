@@ -1,125 +1,126 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>instrumentation</title><link rel="stylesheet" href="https://razria93.github.io/Plugin_Portfolio_UE5.4/document.css"></head><body><header><p class="report-meta">Asset Reference Inspector · 공개 근거 자료</p><h1 class="report-title">instrumentation</h1><p class="report-intro"></p></header><nav><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/">포트폴리오 안내</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/">영상·검증 자료</a></nav><main><section><p><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/scripts/instrumentation.diff" download>파일 다운로드</a></p><pre>--- original/Plugins\AssetReferenceInspector\Source\AssetReferenceInspector\Private\UI\SAssetReferenceInspectorWidget.cpp
-+++ qa/Plugins\AssetReferenceInspector\Source\AssetReferenceInspector\Private\UI\SAssetReferenceInspectorWidget.cpp
-@@ -10,6 +10,8 @@
- #include &quot;HAL/FileManager.h&quot;
- #include &quot;IContentBrowserSingleton.h&quot;
- #include &quot;Misc/DefaultValueHelper.h&quot;
-+#include &quot;Misc/CommandLine.h&quot;
-+#include &quot;Misc/Parse.h&quot;
- #include &quot;Misc/PackageName.h&quot;
- #include &quot;Misc/Paths.h&quot;
- #include &quot;Styling/AppStyle.h&quot;
-@@ -28,6 +30,10 @@
- namespace
- {
- 	constexpr int32 MaxAllowedRelationDepth = 10;
-+ int32 QAAnalysisId = 0;
-+ const TCHAR* QAMode(EAssetReferenceMode Mode) { return Mode == EAssetReferenceMode::Referencers ? TEXT(&quot;Referencers&quot;) : TEXT(&quot;Dependencies&quot;); }
-+ bool QALegacy(const TCHAR* Flag) { return FParse::Param(FCommandLine::Get(), Flag); }
-+
- }
- 
- void SAssetReferenceInspectorWidget::Construct(const FArguments&amp; InArgs)
-@@ -323,12 +329,14 @@
- 	ContentBrowserModule.Get().GetSelectedAssets(SelectedAssets);
- 
- 	SelectedAssetData = SelectedAssets.Num() &gt; 0 ? SelectedAssets[0] : FAssetData();
-+ UE_LOG(LogTemp, Display, TEXT(&quot;ARIQA|Pick|Package=%s&quot;), *SelectedAssetData.PackageName.ToString());
- 
- 	return FReply::Handled();
- }
- 
- FReply SAssetReferenceInspectorWidget::OnAnalyzeClicked()
- {
-+ UE_LOG(LogTemp, Display, TEXT(&quot;ARIQA|AnalyzeClick|Path=%s|UI=%s|Depth=%d&quot;), *AnalysisOptions.PathFilter, QAMode(AnalysisOptions.Mode), AnalysisOptions.MaxDepth);
- 	BuildRelationTree();
- 	RefreshTree();
- 
-@@ -347,7 +355,9 @@
- {
- 	FString ExportFilename;
- 	FString ErrorMessage;
--	const bool bExported = FAssetReferenceCsvExporter::ExportToTimestampedCsv(TreeRootItems, CurrentTreeMode, ExportFilename, ErrorMessage);
-+	const EAssetReferenceMode ExportMode = QALegacy(TEXT(&quot;ARIQALegacyCsv&quot;)) ? AnalysisOptions.Mode : CurrentTreeMode;
-+ const bool bExported = FAssetReferenceCsvExporter::ExportToTimestampedCsv(TreeRootItems, ExportMode, ExportFilename, ErrorMessage);
-+ UE_LOG(LogTemp, Display, TEXT(&quot;ARIQA|Export|Analysis=%d|UI=%s|Tree=%s|ExportMode=%s|Success=%d|File=%s&quot;), QAAnalysisId, QAMode(AnalysisOptions.Mode), QAMode(CurrentTreeMode), QAMode(ExportMode), bExported, *ExportFilename);
- 
- 	FNotificationInfo NotificationInfo(FText::FromString(bExported
- 		? FString::Printf(TEXT(&quot;CSV exported: %s&quot;), *ExportFilename)
-@@ -367,13 +377,15 @@
- FReply SAssetReferenceInspectorWidget::OnDependenciesModeClicked()
- {
- 	AnalysisOptions.Mode = EAssetReferenceMode::Dependencies;
--	return FReply::Handled();
-+ UE_LOG(LogTemp, Display, TEXT(&quot;ARIQA|ModeClick|Analysis=%d|UI=%s|Tree=%s&quot;), QAAnalysisId, QAMode(AnalysisOptions.Mode), QAMode(CurrentTreeMode));
-+ return FReply::Handled();
- }
- 
- FReply SAssetReferenceInspectorWidget::OnReferencersModeClicked()
- {
- 	AnalysisOptions.Mode = EAssetReferenceMode::Referencers;
--	return FReply::Handled();
-+ UE_LOG(LogTemp, Display, TEXT(&quot;ARIQA|ModeClick|Analysis=%d|UI=%s|Tree=%s&quot;), QAAnalysisId, QAMode(AnalysisOptions.Mode), QAMode(CurrentTreeMode));
-+ return FReply::Handled();
- }
- 
- void SAssetReferenceInspectorWidget::OnMaxDepthTextCommitted(const FText&amp; InText, ETextCommit::Type CommitType)
-@@ -392,12 +404,17 @@
- 
- void SAssetReferenceInspectorWidget::OnPathFilterTextCommitted(const FText&amp; InText, ETextCommit::Type CommitType)
- {
--	if (CommitType == ETextCommit::OnCleared)
--	{
--		return;
--	}
--
--	AnalysisOptions.PathFilter = InText.ToString().TrimStartAndEnd();
-+ const FString Before = AnalysisOptions.PathFilter;
-+ const bool bLegacy = QALegacy(TEXT(&quot;ARIQALegacyFilter&quot;));
-+ if (bLegacy)
-+ {
-+  AnalysisOptions.PathFilter = (CommitType == ETextCommit::OnCleared ? FString() : InText.ToString()).TrimStartAndEnd();
-+ }
-+ else if (CommitType != ETextCommit::OnCleared)
-+ {
-+  AnalysisOptions.PathFilter = InText.ToString().TrimStartAndEnd();
-+ }
-+ UE_LOG(LogTemp, Display, TEXT(&quot;ARIQA|FilterCommit|Type=%d|Input=%s|Before=%s|After=%s|Ignored=%d|Legacy=%d&quot;), int32(CommitType), *InText.ToString(), *Before, *AnalysisOptions.PathFilter, !bLegacy &amp;&amp; CommitType == ETextCommit::OnCleared, bLegacy);
- }
- 
- void SAssetReferenceInspectorWidget::OnClassFilterTextCommitted(const FText&amp; InText, ETextCommit::Type CommitType)
-@@ -502,6 +519,8 @@
- 
- void SAssetReferenceInspectorWidget::BuildRelationTree()
- {
-+ ++QAAnalysisId;
-+ UE_LOG(LogTemp, Display, TEXT(&quot;ARIQA|BuildTree|Analysis=%d|Package=%s|Mode=%s|Path=%s&quot;), QAAnalysisId, *SelectedAssetData.PackageName.ToString(), QAMode(AnalysisOptions.Mode), *AnalysisOptions.PathFilter);
- 	TreeRootItems.Reset();
- 	CurrentTreeMode = AnalysisOptions.Mode;
- 
-@@ -547,6 +566,9 @@
- 		}
- 
- 		const bool bIsCircular = CurrentPath.Contains(RelatedPackageName);
-+ TArray&lt;FString&gt; QAPath;
-+ for (const FName&amp; P : CurrentPath) { QAPath.Add(P.ToString()); }
-+ UE_LOG(LogTemp, Display, TEXT(&quot;ARIQA|Visit|Analysis=%d|Parent=%s|Child=%s|Depth=%d|Circular=%d|Path=%s&quot;), QAAnalysisId, *ParentNode-&gt;PackageName.ToString(), *RelatedPackageName.ToString(), ParentNode-&gt;Depth + 1, bIsCircular, *FString::Join(QAPath, TEXT(&quot;;&quot;)));
- 		TSharedPtr&lt;FAssetReferenceTreeNode&gt; ChildNode = CreateRelationNode(RelatedPackageName, ParentNode-&gt;Depth + 1, ParentNode-&gt;PackageName, bIsCircular);
- 		ParentNode-&gt;Children.Add(ChildNode);
- 		bAddedChild = true;
---- original/Plugins\AssetReferenceInspector\Source\AssetReferenceInspector\Private\AssetReferenceInspectorModule.cpp
-+++ qa/Plugins\AssetReferenceInspector\Source\AssetReferenceInspector\Private\AssetReferenceInspectorModule.cpp
-@@ -8,10 +8,12 @@
- #include &quot;Modules/ModuleManager.h&quot;
- 
- #include &quot;ToolMenus.h&quot;
-+#include &quot;HAL/IConsoleManager.h&quot;
- 
- #include &quot;Widgets/Docking/SDockTab.h&quot;
- 
- static const FName AssetReferenceInspectorTabName(TEXT(&quot;AssetReferenceInspector&quot;));
-+static FAutoConsoleCommand QAOpen(TEXT(&quot;ARIQA.Open&quot;), TEXT(&quot;Open QA plugin tab&quot;), FConsoleCommandDelegate::CreateLambda([](){ FGlobalTabmanager::Get()-&gt;TryInvokeTab(AssetReferenceInspectorTabName); }));
- 
- void FAssetReferenceInspectorModule::StartupModule()
- {
-</pre></section></main></body></html>
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>추가 QA — 계측 변경 내역 · Asset Reference Inspector</title><link rel="stylesheet" href="https://razria93.github.io/Plugin_Portfolio_UE5.4/document.css"></head><body><header><p class="report-meta">Asset Reference Inspector · 검증 범위 · PDF 2쪽</p><h1 class="report-title">추가 QA — 계측 변경 내역</h1><p class="report-intro">별도 QA 복사본에 추가한 로그, 탭 열기 명령과 이전 로직 비교 플래그의 코드 차이입니다.</p></header><nav><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio/files/plugin-portfolio-v75.pdf#page=2">PDF 2쪽으로 돌아가기 ↗</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#scope">검증 범위 자료</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html">전체 자료 목차</a></nav><main><section class="evidence-summary"><h2>이 자료에서 확인할 내용</h2><p>별도 QA 복사본에 추가한 로그, 탭 열기 명령과 이전 로직 비교 플래그의 코드 차이입니다.</p><dl class="facts"><dt>자료 구분</dt><dd>추가 QA · 2026.10.21 · UE 5.4</dd><dt>확인 범위</dt><dd>개발 당시 기능 변경이 아닙니다. 원본 플러그인과 추가 QA 도구를 구분하기 위한 자료입니다.</dd></dl></section><section><h2>원본 자료</h2><p><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/scripts/instrumentation.diff" download>原본 파일 다운로드</a></p><details><summary>원본 전체 펼치기</summary><pre>--- original/Plugins\AssetReferenceInspector\Source\AssetReferenceInspector\Private\UI\SAssetReferenceInspectorWidget.cpp
++++ qa/Plugins\AssetReferenceInspector\Source\AssetReferenceInspector\Private\UI\SAssetReferenceInspectorWidget.cpp
+@@ -10,6 +10,8 @@
+ #include "HAL/FileManager.h"
+ #include "IContentBrowserSingleton.h"
+ #include "Misc/DefaultValueHelper.h"
++#include "Misc/CommandLine.h"
++#include "Misc/Parse.h"
+ #include "Misc/PackageName.h"
+ #include "Misc/Paths.h"
+ #include "Styling/AppStyle.h"
+@@ -28,6 +30,10 @@
+ namespace
+ {
+ 	constexpr int32 MaxAllowedRelationDepth = 10;
++ int32 QAAnalysisId = 0;
++ const TCHAR* QAMode(EAssetReferenceMode Mode) { return Mode == EAssetReferenceMode::Referencers ? TEXT("Referencers") : TEXT("Dependencies"); }
++ bool QALegacy(const TCHAR* Flag) { return FParse::Param(FCommandLine::Get(), Flag); }
++
+ }
+ 
+ void SAssetReferenceInspectorWidget::Construct(const FArguments&amp; InArgs)
+@@ -323,12 +329,14 @@
+ 	ContentBrowserModule.Get().GetSelectedAssets(SelectedAssets);
+ 
+ 	SelectedAssetData = SelectedAssets.Num() &gt; 0 ? SelectedAssets[0] : FAssetData();
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|Pick|Package=%s"), *SelectedAssetData.PackageName.ToString());
+ 
+ 	return FReply::Handled();
+ }
+ 
+ FReply SAssetReferenceInspectorWidget::OnAnalyzeClicked()
+ {
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|AnalyzeClick|Path=%s|UI=%s|Depth=%d"), *AnalysisOptions.PathFilter, QAMode(AnalysisOptions.Mode), AnalysisOptions.MaxDepth);
+ 	BuildRelationTree();
+ 	RefreshTree();
+ 
+@@ -347,7 +355,9 @@
+ {
+ 	FString ExportFilename;
+ 	FString ErrorMessage;
+-	const bool bExported = FAssetReferenceCsvExporter::ExportToTimestampedCsv(TreeRootItems, CurrentTreeMode, ExportFilename, ErrorMessage);
++	const EAssetReferenceMode ExportMode = QALegacy(TEXT("ARIQALegacyCsv")) ? AnalysisOptions.Mode : CurrentTreeMode;
++ const bool bExported = FAssetReferenceCsvExporter::ExportToTimestampedCsv(TreeRootItems, ExportMode, ExportFilename, ErrorMessage);
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|Export|Analysis=%d|UI=%s|Tree=%s|ExportMode=%s|Success=%d|File=%s"), QAAnalysisId, QAMode(AnalysisOptions.Mode), QAMode(CurrentTreeMode), QAMode(ExportMode), bExported, *ExportFilename);
+ 
+ 	FNotificationInfo NotificationInfo(FText::FromString(bExported
+ 		? FString::Printf(TEXT("CSV exported: %s"), *ExportFilename)
+@@ -367,13 +377,15 @@
+ FReply SAssetReferenceInspectorWidget::OnDependenciesModeClicked()
+ {
+ 	AnalysisOptions.Mode = EAssetReferenceMode::Dependencies;
+-	return FReply::Handled();
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|ModeClick|Analysis=%d|UI=%s|Tree=%s"), QAAnalysisId, QAMode(AnalysisOptions.Mode), QAMode(CurrentTreeMode));
++ return FReply::Handled();
+ }
+ 
+ FReply SAssetReferenceInspectorWidget::OnReferencersModeClicked()
+ {
+ 	AnalysisOptions.Mode = EAssetReferenceMode::Referencers;
+-	return FReply::Handled();
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|ModeClick|Analysis=%d|UI=%s|Tree=%s"), QAAnalysisId, QAMode(AnalysisOptions.Mode), QAMode(CurrentTreeMode));
++ return FReply::Handled();
+ }
+ 
+ void SAssetReferenceInspectorWidget::OnMaxDepthTextCommitted(const FText&amp; InText, ETextCommit::Type CommitType)
+@@ -392,12 +404,17 @@
+ 
+ void SAssetReferenceInspectorWidget::OnPathFilterTextCommitted(const FText&amp; InText, ETextCommit::Type CommitType)
+ {
+-	if (CommitType == ETextCommit::OnCleared)
+-	{
+-		return;
+-	}
+-
+-	AnalysisOptions.PathFilter = InText.ToString().TrimStartAndEnd();
++ const FString Before = AnalysisOptions.PathFilter;
++ const bool bLegacy = QALegacy(TEXT("ARIQALegacyFilter"));
++ if (bLegacy)
++ {
++  AnalysisOptions.PathFilter = (CommitType == ETextCommit::OnCleared ? FString() : InText.ToString()).TrimStartAndEnd();
++ }
++ else if (CommitType != ETextCommit::OnCleared)
++ {
++  AnalysisOptions.PathFilter = InText.ToString().TrimStartAndEnd();
++ }
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|FilterCommit|Type=%d|Input=%s|Before=%s|After=%s|Ignored=%d|Legacy=%d"), int32(CommitType), *InText.ToString(), *Before, *AnalysisOptions.PathFilter, !bLegacy &amp;&amp; CommitType == ETextCommit::OnCleared, bLegacy);
+ }
+ 
+ void SAssetReferenceInspectorWidget::OnClassFilterTextCommitted(const FText&amp; InText, ETextCommit::Type CommitType)
+@@ -502,6 +519,8 @@
+ 
+ void SAssetReferenceInspectorWidget::BuildRelationTree()
+ {
++ ++QAAnalysisId;
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|BuildTree|Analysis=%d|Package=%s|Mode=%s|Path=%s"), QAAnalysisId, *SelectedAssetData.PackageName.ToString(), QAMode(AnalysisOptions.Mode), *AnalysisOptions.PathFilter);
+ 	TreeRootItems.Reset();
+ 	CurrentTreeMode = AnalysisOptions.Mode;
+ 
+@@ -547,6 +566,9 @@
+ 		}
+ 
+ 		const bool bIsCircular = CurrentPath.Contains(RelatedPackageName);
++ TArray&lt;FString&gt; QAPath;
++ for (const FName&amp; P : CurrentPath) { QAPath.Add(P.ToString()); }
++ UE_LOG(LogTemp, Display, TEXT("ARIQA|Visit|Analysis=%d|Parent=%s|Child=%s|Depth=%d|Circular=%d|Path=%s"), QAAnalysisId, *ParentNode-&gt;PackageName.ToString(), *RelatedPackageName.ToString(), ParentNode-&gt;Depth + 1, bIsCircular, *FString::Join(QAPath, TEXT(";")));
+ 		TSharedPtr&lt;FAssetReferenceTreeNode&gt; ChildNode = CreateRelationNode(RelatedPackageName, ParentNode-&gt;Depth + 1, ParentNode-&gt;PackageName, bIsCircular);
+ 		ParentNode-&gt;Children.Add(ChildNode);
+ 		bAddedChild = true;
+--- original/Plugins\AssetReferenceInspector\Source\AssetReferenceInspector\Private\AssetReferenceInspectorModule.cpp
++++ qa/Plugins\AssetReferenceInspector\Source\AssetReferenceInspector\Private\AssetReferenceInspectorModule.cpp
+@@ -8,10 +8,12 @@
+ #include "Modules/ModuleManager.h"
+ 
+ #include "ToolMenus.h"
++#include "HAL/IConsoleManager.h"
+ 
+ #include "Widgets/Docking/SDockTab.h"
+ 
+ static const FName AssetReferenceInspectorTabName(TEXT("AssetReferenceInspector"));
++static FAutoConsoleCommand QAOpen(TEXT("ARIQA.Open"), TEXT("Open QA plugin tab"), FConsoleCommandDelegate::CreateLambda([](){ FGlobalTabmanager::Get()-&gt;TryInvokeTab(AssetReferenceInspectorTabName); }));
+ 
+ void FAssetReferenceInspectorModule::StartupModule()
+ {
+</pre></details></section><section aria-label="자료 이동"><div class="return-links"><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio/files/plugin-portfolio-v75.pdf#page=2">PDF 2쪽으로 돌아가기 ↗</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#scope">검증 범위 자료 모아보기</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html">전체 자료 목차</a></div></section></main></body></html>

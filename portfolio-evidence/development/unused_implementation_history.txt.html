@@ -1,339 +1,340 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>unused_implementation_history</title><link rel="stylesheet" href="https://razria93.github.io/Plugin_Portfolio_UE5.4/document.css"></head><body><header><p class="report-meta">Asset Reference Inspector · 공개 근거 자료</p><h1 class="report-title">unused_implementation_history</h1><p class="report-intro"></p></header><nav><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/">포트폴리오 안내</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/">영상·검증 자료</a></nav><main><section><p><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/development/unused_implementation_history.txt" download>파일 다운로드</a></p><pre>Unused Candidate 초기 구현과 수정의 당시 도구 호출 발췌
-최초 초안은 커밋된 구버전 제품이 아니라 브랜치 작업 중 수정된 구현입니다.
-
-[main 25030] custom_tool_call apply_patch
-*** Begin Patch
-*** Update File: Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/UI/SAssetReferenceInspectorWidget.cpp
-@@
- 		SelectedAssetData.PackageName,
- 		0,
- 		false,
-+		IsUnusedCandidateAsset(SelectedAssetData.PackageName, SelectedAssetData),
- 		SelectedAssetData.AssetClassPath.GetAssetName().ToString(),
- 		GetPackageDiskSizeBytes(SelectedAssetData.PackageName));
-@@
--		ParentNode-&gt;Children.Add(MakeShared&lt;FAssetReferenceTreeNode&gt;(GetEmptyRelationMessage(), NAME_None, ParentNode-&gt;Depth + 1));
-+		ParentNode-&gt;Children.Add(MakeShared&lt;FAssetReferenceTreeNode&gt;(GetEmptyRelationMessage(), NAME_None, ParentNode-&gt;Depth + 1));
-@@
- 	if (TryGetPrimaryAssetDataForPackage(PackageName, AssetData))
- 	{
- 		DisplayName = AssetData.AssetName.ToString();
- 		ClassName = AssetData.AssetClassPath.GetAssetName().ToString();
- 	}
- 
--	return MakeShared&lt;FAssetReferenceTreeNode&gt;(DisplayName, PackageName, Depth, bIsCircular, ClassName, GetPackageDiskSizeBytes(PackageName));
-+	const bool bIsUnusedCandidate = AssetData.IsValid()
-+		? IsUnusedCandidateAsset(PackageName, AssetData)
-+		: false;
-+
-+	return MakeShared&lt;FAssetReferenceTreeNode&gt;(
-+		DisplayName,
-+		PackageName,
-+		Depth,
-+		bIsCircular,
-+		bIsUnusedCandidate,
-+		ClassName,
-+		GetPackageDiskSizeBytes(PackageName));
- }
-@@
- bool SAssetReferenceInspectorWidget::TryGetPrimaryAssetDataForPackage(FName PackageName, FAssetData&amp; OutAssetData) const
- {
-@@
- 	OutAssetData = AssetsInPackage[0];
- 	return true;
- }
-+
-+bool SAssetReferenceInspectorWidget::IsUnusedCandidatePackage(FName PackageName) const
-+{
-+	FAssetData AssetData;
-+	if (!TryGetPrimaryAssetDataForPackage(PackageName, AssetData))
-+	{
-+		return false;
-+	}
-+
-+	return IsUnusedCandidateAsset(PackageName, AssetData);
-+}
-+
-+bool SAssetReferenceInspectorWidget::IsUnusedCandidateAsset(FName PackageName, const FAssetData&amp; AssetData) const
-+{
-+	if (PackageName.IsNone() || !AssetData.IsValid())
-+	{
-+		return false;
-+	}
-+
-+	if (!PackageName.ToString().StartsWith(TEXT(&quot;/Game/&quot;)))
-+	{
-+		return false;
-+	}
-+
-+	if (IsExcludedUnusedCandidateClass(AssetData))
-+	{
-+		return false;
-+	}
-+
-+	FAssetRegistryModule&amp; AssetRegistryModule = FModuleManager::LoadModuleChecked&lt;FAssetRegistryModule&gt;(TEXT(&quot;AssetRegistry&quot;));
-+
-+	TArray&lt;FName&gt; ReferencerPackageNames;
-+	AssetRegistryModule.Get().GetReferencers(PackageName, ReferencerPackageNames);
-+
-+	return ReferencerPackageNames.Num() == 0;
-+}
-+
-+bool SAssetReferenceInspectorWidget::IsExcludedUnusedCandidateClass(const FAssetData&amp; AssetData) const
-+{
-+	const FString ClassName = AssetData.AssetClassPath.GetAssetName().ToString();
-+
-+	return ClassName.Equals(TEXT(&quot;World&quot;), ESearchCase::IgnoreCase)
-+		|| ClassName.Equals(TEXT(&quot;ObjectRedirector&quot;), ESearchCase::IgnoreCase);
-+}
-@@
- 	if (Item-&gt;bIsCircular)
- 	{
- 		DisplayText = FString::Printf(TEXT(&quot;%s [Circular]&quot;), *DisplayText);
- 	}
-+
-+	if (Item-&gt;bIsUnusedCandidate)
-+	{
-+		DisplayText = FString::Printf(TEXT(&quot;%s [Unused Candidate]&quot;), *DisplayText);
-+	}
- 
- 	return DisplayText;
- }
-*** End Patch
-
-
-[main 25157] custom_tool_call apply_patch
-*** Begin Patch
-*** Delete File: LocalNotes/mini-plans/unused_candidate_indicator_mini_plan_KR.md
-*** Add File: LocalNotes/mini-plans/unused_candidate_indicator_mini_plan_KR.md
-+# Mini Plan: Phase 6-3 Unused Candidate 전체 스캔
-+
-+## Metadata
-+
-+- Type: Mini Plan
-+- Status: Draft
-+- Branch: `feature/ari-unused-candidate-indicator`
-+- Related Phase: Phase 6-3. Unused Candidate 표시
-+- Related PR: TBD
-+- Related Issues: TBD
-+- Source Docs:
-+  - `Docs/01_Planning/Feature_Work_Plan_KR.md`
-+  - `Docs/02_Architecture/Asset_Registry_Analysis_Flow_KR.md`
-+  - `Docs/02_Architecture/Slate_UI_Basics_KR.md`
-+  - `Docs/03_Verification/Build_Verification_Log_KR.md`
-+
-+## Goal
-+
-+선택 Asset 관계 Tree에 Unused Candidate suffix를 억지로 붙이지 않고, `/Game` 전체 Asset을 대상으로 참조자가 없는 후보 목록을 스캔해 Tree에 표시한다.
-+
-+Dependencies / Referencers Tree는 선택 Asset의 관계 분석이고, Unused Candidate는 프로젝트 Content 전체에서 참조자가 없는 후보를 찾는 기능이다. 두 기능의 분석 기준이 다르므로 이번 Phase에서는 별도 스캔 버튼과 결과 Tree를 구성한다.
-+
-+## Scope
-+
-+포함:
-+
-+- `Scan Unused Candidates` 버튼 추가
-+- `/Game` 아래 Asset 전체 조회
-+- Asset Registry `GetReferencers` 결과가 0개인 Asset을 후보로 판정
-+- 후보 노드는 `bIsUnusedCandidate`를 true로 저장
-+- Tree root를 `Unused Candidates` 그룹 노드로 구성
-+- 후보 row를 `DisplayName [ClassName] (Size) [Unused Candidate]` 형식으로 표시
-+- Path Filter / Class Filter를 후보 스캔에도 적용
-+- Map, Redirector, `/Script`, `/Engine`, Plugin Content, placeholder 제외
-+- Soft Reference / Asset Manager / 동적 로딩 제한사항 문서화
-+
-+제외:
-+
-+- 선택 Asset 관계 child node에 Unused Candidate 표시
-+- Asset 삭제 기능
-+- 자동 정리, 이동, quarantine 기능
-+- Soft Reference / Asset Manager / 동적 로딩 정밀 분석
-+- Cooked build 기준 unused 판정
-+- CSV Export 반영
-+- 별도 컬럼형 Tree UI
-+
-+## Target Files
-+
-+- `Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/Analysis/AssetReferenceTypes.h`
-+- `Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/UI/SAssetReferenceInspectorWidget.h`
-+- `Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/UI/SAssetReferenceInspectorWidget.cpp`
-+- `Docs/01_Planning/Feature_Work_Plan_KR.md`
-+- `Docs/02_Architecture/Asset_Registry_Analysis_Flow_KR.md`
-+- `Docs/02_Architecture/Slate_UI_Basics_KR.md`
-+- `Docs/03_Verification/Build_Verification_Log_KR.md`
-+
-+## Implementation Steps
-+
-+1. `FAssetReferenceTreeNode`에 `bIsUnusedCandidate` 메타데이터를 추가한다.
-+2. 선택 Asset relation node 생성 흐름에서는 Unused Candidate 판정을 하지 않는다.
-+3. `Scan Unused Candidates` 버튼과 callback을 추가한다.
-+4. Asset Registry에서 `/Game` 아래 전체 Asset을 조회한다.
-+5. Path Filter / Class Filter를 통과한 Project Content Asset만 후보 검사 대상으로 삼는다.
-+6. Map, Redirector, 외부 Content, placeholder 성격의 Asset은 후보 검사에서 제외한다.
-+7. `GetReferencers(PackageName)` 결과가 0개인 Asset을 후보 node로 추가한다.
-+8. 후보 결과가 없으면 `No unused candidates found` placeholder를 표시한다.
-+9. 빌드와 에디터 수동 확인 후 문서와 검증 로그를 갱신한다.
-+
-+## Verification
-+
-+- Build:
-+  - `Portfolio_PlugInEditor Win64 Development` 빌드 성공
-+- Editor:
-+  - `Scan Unused Candidates` 클릭 시 `/Game` 전체 기준 후보 Tree가 표시되는지 확인
-+  - 참조자가 없는 Demo Asset이 `[Unused Candidate]`로 표시되는지 확인
-+  - 참조자가 있는 Demo Asset은 후보 목록에 표시되지 않는지 확인
-+  - Path Filter / Class Filter가 후보 스캔에도 적용되는지 확인
-+  - 후보가 없는 조건에서 `No unused candidates found` placeholder가 표시되는지 확인
-+- Unverified:
-+  - Soft Reference, Asset Manager, 동적 로딩 기반 사용 여부는 이번 범위에서 검증하지 않음
-+  - 실제 삭제 가능 여부는 이번 범위에서 판단하지 않음
-+
-+## Documentation Check
-+
-+- `Feature_Work_Plan_KR.md`에 Phase 6-3을 전체 스캔 기준으로 반영한다.
-+- `Asset_Registry_Analysis_Flow_KR.md`에 Unused Candidate 전체 스캔 흐름과 제한사항을 정리한다.
-+- `Slate_UI_Basics_KR.md`에 `Scan Unused Candidates` 버튼과 결과 Tree 표시 흐름을 필요한 만큼 보강한다.
-+- `Build_Verification_Log_KR.md`에 빌드와 에디터 수동 확인 결과를 기록한다.
-+- 검증 스크린샷은 필요 시 `Docs/03_Verification/Screenshots/feature_ari_unused_candidate_indicator/`에 승격한다.
-+
-+## Commit Plan
-+
-+- 구현, 문서, 검증 로그, 스크린샷을 하나의 feature commit으로 묶는 것을 우선한다.
-+- 추천 메시지:
-+
-+```text
-+feat: Unused Candidate 전체 스캔 추가
-+```
-*** End Patch
-
-
-[main 25172] custom_tool_call apply_patch
-*** Begin Patch
-*** Update File: Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/UI/SAssetReferenceInspectorWidget.cpp
-@@
- 							SNew(SUniformGridPanel)
- 								.SlotPadding(4.0f)
- 
- 								+ SUniformGridPanel::Slot(0, 0)
- 								[
-@@
- 								+ SUniformGridPanel::Slot(1, 0)
- 								[
- 									SNew(SButton)
- 										.Text(FText::FromString(TEXT(&quot;Analyze&quot;)))
- 										.OnClicked(this, &amp;SAssetReferenceInspectorWidget::OnAnalyzeClicked)
- 								]
-+
-+								+ SUniformGridPanel::Slot(2, 0)
-+								[
-+									SNew(SButton)
-+										.Text(FText::FromString(TEXT(&quot;Scan Unused Candidates&quot;)))
-+										.OnClicked(this, &amp;SAssetReferenceInspectorWidget::OnScanUnusedCandidatesClicked)
-+								]
- 						]
-@@
- FReply SAssetReferenceInspectorWidget::OnAnalyzeClicked()
- {
- 	BuildRelationTree();
- 	RefreshTree();
- 
- 	return FReply::Handled();
- }
-+
-+FReply SAssetReferenceInspectorWidget::OnScanUnusedCandidatesClicked()
-+{
-+	BuildUnusedCandidateTree();
-+	RefreshTree();
-+
-+	return FReply::Handled();
-+}
-@@
- 		SelectedAssetData.PackageName,
- 		0,
- 		false,
- 		SelectedAssetData.AssetClassPath.GetAssetName().ToString(),
--		GetPackageDiskSizeBytes(SelectedAssetData.PackageName),
--		IsUnusedCandidateAsset(SelectedAssetData.PackageName, SelectedAssetData));
-+		GetPackageDiskSizeBytes(SelectedAssetData.PackageName));
-@@
- void SAssetReferenceInspectorWidget::GetRelatedPackageNames(FName PackageName, TArray&lt;FName&gt;&amp; OutPackageNames) const
- {
-@@
- 	AssetRegistryModule.Get().GetDependencies(PackageName, OutPackageNames);
- }
-+
-+void SAssetReferenceInspectorWidget::BuildUnusedCandidateTree()
-+{
-+	TreeRootItems.Reset();
-+
-+	FAssetRegistryModule&amp; AssetRegistryModule = FModuleManager::LoadModuleChecked&lt;FAssetRegistryModule&gt;(TEXT(&quot;AssetRegistry&quot;));
-+
-+	TArray&lt;FAssetData&gt; ProjectAssets;
-+	AssetRegistryModule.Get().GetAssetsByPath(FName(TEXT(&quot;/Game&quot;)), ProjectAssets, true);
-+
-+	TSharedPtr&lt;FAssetReferenceTreeNode&gt; RootNode = MakeShared&lt;FAssetReferenceTreeNode&gt;(TEXT(&quot;Unused Candidates&quot;));
-+
-+	for (const FAssetData&amp; AssetData : ProjectAssets)
-+	{
-+		if (!AssetData.IsValid())
-+		{
-+			continue;
-+		}
-+
-+		if (!FAssetReferenceFilter::ShouldPassRelationFilters(AnalysisOptions, AssetData.PackageName))
-+		{
-+			continue;
-+		}
-+
-+		if (!IsUnusedCandidateAsset(AssetData.PackageName, AssetData))
-+		{
-+			continue;
-+		}
-+
-+		RootNode-&gt;Children.Add(CreateUnusedCandidateNode(AssetData));
-+	}
-+
-+	RootNode-&gt;Children.Sort([](const TSharedPtr&lt;FAssetReferenceTreeNode&gt;&amp; Left, const TSharedPtr&lt;FAssetReferenceTreeNode&gt;&amp; Right)
-+	{
-+		const FString LeftName = Left.IsValid() ? Left-&gt;DisplayName : FString();
-+		const FString RightName = Right.IsValid() ? Right-&gt;DisplayName : FString();
-+		return LeftName &lt; RightName;
-+	});
-+
-+	if (RootNode-&gt;Children.Num() == 0)
-+	{
-+		RootNode-&gt;Children.Add(MakeShared&lt;FAssetReferenceTreeNode&gt;(TEXT(&quot;No unused candidates found&quot;), NAME_None, 1));
-+	}
-+
-+	TreeRootItems.Add(RootNode);
-+}
-@@
--	const bool bIsUnusedCandidate = AssetData.IsValid()
--		? IsUnusedCandidateAsset(PackageName, AssetData)
--		: false;
--
- 	return MakeShared&lt;FAssetReferenceTreeNode&gt;(
- 		DisplayName,
- 		PackageName,
- 		Depth,
- 		bIsCircular,
- 		ClassName,
--		GetPackageDiskSizeBytes(PackageName),
--		bIsUnusedCandidate);
-+		GetPackageDiskSizeBytes(PackageName));
-+}
-+
-+TSharedPtr&lt;FAssetReferenceTreeNode&gt; SAssetReferenceInspectorWidget::CreateUnusedCandidateNode(const FAssetData&amp; AssetData) const
-+{
-+	return MakeShared&lt;FAssetReferenceTreeNode&gt;(
-+		AssetData.AssetName.ToString(),
-+		AssetData.PackageName,
-+		1,
-+		false,
-+		AssetData.AssetClassPath.GetAssetName().ToString(),
-+		GetPackageDiskSizeBytes(AssetData.PackageName),
-+		true);
- }
-*** End Patch
-
-</pre></section></main></body></html>
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>미사용 후보 탐색 — 구현 전환 근거 · Asset Reference Inspector</title><link rel="stylesheet" href="https://razria93.github.io/Plugin_Portfolio_UE5.4/document.css"></head><body><header><p class="report-meta">Asset Reference Inspector · 미사용 후보 탐색 재설계 · PDF 9쪽</p><h1 class="report-title">미사용 후보 탐색 — 구현 전환 근거</h1><p class="report-intro">선택 에셋의 참조 트리 안에서 후보를 표시하던 방식에서 프로젝트 콘텐츠(/Game와 하위 폴더)를 별도로 스캔하는 방식으로 바꿨습니다.</p></header><nav><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio/files/plugin-portfolio-v75.pdf#page=9">PDF 9쪽으로 돌아가기 ↗</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#unused">미사용 후보 탐색 재설계 자료</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html">전체 자료 목차</a></nav><main><section class="evidence-summary"><h2>이 자료에서 확인할 내용</h2><p>선택 에셋의 참조 트리 안에서 후보를 표시하던 방식에서 프로젝트 콘텐츠(/Game와 하위 폴더)를 별도로 스캔하는 방식으로 바꿨습니다.</p><dl class="facts"><dt>자료 구분</dt><dd>개발 당시 코드·계획 변경 기록 · 2026.07</dd><dt>확인 범위</dt><dd>초기 구현은 작업 중 초안입니다. 과거 전체 빌드 전후 실행 비교가 아닙니다.</dd></dl></section><section><h2>원본 자료</h2><p><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/development/unused_implementation_history.txt" download>原본 파일 다운로드</a></p><details><summary>원본 전체 펼치기</summary><pre>Unused Candidate 초기 구현과 수정의 당시 도구 호출 발췌
+최초 초안은 커밋된 구버전 제품이 아니라 브랜치 작업 중 수정된 구현입니다.
+
+[main 25030] custom_tool_call apply_patch
+*** Begin Patch
+*** Update File: Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/UI/SAssetReferenceInspectorWidget.cpp
+@@
+ 		SelectedAssetData.PackageName,
+ 		0,
+ 		false,
++		IsUnusedCandidateAsset(SelectedAssetData.PackageName, SelectedAssetData),
+ 		SelectedAssetData.AssetClassPath.GetAssetName().ToString(),
+ 		GetPackageDiskSizeBytes(SelectedAssetData.PackageName));
+@@
+-		ParentNode-&gt;Children.Add(MakeShared&lt;FAssetReferenceTreeNode&gt;(GetEmptyRelationMessage(), NAME_None, ParentNode-&gt;Depth + 1));
++		ParentNode-&gt;Children.Add(MakeShared&lt;FAssetReferenceTreeNode&gt;(GetEmptyRelationMessage(), NAME_None, ParentNode-&gt;Depth + 1));
+@@
+ 	if (TryGetPrimaryAssetDataForPackage(PackageName, AssetData))
+ 	{
+ 		DisplayName = AssetData.AssetName.ToString();
+ 		ClassName = AssetData.AssetClassPath.GetAssetName().ToString();
+ 	}
+ 
+-	return MakeShared&lt;FAssetReferenceTreeNode&gt;(DisplayName, PackageName, Depth, bIsCircular, ClassName, GetPackageDiskSizeBytes(PackageName));
++	const bool bIsUnusedCandidate = AssetData.IsValid()
++		? IsUnusedCandidateAsset(PackageName, AssetData)
++		: false;
++
++	return MakeShared&lt;FAssetReferenceTreeNode&gt;(
++		DisplayName,
++		PackageName,
++		Depth,
++		bIsCircular,
++		bIsUnusedCandidate,
++		ClassName,
++		GetPackageDiskSizeBytes(PackageName));
+ }
+@@
+ bool SAssetReferenceInspectorWidget::TryGetPrimaryAssetDataForPackage(FName PackageName, FAssetData&amp; OutAssetData) const
+ {
+@@
+ 	OutAssetData = AssetsInPackage[0];
+ 	return true;
+ }
++
++bool SAssetReferenceInspectorWidget::IsUnusedCandidatePackage(FName PackageName) const
++{
++	FAssetData AssetData;
++	if (!TryGetPrimaryAssetDataForPackage(PackageName, AssetData))
++	{
++		return false;
++	}
++
++	return IsUnusedCandidateAsset(PackageName, AssetData);
++}
++
++bool SAssetReferenceInspectorWidget::IsUnusedCandidateAsset(FName PackageName, const FAssetData&amp; AssetData) const
++{
++	if (PackageName.IsNone() || !AssetData.IsValid())
++	{
++		return false;
++	}
++
++	if (!PackageName.ToString().StartsWith(TEXT("/Game/")))
++	{
++		return false;
++	}
++
++	if (IsExcludedUnusedCandidateClass(AssetData))
++	{
++		return false;
++	}
++
++	FAssetRegistryModule&amp; AssetRegistryModule = FModuleManager::LoadModuleChecked&lt;FAssetRegistryModule&gt;(TEXT("AssetRegistry"));
++
++	TArray&lt;FName&gt; ReferencerPackageNames;
++	AssetRegistryModule.Get().GetReferencers(PackageName, ReferencerPackageNames);
++
++	return ReferencerPackageNames.Num() == 0;
++}
++
++bool SAssetReferenceInspectorWidget::IsExcludedUnusedCandidateClass(const FAssetData&amp; AssetData) const
++{
++	const FString ClassName = AssetData.AssetClassPath.GetAssetName().ToString();
++
++	return ClassName.Equals(TEXT("World"), ESearchCase::IgnoreCase)
++		|| ClassName.Equals(TEXT("ObjectRedirector"), ESearchCase::IgnoreCase);
++}
+@@
+ 	if (Item-&gt;bIsCircular)
+ 	{
+ 		DisplayText = FString::Printf(TEXT("%s [Circular]"), *DisplayText);
+ 	}
++
++	if (Item-&gt;bIsUnusedCandidate)
++	{
++		DisplayText = FString::Printf(TEXT("%s [Unused Candidate]"), *DisplayText);
++	}
+ 
+ 	return DisplayText;
+ }
+*** End Patch
+
+
+[main 25157] custom_tool_call apply_patch
+*** Begin Patch
+*** Delete File: LocalNotes/mini-plans/unused_candidate_indicator_mini_plan_KR.md
+*** Add File: LocalNotes/mini-plans/unused_candidate_indicator_mini_plan_KR.md
++# Mini Plan: Phase 6-3 Unused Candidate 전체 스캔
++
++## Metadata
++
++- Type: Mini Plan
++- Status: Draft
++- Branch: `feature/ari-unused-candidate-indicator`
++- Related Phase: Phase 6-3. Unused Candidate 표시
++- Related PR: TBD
++- Related Issues: TBD
++- Source Docs:
++  - `Docs/01_Planning/Feature_Work_Plan_KR.md`
++  - `Docs/02_Architecture/Asset_Registry_Analysis_Flow_KR.md`
++  - `Docs/02_Architecture/Slate_UI_Basics_KR.md`
++  - `Docs/03_Verification/Build_Verification_Log_KR.md`
++
++## Goal
++
++선택 Asset 관계 Tree에 Unused Candidate suffix를 억지로 붙이지 않고, `/Game` 전체 Asset을 대상으로 참조자가 없는 후보 목록을 스캔해 Tree에 표시한다.
++
++Dependencies / Referencers Tree는 선택 Asset의 관계 분석이고, Unused Candidate는 프로젝트 Content 전체에서 참조자가 없는 후보를 찾는 기능이다. 두 기능의 분석 기준이 다르므로 이번 Phase에서는 별도 스캔 버튼과 결과 Tree를 구성한다.
++
++## Scope
++
++포함:
++
++- `Scan Unused Candidates` 버튼 추가
++- `/Game` 아래 Asset 전체 조회
++- Asset Registry `GetReferencers` 결과가 0개인 Asset을 후보로 판정
++- 후보 노드는 `bIsUnusedCandidate`를 true로 저장
++- Tree root를 `Unused Candidates` 그룹 노드로 구성
++- 후보 row를 `DisplayName [ClassName] (Size) [Unused Candidate]` 형식으로 표시
++- Path Filter / Class Filter를 후보 스캔에도 적용
++- Map, Redirector, `/Script`, `/Engine`, Plugin Content, placeholder 제외
++- Soft Reference / Asset Manager / 동적 로딩 제한사항 문서화
++
++제외:
++
++- 선택 Asset 관계 child node에 Unused Candidate 표시
++- Asset 삭제 기능
++- 자동 정리, 이동, quarantine 기능
++- Soft Reference / Asset Manager / 동적 로딩 정밀 분석
++- Cooked build 기준 unused 판정
++- CSV Export 반영
++- 별도 컬럼형 Tree UI
++
++## Target Files
++
++- `Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/Analysis/AssetReferenceTypes.h`
++- `Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/UI/SAssetReferenceInspectorWidget.h`
++- `Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/UI/SAssetReferenceInspectorWidget.cpp`
++- `Docs/01_Planning/Feature_Work_Plan_KR.md`
++- `Docs/02_Architecture/Asset_Registry_Analysis_Flow_KR.md`
++- `Docs/02_Architecture/Slate_UI_Basics_KR.md`
++- `Docs/03_Verification/Build_Verification_Log_KR.md`
++
++## Implementation Steps
++
++1. `FAssetReferenceTreeNode`에 `bIsUnusedCandidate` 메타데이터를 추가한다.
++2. 선택 Asset relation node 생성 흐름에서는 Unused Candidate 판정을 하지 않는다.
++3. `Scan Unused Candidates` 버튼과 callback을 추가한다.
++4. Asset Registry에서 `/Game` 아래 전체 Asset을 조회한다.
++5. Path Filter / Class Filter를 통과한 Project Content Asset만 후보 검사 대상으로 삼는다.
++6. Map, Redirector, 외부 Content, placeholder 성격의 Asset은 후보 검사에서 제외한다.
++7. `GetReferencers(PackageName)` 결과가 0개인 Asset을 후보 node로 추가한다.
++8. 후보 결과가 없으면 `No unused candidates found` placeholder를 표시한다.
++9. 빌드와 에디터 수동 확인 후 문서와 검증 로그를 갱신한다.
++
++## Verification
++
++- Build:
++  - `Portfolio_PlugInEditor Win64 Development` 빌드 성공
++- Editor:
++  - `Scan Unused Candidates` 클릭 시 `/Game` 전체 기준 후보 Tree가 표시되는지 확인
++  - 참조자가 없는 Demo Asset이 `[Unused Candidate]`로 표시되는지 확인
++  - 참조자가 있는 Demo Asset은 후보 목록에 표시되지 않는지 확인
++  - Path Filter / Class Filter가 후보 스캔에도 적용되는지 확인
++  - 후보가 없는 조건에서 `No unused candidates found` placeholder가 표시되는지 확인
++- Unverified:
++  - Soft Reference, Asset Manager, 동적 로딩 기반 사용 여부는 이번 범위에서 검증하지 않음
++  - 실제 삭제 가능 여부는 이번 범위에서 판단하지 않음
++
++## Documentation Check
++
++- `Feature_Work_Plan_KR.md`에 Phase 6-3을 전체 스캔 기준으로 반영한다.
++- `Asset_Registry_Analysis_Flow_KR.md`에 Unused Candidate 전체 스캔 흐름과 제한사항을 정리한다.
++- `Slate_UI_Basics_KR.md`에 `Scan Unused Candidates` 버튼과 결과 Tree 표시 흐름을 필요한 만큼 보강한다.
++- `Build_Verification_Log_KR.md`에 빌드와 에디터 수동 확인 결과를 기록한다.
++- 검증 스크린샷은 필요 시 `Docs/03_Verification/Screenshots/feature_ari_unused_candidate_indicator/`에 승격한다.
++
++## Commit Plan
++
++- 구현, 문서, 검증 로그, 스크린샷을 하나의 feature commit으로 묶는 것을 우선한다.
++- 추천 메시지:
++
++```text
++feat: Unused Candidate 전체 스캔 추가
++```
+*** End Patch
+
+
+[main 25172] custom_tool_call apply_patch
+*** Begin Patch
+*** Update File: Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/UI/SAssetReferenceInspectorWidget.cpp
+@@
+ 							SNew(SUniformGridPanel)
+ 								.SlotPadding(4.0f)
+ 
+ 								+ SUniformGridPanel::Slot(0, 0)
+ 								[
+@@
+ 								+ SUniformGridPanel::Slot(1, 0)
+ 								[
+ 									SNew(SButton)
+ 										.Text(FText::FromString(TEXT("Analyze")))
+ 										.OnClicked(this, &amp;SAssetReferenceInspectorWidget::OnAnalyzeClicked)
+ 								]
++
++								+ SUniformGridPanel::Slot(2, 0)
++								[
++									SNew(SButton)
++										.Text(FText::FromString(TEXT("Scan Unused Candidates")))
++										.OnClicked(this, &amp;SAssetReferenceInspectorWidget::OnScanUnusedCandidatesClicked)
++								]
+ 						]
+@@
+ FReply SAssetReferenceInspectorWidget::OnAnalyzeClicked()
+ {
+ 	BuildRelationTree();
+ 	RefreshTree();
+ 
+ 	return FReply::Handled();
+ }
++
++FReply SAssetReferenceInspectorWidget::OnScanUnusedCandidatesClicked()
++{
++	BuildUnusedCandidateTree();
++	RefreshTree();
++
++	return FReply::Handled();
++}
+@@
+ 		SelectedAssetData.PackageName,
+ 		0,
+ 		false,
+ 		SelectedAssetData.AssetClassPath.GetAssetName().ToString(),
+-		GetPackageDiskSizeBytes(SelectedAssetData.PackageName),
+-		IsUnusedCandidateAsset(SelectedAssetData.PackageName, SelectedAssetData));
++		GetPackageDiskSizeBytes(SelectedAssetData.PackageName));
+@@
+ void SAssetReferenceInspectorWidget::GetRelatedPackageNames(FName PackageName, TArray&lt;FName&gt;&amp; OutPackageNames) const
+ {
+@@
+ 	AssetRegistryModule.Get().GetDependencies(PackageName, OutPackageNames);
+ }
++
++void SAssetReferenceInspectorWidget::BuildUnusedCandidateTree()
++{
++	TreeRootItems.Reset();
++
++	FAssetRegistryModule&amp; AssetRegistryModule = FModuleManager::LoadModuleChecked&lt;FAssetRegistryModule&gt;(TEXT("AssetRegistry"));
++
++	TArray&lt;FAssetData&gt; ProjectAssets;
++	AssetRegistryModule.Get().GetAssetsByPath(FName(TEXT("/Game")), ProjectAssets, true);
++
++	TSharedPtr&lt;FAssetReferenceTreeNode&gt; RootNode = MakeShared&lt;FAssetReferenceTreeNode&gt;(TEXT("Unused Candidates"));
++
++	for (const FAssetData&amp; AssetData : ProjectAssets)
++	{
++		if (!AssetData.IsValid())
++		{
++			continue;
++		}
++
++		if (!FAssetReferenceFilter::ShouldPassRelationFilters(AnalysisOptions, AssetData.PackageName))
++		{
++			continue;
++		}
++
++		if (!IsUnusedCandidateAsset(AssetData.PackageName, AssetData))
++		{
++			continue;
++		}
++
++		RootNode-&gt;Children.Add(CreateUnusedCandidateNode(AssetData));
++	}
++
++	RootNode-&gt;Children.Sort([](const TSharedPtr&lt;FAssetReferenceTreeNode&gt;&amp; Left, const TSharedPtr&lt;FAssetReferenceTreeNode&gt;&amp; Right)
++	{
++		const FString LeftName = Left.IsValid() ? Left-&gt;DisplayName : FString();
++		const FString RightName = Right.IsValid() ? Right-&gt;DisplayName : FString();
++		return LeftName &lt; RightName;
++	});
++
++	if (RootNode-&gt;Children.Num() == 0)
++	{
++		RootNode-&gt;Children.Add(MakeShared&lt;FAssetReferenceTreeNode&gt;(TEXT("No unused candidates found"), NAME_None, 1));
++	}
++
++	TreeRootItems.Add(RootNode);
++}
+@@
+-	const bool bIsUnusedCandidate = AssetData.IsValid()
+-		? IsUnusedCandidateAsset(PackageName, AssetData)
+-		: false;
+-
+ 	return MakeShared&lt;FAssetReferenceTreeNode&gt;(
+ 		DisplayName,
+ 		PackageName,
+ 		Depth,
+ 		bIsCircular,
+ 		ClassName,
+-		GetPackageDiskSizeBytes(PackageName),
+-		bIsUnusedCandidate);
++		GetPackageDiskSizeBytes(PackageName));
++}
++
++TSharedPtr&lt;FAssetReferenceTreeNode&gt; SAssetReferenceInspectorWidget::CreateUnusedCandidateNode(const FAssetData&amp; AssetData) const
++{
++	return MakeShared&lt;FAssetReferenceTreeNode&gt;(
++		AssetData.AssetName.ToString(),
++		AssetData.PackageName,
++		1,
++		false,
++		AssetData.AssetClassPath.GetAssetName().ToString(),
++		GetPackageDiskSizeBytes(AssetData.PackageName),
++		true);
+ }
+*** End Patch
+
+</pre></details></section><section aria-label="자료 이동"><div class="return-links"><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio/files/plugin-portfolio-v75.pdf#page=9">PDF 9쪽으로 돌아가기 ↗</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#unused">미사용 후보 탐색 재설계 자료 모아보기</a><a href="https://razria93.github.io/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html">전체 자료 목차</a></div></section></main></body></html>
