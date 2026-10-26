@@ -1,4 +1,6 @@
-# Asset Reference Inspector
+# Asset Reference Inspector — UE5 에셋 참조 분석 도구
+
+<a id="asset-reference-inspector"></a>
 
 에셋 참조 관계를 조회하고 미사용 후보를 탐색하며, 분석 결과를 CSV로 저장하는 Unreal Engine 5.4 에디터 플러그인입니다. Content Browser에서 선택한 에셋을 기준으로 Asset Registry를 조회하고 Dependencies / Referencers 관계를 Slate Tree View로 표시합니다. 게임 런타임 기능이 아닌 에디터 도구입니다.
 
@@ -10,7 +12,9 @@
 
 *2026.07 개발 당시 화면 · 에셋 선택 없이 미사용 후보를 조회하고 원본 위치로 이동합니다.*
 
-## 대표 검증 영상
+<a id="대표-검증-영상"></a>
+
+## 대표 화면·시연
 
 | 영상 | 길이 | 확인할 내용 |
 | --- | --- | --- |
@@ -29,11 +33,13 @@
 | 엔진 | Unreal Engine 5.4 |
 | 유형 | Editor Plugin / Demo Host Project |
 | 플러그인 | `AssetReferenceInspector` |
-| 개발 목적 | 포트폴리오 / Unreal Editor Tool 제작 학습 |
-| 개발 기간 | 2026.07.13 ~ 2026.07.20 (포트폴리오 적용·제출 정리 포함; Demo Host 기능 개발 기록은 07.19까지) |
-| 개발 형태 | 1인 개발 · Codex 활용 |
-| 주요 기술 | C++, Unreal Editor Module, Asset Registry, Slate UI, Content Browser API |
-| 현재 단계 | Demo Host 기능 구현과 실제 Portfolio 프로젝트 적용 기록 정리. 검증 범위는 개발 당시 확인과 별도 추가 QA로 구분 |
+| 목적 | 포트폴리오 / Unreal Editor Tool 제작 학습 |
+| 기간 | 2026.07.13 ~ 2026.07.20 |
+| 형태 | 1인 개발 · Codex 활용 |
+| 기술 | C++, Unreal Editor Module, Asset Registry, Slate UI, Content Browser API |
+| 범위 | Demo Host 기능 구현 · 실제 Portfolio 프로젝트 적용 기록 정리 |
+
+기간은 포트폴리오 적용·제출 정리를 포함하며, Demo Host 기능 개발 기록은 07.19까지입니다. 검증 범위는 개발 당시 확인과 별도 추가 QA로 구분합니다.
 
 ## 작업 범위·기여
 
@@ -44,22 +50,35 @@
 
 ## 대표 구현
 
-| 기능 | 처리 방식 | 자료 |
-| --- | --- | --- |
-| 참조 관계·공유·순환 처리 | Dependencies / Referencers를 조회. 서로 다른 경로의 공유 에셋은 각 경로에 표시하고 같은 경로에서 다시 만난 에셋은 순환 표시 후 하위 탐색 중단 | [PDF 13쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=13) · [참조·순환 탐색 코드](Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/UI/SAssetReferenceInspectorWidget.cpp) |
-| 선택 없이 미사용 후보 탐색 | /Game 및 하위 폴더에서 `GetReferencers()` 결과가 0개인 후보를 탐색하고 폴더·에셋 종류 필터 적용. 결과에서 원본 에셋 위치로 이동 | [PDF 12쪽 · 처리 흐름](https://razria93.github.io/files/pdf/plugin-review.pdf#page=12) · [미사용 후보 스캔 코드](Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/UI/SAssetReferenceInspectorWidget.cpp) |
-| 분석 결과 CSV 저장 | 실제 에셋 행을 저장하고 안내·그룹 행은 제외. 부모·깊이·모드·순환 여부 등을 기록 | [PDF 14쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=14) · [CSV 형식·저장 규칙](Docs/02_Architecture/CSV_Export_Format_KR.md) · [CSV 저장 코드](Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/Export/AssetReferenceCsvExporter.cpp) |
+### 참조 관계·공유·순환 처리
 
-- **미사용 후보·크기:** 후보는 삭제 안전 판정이 아니며, 표시 크기는 런타임 메모리가 아닌 디스크 파일 기준 추정값입니다.
-- **공유·순환 QA:** 별도 Data Asset의 hard reference 확인이며 당시 Blueprint·실제 프로젝트 전체 재실행을 뜻하지 않습니다.
+Dependencies / Referencers를 조회합니다. 서로 다른 경로의 공유 에셋은 각 경로에 표시하고, 같은 경로에서 다시 만난 에셋은 순환 표시 후 하위 탐색을 중단합니다.
+
+공유·순환 추가 QA는 별도 Data Asset의 hard reference 확인입니다. 당시 Blueprint·실제 프로젝트 전체 재실행을 뜻하지 않습니다.
+
+[처리 구조 · PDF 13쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=13) · [공유·순환 검증 자료](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case1) · [참조·순환 탐색 코드](Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/UI/SAssetReferenceInspectorWidget.cpp)
+
+### 선택 없이 미사용 후보 탐색
+
+`/Game` 및 하위 폴더에서 `GetReferencers()` 결과가 0개인 후보를 탐색하고 폴더·에셋 종류 필터를 적용합니다. 결과에서 원본 에셋 위치로 이동할 수 있습니다. **미사용 후보는 삭제 안전 판정이 아닙니다.** 표시 크기는 런타임 메모리가 아닌 디스크 파일 기준 추정값입니다.
+
+[처리 흐름 · PDF 12쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=12) · [개발 당시 화면·확인 기록](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#unused) · [미사용 후보 스캔 코드](Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/UI/SAssetReferenceInspectorWidget.cpp)
+
+### 분석 결과 CSV 저장
+
+실제 에셋 행을 저장하고 안내·그룹 행은 제외합니다. 부모·깊이·모드·순환 여부 등을 기록합니다. CSV 행 수는 결과 범위 확인용이며 성능이나 고유 에셋 수를 뜻하지 않습니다.
+
+[저장 결과 · PDF 14쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=14) · [CSV 형식·저장 규칙](Docs/02_Architecture/CSV_Export_Format_KR.md) · [CSV 저장 코드](Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/Private/Export/AssetReferenceCsvExporter.cpp)
 
 ## 문제 해결
 
-| 사례 | 문제와 보완 | 결과 해석·자료 |
-| --- | --- | --- |
-| 필터 입력 오류 | Enter 확정 후 OnCleared 호출이 저장 경로를 덮어쓰는 문제를 수정 | 이전 처리 비교는 재구성한 Enter 조건에 한정. [PDF 5–7쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=5) · [입력 4조건 검증 영상·CSV](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case2) |
-| 미사용 후보 탐색 범위 재설계 | 선택 에셋의 관계 목록에서 /Game 및 하위 폴더의 독립 탐색으로 변경 | 개발 당시 확인이며 새 10월 추가 QA 사례가 아님. [PDF 8–10쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=8) · [개발 당시 화면·확인 기록](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#unused) |
-| CSV 모드 불일치·AI 리뷰 | PR #59의 Codex 자동 리뷰에서 발견. 현재 버튼 값 대신 결과 생성 당시 분석 모드를 저장 | 개발 당시 빌드와 별도 Data Asset QA를 구분. 과거 전체 빌드 비교가 아님. [PDF 15쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=15) · [모드 전환 검증 영상·CSV](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case3) |
+| 사례 | 핵심 결과 | 자료 | 영상 |
+| --- | --- | --- | --- |
+| 필터 입력<br>오류 | Enter 확정 후 OnCleared 호출이 저장 경로를 덮어쓰는 문제를 수정.<br>이전 처리 비교는 재구성한 Enter 조건에 한정 | [PDF 5–7쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=5)<br>[조건·한계](#필터-입력-오류) | [입력 4조건<br>검증](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case2) |
+| 미사용 후보<br>탐색 범위 | 선택 에셋의 관계 목록에서 /Game 및 하위 폴더의 독립 탐색으로 변경.<br>개발 당시 확인이며 새 10월 추가 QA 사례가 아님 | [PDF 8–10쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=8)<br>[당시 화면·기록](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#unused) | — |
+| CSV 모드 불일치<br>AI 리뷰 | PR #59의 Codex 자동 리뷰에서 발견.<br>현재 버튼 값 대신 결과 생성 당시 분석 모드를 저장 | [PDF 15쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=15)<br>[조건·한계](#csv-저장모드-불일치) | [모드 전환<br>검증](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case3) |
+
+**CSV 비교 범위:** 개발 당시 빌드와 별도 Data Asset QA를 구분하며, 과거 전체 빌드 비교가 아닙니다. 입력·모드 전환 영상 페이지에서 대응 CSV도 확인할 수 있습니다.
 
 ## 검증 조건·한계
 
@@ -104,6 +123,17 @@
 
 ## 로컬 실행
 
+### 저장소·환경 준비
+
+Unreal Engine 5.4와 Visual Studio C++ 개발 환경을 준비하고 이 저장소를 받습니다.
+
+```powershell
+git clone https://github.com/Razria93/Plugin_Portfolio_UE5.4.git
+cd Plugin_Portfolio_UE5.4
+```
+
+### 에디터에서 실행
+
 - **Demo Host에서 확인:** 아래 명령으로 `Portfolio_PlugInEditor`를 빌드하고 `Portfolio_PlugIn.uproject`를 열어 기본 사용 흐름을 확인합니다.
 - **기존 프로젝트에 적용:** 이 저장소의 `Plugins/AssetReferenceInspector` 폴더를 대상 프로젝트의 `Plugins` 폴더로 복사합니다. 프로젝트를 다시 열고 필요하면 Editor Target을 빌드합니다. [플러그인 적용 안내](Plugins/AssetReferenceInspector/README.md#다른-프로젝트-적용)에서 전체 절차를 확인합니다.
 
@@ -115,7 +145,16 @@ $projectPath = (Resolve-Path -LiteralPath '.\Portfolio_PlugIn.uproject').Path
 & "$engineRoot\Engine\Build\BatchFiles\Build.bat" Portfolio_PlugInEditor Win64 Development "-Project=$projectPath" -WaitMutex -FromMsBuild
 ```
 
-### 기본 사용 흐름
+<a id="기본-사용-흐름"></a>
+
+### 실행 후 확인
+
+1. `Window > Asset Reference Inspector`에서 창을 열고 에셋을 선택해 참조 관계를 분석합니다.
+2. 결과 트리를 확인하고 원본 에셋 위치 이동과 CSV 저장을 확인합니다.
+3. 미사용 후보는 `Scan Unused Candidate`로 별도 스캔합니다.
+
+<details>
+<summary>상세 조작 순서 · 필터·모드·CSV 저장 위치</summary>
 
 1. Unreal Editor에서 `Window > Asset Reference Inspector`를 엽니다.
 2. Content Browser에서 분석할 Asset을 선택합니다.
@@ -129,18 +168,20 @@ $projectPath = (Resolve-Path -LiteralPath '.\Portfolio_PlugIn.uproject').Path
 
 Unused Candidate 후보는 `Scan Unused Candidate`로 별도 스캔합니다.
 
+</details>
+
+[준비·빌드 상세](BUILD.md) · [기능별 사용·프로젝트 적용 안내](Plugins/AssetReferenceInspector/README.md)
+
 ## 저장소 구조
 
-```text
-Portfolio_PlugIn/
-  Portfolio_PlugIn.uproject
-  Source/Portfolio_PlugIn/
-  Plugins/
-    AssetReferenceInspector/
-      AssetReferenceInspector.uplugin
-      Source/AssetReferenceInspector/
-  Docs/
-```
+| 경로 | 역할 |
+| --- | --- |
+| [Plugins/AssetReferenceInspector](Plugins/AssetReferenceInspector/) | 독립 에디터 플러그인과 사용 안내 |
+| [플러그인 Source](Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/) | Slate UI·참조 탐색·CSV 구현 |
+| [Source/Portfolio_PlugIn](Source/Portfolio_PlugIn/) | 개발·검증용 Demo Host |
+| [Portfolio_PlugIn.uproject](Portfolio_PlugIn.uproject) | Demo Host 실행 진입점 |
+| [Docs](Docs/README_KR.md) | 계획·구조·검증·시연 문서 색인 |
+| [BUILD.md](BUILD.md) | 환경 준비와 빌드 안내 |
 
 실제 플러그인 구현은 `Plugins/AssetReferenceInspector` 아래에 둡니다. Engine 설치 경로의 `Engine/Plugins`에는 작업하지 않습니다.
 
@@ -189,8 +230,6 @@ Demo Host의 구현 기능입니다. 기능별 검증 조건은 개발 당시 �
 
 ### 개발 당시 검증 자료
 
-- [Final Verification Summary](Docs/03_Verification/Final_Verification_Summary_KR.md)
-- [Build Verification Log](Docs/03_Verification/Build_Verification_Log_KR.md)
 - [Dependencies Depth 1](Docs/03_Verification/Screenshots/feature_ari_dependencies_depth1/bp_dummy_dependencies.png)
 - [Referencers Mode](Docs/03_Verification/Screenshots/feature_ari_referencers_mode/referencers_t_dummy_color.png)
 - [Content Browser Sync](Docs/03_Verification/Screenshots/feature_ari_content_browser_sync/sync_m_dummy_from_dependencies.png)
