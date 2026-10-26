@@ -74,9 +74,9 @@ Dependencies / Referencers를 조회합니다. 서로 다른 경로의 공유 �
 
 | 사례 | 핵심 결과 | 자료 | 영상 |
 | --- | --- | --- | --- |
-| 필터 입력<br>오류 | Enter 확정 후 OnCleared 호출이 저장 경로를 덮어쓰는 문제를 수정.<br>이전 처리 비교는 재구성한 Enter 조건에 한정 | [PDF 5–7쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=5)<br>[조건·한계](#필터-입력-오류) | [입력 4조건<br>검증](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case2) |
+| 필터 입력<br>오류 | Enter 확정 후 OnCleared 호출이 저장 경로를 덮어쓰는 문제를 수정.<br>이전 처리 비교는 재구성한 Enter 조건에 한정 | [PDF 5–7쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=5)<br>[조건·한계](#필터-입력-오류) | [입력 조건<br>검증 영상](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case2) |
 | 미사용 후보<br>탐색 범위 | 선택 에셋의 관계 목록에서 /Game 및 하위 폴더의 독립 탐색으로 변경.<br>개발 당시 확인이며 새 10월 추가 QA 사례가 아님 | [PDF 8–10쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=8)<br>[당시 화면·기록](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#unused) | — |
-| CSV 모드 불일치<br>AI 리뷰 | PR #59의 Codex 자동 리뷰에서 발견.<br>현재 버튼 값 대신 결과 생성 당시 분석 모드를 저장 | [PDF 15쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=15)<br>[조건·한계](#csv-저장모드-불일치) | [모드 전환<br>검증](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case3) |
+| CSV 저장<br>모드 불일치 | PR #59의 Codex 자동 리뷰에서 발견.<br>현재 버튼 값 대신 결과 생성 당시 분석 모드를 저장 | [PDF 15쪽](https://razria93.github.io/files/pdf/plugin-review.pdf#page=15)<br>[조건·한계](#csv-저장모드-불일치) | [모드 전환<br>영상](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case3) |
 
 **CSV 비교 범위:** 개발 당시 빌드와 별도 Data Asset QA를 구분하며, 과거 전체 빌드 비교가 아닙니다. 입력·모드 전환 영상 페이지에서 대응 CSV도 확인할 수 있습니다.
 
@@ -93,10 +93,14 @@ Dependencies / Referencers를 조회합니다. 서로 다른 경로의 공유 �
 - **미사용 후보:** 삭제 안전 판정이 아닙니다. Soft Reference·Asset Manager·동적 로딩 기반 사용 여부는 검증하지 않았습니다.
 - 개발 당시 조회·필터·원본 위치 이동 확인. 새 10월 추가 QA를 수행한 사례가 아님.
 
+[개발 당시 화면·확인 기록](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#unused)
+
 ### 필터 입력 오류
 
 - 사용자 오류·로그 제공과 수정 후 Escape 확인, Codex 분석·수정 및 별도 입력 4조건 QA.
 - **필터 비교 조건:** 필터의 이전 처리 비교는 이전 입력 콜백을 재구성한 Enter 조건에 한정하며 과거 전체 빌드를 실행한 비교가 아닙니다.
+
+[입력 조건별 검증](https://razria93.github.io/site/details/Plugin_Portfolio_UE5.4/portfolio-evidence/index.html#case2)
 
 ### CSV 저장·모드 불일치
 
@@ -134,8 +138,10 @@ cd Plugin_Portfolio_UE5.4
 
 ### 에디터에서 실행
 
-- **Demo Host에서 확인:** 아래 명령으로 `Portfolio_PlugInEditor`를 빌드하고 `Portfolio_PlugIn.uproject`를 열어 기본 사용 흐름을 확인합니다.
-- **기존 프로젝트에 적용:** 이 저장소의 `Plugins/AssetReferenceInspector` 폴더를 대상 프로젝트의 `Plugins` 폴더로 복사합니다. 프로젝트를 다시 열고 필요하면 Editor Target을 빌드합니다. [플러그인 적용 안내](Plugins/AssetReferenceInspector/README.md#다른-프로젝트-적용)에서 전체 절차를 확인합니다.
+**실행 경로 선택:** 아래는 저장소에 포함된 Demo Host 기준입니다. 기존 프로젝트에 적용하려면 `Plugins/AssetReferenceInspector` 폴더를 대상 프로젝트의 `Plugins` 폴더로 복사하고, 프로젝트를 다시 연 뒤 필요하면 Editor Target을 빌드합니다. 전체 절차는 [플러그인 적용 안내](Plugins/AssetReferenceInspector/README.md#다른-프로젝트-적용)에 있습니다.
+
+1. 아래 명령으로 `Portfolio_PlugInEditor`를 빌드합니다.
+2. `Portfolio_PlugIn.uproject`를 엽니다.
 
 [빌드 안내](BUILD.md)에서 준비 조건을 확인합니다. PowerShell에서 저장소 루트 기준으로 실행합니다. 엔진 경로는 설치 위치에 맞게 변경합니다.
 
@@ -170,14 +176,14 @@ Unused Candidate 후보는 `Scan Unused Candidate`로 별도 스캔합니다.
 
 </details>
 
-[준비·빌드 상세](BUILD.md) · [기능별 사용·프로젝트 적용 안내](Plugins/AssetReferenceInspector/README.md)
+[기능별 사용·프로젝트 적용 안내](Plugins/AssetReferenceInspector/README.md)
 
 ## 저장소 구조
 
 | 경로 | 역할 |
 | --- | --- |
 | [Plugins/AssetReferenceInspector](Plugins/AssetReferenceInspector/) | 독립 에디터 플러그인과 사용 안내 |
-| [플러그인 Source](Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/) | Slate UI·참조 탐색·CSV 구현 |
+| [Plugins/AssetReferenceInspector/<br>Source/AssetReferenceInspector](Plugins/AssetReferenceInspector/Source/AssetReferenceInspector/) | Slate UI·참조 탐색·CSV 구현 |
 | [Source/Portfolio_PlugIn](Source/Portfolio_PlugIn/) | 개발·검증용 Demo Host |
 | [Portfolio_PlugIn.uproject](Portfolio_PlugIn.uproject) | Demo Host 실행 진입점 |
 | [Docs](Docs/README_KR.md) | 계획·구조·검증·시연 문서 색인 |
