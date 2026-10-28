@@ -1,8 +1,8 @@
 (() => {
   'use strict';
   const root = 'https://razria93.github.io/Portfolio_UE5.4_verGit/';
-  const hub = root + 'portfolio/';
-  const pdf = root + 'portfolio/files/yeom-dongseop-game-client-portfolio-20261023.pdf';
+  const hub = 'https://razria93.github.io/';
+  const pdf = 'https://razria93.github.io/files/pdf/combined-review.pdf';
   const current = new URL(location.href);
   const value = current.searchParams.get('portfolio_page');
   const incoming = /^\d+$/.test(value || '') ? Number(value) : 0;
